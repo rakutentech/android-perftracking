@@ -1,0 +1,61 @@
+{
+  "app": "app",
+  "country": "test-land",
+  "region": "test-region",
+  "device": "test-device",
+  "os": "android",
+  "os_version": "7.1.1",
+  "measurements": [
+    {
+      "metric": "test-metric",
+      "start":0,
+      "time": 999,
+      "urls": 999
+    },
+    {
+      "metric": "test-metric",
+      "start":0,
+      "time": 999,
+      "urls": 999
+    },
+    {
+      "method": "TestClass.testMethod",
+      "metric": "test-metric",
+      "start":1,
+      "time": 998
+    },
+    {
+      "url": "https://rakuten.co.jp1/some/path",
+      "metric": "test-metric",
+      "start":10,
+      "time": 989,
+      "verb": "VERB"
+    },
+    {
+      "url": "https://rakuten.co.jp2/some/path",
+      "start":11,
+      "time": 988,
+      "verb": "VERB"
+    },
+    {
+      "url": "https://rakuten.co.jp3/some/path",
+      "start":100,
+      "time": 899
+    },
+    {
+      "custom": "custom-measurement",
+      "metric": "test-metric",
+      "start":101,
+      "time": 898
+    },
+    {
+      "url": "https://amazon.co.jp/other/path",
+      "metric": "test-metric",
+      "start":0,
+      "time": 100,
+      "verb": "BERV"
+    }
+  ],
+  "network": "test-network",
+  "version": "test-version"
+}

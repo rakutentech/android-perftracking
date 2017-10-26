@@ -1,0 +1,9 @@
+{
+  "app": "app",
+  "country": "test-land",
+  "region": "test-region",
+  "os": "android",
+  "os_version": "7.1.1",
+  "measurements": [],
+  "version": "test-version"
+}

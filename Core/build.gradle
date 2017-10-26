@@ -1,0 +1,27 @@
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+dependencies {
+    compile project(':Stubs')
+}
+
+apply plugin: "jacoco"
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.6.2'
+    testCompile 'org.skyscreamer:jsonassert:1.5.0'
+    // use mockito-inline instead of mockito-core to allow mocking final classes
+    // see http://static.javadoc.io/org.mockito/mockito-core/2.7.22/org/mockito/Mockito.html#39
+    testCompile "org.mockito:mockito-inline:2.7.22"
+}
+
+// copy resources to classes dir so they are available on the test classpath
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/test"
+}
+
+test.dependsOn copyTestResources

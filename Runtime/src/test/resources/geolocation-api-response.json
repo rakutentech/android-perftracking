@@ -1,0 +1,60 @@
+{
+  "status": "ok",
+  "list": [{
+    "city": {
+      "geoname_id": 1850147,
+      "names": {
+        "de": "Tokio",
+        "ru": "Токио",
+        "pt-BR": "Tóquio",
+        "ja": "東京",
+        "en": "Tokyo",
+        "fr": "Tokyo",
+        "zh-CN": "东京",
+        "es": "Tokio"
+      }
+    },
+    "country": {
+      "geoname_id": 1861060,
+      "iso_code": "JP",
+      "names": {
+        "de": "Japan",
+        "ru": "Япония",
+        "pt-BR": "Japão",
+        "ja": "日本",
+        "en": "Japan",
+        "fr": "Japon",
+        "zh-CN": "日本",
+        "es": "Japón"
+      }
+    },
+    "location": {
+      "accuracy_radius": 10,
+      "latitude": 35.6427,
+      "longitude": 139.7677,
+      "time_zone": "Asia/Tokyo"
+    },
+    "subdivisions": [{
+      "geoname_id": 1850144,
+      "iso_code": "13",
+      "names": {
+        "en": "Tokyo",
+        "fr": "Préfecture de Tokyo",
+        "ja": "東京都"
+      }
+    }],
+    "traits": {
+      "ip_address": "133.237.7.86",
+      "is_anonymous": false,
+      "is_anonymous_vpn": false,
+      "is_tor_exit_node": false,
+      "is_hosting_provider_or_data_center": false,
+      "is_public_proxy": false,
+      "connection_type": "Cable/DSL",
+      "isp": "Rakuten,Inc.",
+      "organization": "Rakuten,Inc.",
+      "autonomous_system_number": "23820",
+      "autonomous_system_number_organization": "Rakuten,Inc."
+    }
+  }]
+}

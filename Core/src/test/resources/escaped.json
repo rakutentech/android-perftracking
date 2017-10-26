@@ -1,0 +1,72 @@
+{
+  "app": "app",
+  "country": "test-land",
+  "region": "test-region",
+  "device": "test-device",
+  "os": "android",
+  "os_version": "7.1.1",
+  "measurements": [
+    {
+      "url": "http://example.com:80/page1\".html",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    },
+    {
+      "url": "http://example.com:80/page1\"[.html",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    },
+    {
+      "url": "http://example.com:80/page1\"{.html",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    },
+    {
+      "url": "http://example.com:80/page1\",.html",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    },
+    {
+      "url": "http://example.com:80/page1'}'.html",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    },
+    {
+      "url": "http://example.com:80/page1\".html",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    },
+    {
+      "url": "http://example.com:80/page1\"[.html",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    },
+    {
+      "url": "http://example.com:80/page1\"{.html",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    },
+    {
+      "url": "http://example.com:80/page1\",.html",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    },
+    {
+      "url": "http://example.com:80/page1'}'.html",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    }
+  ],
+  "network": "test-network",
+  "version": "test-version"
+}

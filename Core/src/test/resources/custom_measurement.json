@@ -1,0 +1,19 @@
+{
+  "app": "app",
+  "country": "test-land",
+  "region": "test-region",
+  "device": "test-device",
+  "os": "android",
+  "os_version": "7.1.1",
+  "measurements": [
+    {
+      "custom": "custom-measurement",
+      "screen": "test-activity",
+      "metric": "test-metric",
+      "start": 0,
+      "time": 999
+    }
+  ],
+  "network": "test-network",
+  "version": "test-version"
+}

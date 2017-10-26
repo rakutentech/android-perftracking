@@ -1,0 +1,67 @@
+buildscript {
+    repositories {
+        jcenter()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath files('../../build/libs/Plugin-0.2.0.jar')
+    }
+}
+
+repositories {
+    jcenter()
+    maven { url 'http://artifactory.raksdtd.com/artifactory/libs-release' }
+    // TODO: remove snapshot repo after initial release
+    maven { url 'http://artifactory.raksdtd.com/artifactory/libs-snapshot' }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.rakuten.tech.mobile.perf'
+
+performanceTracking {
+    release {
+        enable = true
+    }
+    debug {
+        enable = true
+    }
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
+    dataBinding.enabled = true
+
+    defaultConfig {
+        applicationId 'com.rakuten.tech.mobile.perf.example'
+        minSdkVersion 20
+        targetSdkVersion 23
+        versionCode 1
+        versionName 'one'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+dependencies {
+
+    /** support-v4 **/
+    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+}
+
+configurations.all { // TODO: remove after inital release
+    resolutionStrategy {
+        force 'com.rakuten.tech.mobile.perf:performance-tracking:0.1.0-SNAPSHOT'
+    }
+}
+

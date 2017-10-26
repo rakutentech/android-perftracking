@@ -1,0 +1,30 @@
+import com.rakuten.tech.tool.CheckGradleFilesForSnapshotDependencies
+
+buildscript {
+    apply from: "config/index.gradle"
+    repositories {
+        artifactoryRelease()
+        jcenter()
+        maven { url 'https://maven.google.com' }
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:$CONFIG.versions.android.plugin"
+        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'
+        classpath "net.saliman:gradle-cobertura-plugin:2.4.0"
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url 'https://maven.google.com' }
+        jcenter()
+    }
+}
+
+task preReleaseCheck(type: CheckGradleFilesForSnapshotDependencies) {
+     exclude = [
+        ~/.*\/Example\/.*\.gradle/,
+        ~/.*\/config\/.*\.gradle/,
+        ~/.*\/buildSrc\/.*\.gradle/
+        ]
+}
