@@ -35,6 +35,16 @@ dependencies {
     compile 'org.ow2.asm:asm-all:5.1'
 }
 
+apply plugin: 'jp.co.rakuten.sdtd.artifactory'
+
+artifactory {
+    group = project.MODULE_GROUP
+    artifact = project.MODULE_NAME
+    version = project.MODULE_VERSION
+    description = project.MODULE_DESCRIPTION
+    sourceUrl = project.MODULE_REPOSITORY
+}
+
 // testing
 dependencies {
     testCompile gradleTestKit()

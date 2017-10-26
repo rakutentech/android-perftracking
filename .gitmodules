@@ -1,3 +1,6 @@
 [submodule "config"]
 	path = config
 	url = git@github.com:rakutentech/android-buildconfig.git
+[submodule "config-internal"]
+	path = config-internal
+	url = ssh://git@gitpub.rakuten-it.com:7999/eco/android-buildconfig-internal.git

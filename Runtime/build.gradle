@@ -36,6 +36,7 @@ android {
     }
 }
 
+// --- DEPENDENCIES ---
 configurations { copyJar }
 
 task copyJar(type: Copy) {
@@ -70,7 +71,9 @@ dependencies {
 
 apply from: "../config/jacoco.gradle"
 
+apply from: '../config-internal/javadoc.gradle'
 javadoc { exclude = ['**/Measurement.java'] }
+apply from: '../config-internal/artifactory.gradle'
 
 task checkUrlPrefixes {
     doLast {
