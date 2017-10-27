@@ -1,33 +1,33 @@
 import com.rakuten.tech.tool.CheckGradleFilesForSnapshotDependencies
 
 buildscript {
-    apply from: "config/index.gradle"
-    apply from: "config-internal/index.gradle"
-    repositories {
-        artifactoryRelease()
-        jcenter()
-        maven { url 'https://maven.google.com' }
-    }
-    dependencies {
-        classpath "com.android.tools.build:gradle:$CONFIG.versions.android.plugin"
-        classpath 'jp.co.rakuten.sdtd.plugin:artifactory:1.2.0'
-        classpath 'jp.co.rakuten.sdtd.plugin:javadoc:1.2.4'
-        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'
-        classpath "net.saliman:gradle-cobertura-plugin:2.4.0"
-    }
+  apply from: "config/index.gradle"
+  apply from: "config-internal/index.gradle"
+  repositories {
+    artifactoryRelease()
+    jcenter()
+    maven { url 'https://maven.google.com' }
+  }
+  dependencies {
+    classpath "com.android.tools.build:gradle:$CONFIG.versions.android.plugin"
+    classpath 'jp.co.rakuten.sdtd.plugin:javadoc:1.2.4'
+    classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'
+    classpath 'net.saliman:gradle-cobertura-plugin:2.4.0'
+    classpath 'digital.wup:android-maven-publish:3.1.0'
+  }
 }
 
 allprojects {
-    repositories {
-        maven { url 'https://maven.google.com' }
-        jcenter()
-    }
+  repositories {
+    maven { url 'https://maven.google.com' }
+    jcenter()
+  }
 }
 
 task preReleaseCheck(type: CheckGradleFilesForSnapshotDependencies) {
-     exclude = [
-        ~/.*\/Example\/.*\.gradle/,
-        ~/.*\/config\/.*\.gradle/,
-        ~/.*\/buildSrc\/.*\.gradle/
-        ]
+  exclude = [
+      ~/.*\/Example\/.*\.gradle/,
+      ~/.*\/config\/.*\.gradle/,
+      ~/.*\/buildSrc\/.*\.gradle/
+  ]
 }
