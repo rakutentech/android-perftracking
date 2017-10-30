@@ -11,7 +11,11 @@ def config() {
         tasks: ['Plugin:check', 'Runtime:check', 'Core:check'],
       ],
       deploy: [
-        tasks: ['Plugin:uploadRelease', 'Runtime:uploadRelease', 'Runtime:uploadJavadoc'],
+        tasks: [
+        'Plugin:publishPluginPublicationToArtifactoryRepository', 
+        'Runtime:publishRuntimePublicationToArtifactoryRepository', 
+        'Runtime:uploadJavadoc'
+        ],
       ]
     ]
 }

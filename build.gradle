@@ -20,6 +20,19 @@ buildscript {
   }
 }
 
+// do something if a task exists after evaluate
+// receives the task as delegate and parameter
+Project.metaClass.eventuallyHasTask = { String taskName, Closure<Task> cls = null ->
+  delegate.afterEvaluate {
+    def task = it.tasks.find { it.name == taskName }
+    if(task != null && cls != null) {
+      cls.delegate = task
+      cls.resolveStrategy = DELEGATE_FIRST
+      cls(task)
+    }
+  }
+}
+
 subprojects { subproject ->
   apply plugin: 'com.github.ben-manes.versions'
   dependencyUpdates.resolutionStrategy = {
@@ -30,10 +43,7 @@ subprojects { subproject ->
       }
     }
   }
-
-  subproject.afterEvaluate {
-    if(it.tasks.any { it.name == "assemble"} ) it.tasks.assemble.dependsOn dependencyUpdates
-  }
+  subproject.eventuallyHasTask('assemble') { dependsOn dependencyUpdates }
 
   apply plugin: 'pl.allegro.tech.build.axion-release'
   scmVersion {
@@ -43,8 +53,8 @@ subprojects { subproject ->
       versionSeparator = ''
     }
   }
-
   subproject.version = scmVersion.version
+  subproject.eventuallyHasTask('uploadJavadoc') { enabled = !subproject.version.contains('-') }
 
   repositories {
     maven { url 'https://maven.google.com' }
