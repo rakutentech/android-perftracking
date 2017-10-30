@@ -14,10 +14,25 @@ buildscript {
     classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'
     classpath 'net.saliman:gradle-cobertura-plugin:2.4.0'
     classpath 'digital.wup:android-maven-publish:3.1.0'
+    classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
   }
 }
 
-allprojects {
+subprojects { subproject ->
+  apply plugin: 'com.github.ben-manes.versions'
+  dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+      rules.all { ComponentSelection selection ->
+        boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', '-', '_'].any { selection.candidate.version.contains(it) }
+        if (rejected) selection.reject('Release candidate')
+      }
+    }
+  }
+
+  subproject.afterEvaluate {
+    if(it.tasks.any { it.name == "assemble"} ) it.tasks.assemble.dependsOn dependencyUpdates
+  }
+
   repositories {
     maven { url 'https://maven.google.com' }
     jcenter()
