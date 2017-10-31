@@ -19,9 +19,7 @@ dependencies {
 }
 
 // copy resources to classes dir so they are available on the test classpath
-task copyTestResources(type: Copy) {
-  from "${projectDir}/src/test/resources"
-  into "${buildDir}/classes/test"
+processTestResources {
+  from sourceSets.test.resources
+  destinationDir sourceSets.test.output.classesDir
 }
-
-test.dependsOn copyTestResources

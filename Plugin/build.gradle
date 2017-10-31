@@ -16,18 +16,31 @@ sourceSets {
 // Inject the version number into the resources
 import org.apache.tools.ant.filters.ReplaceTokens
 
-afterEvaluate {
-  configure(allProcessResourcesTasks()) {
-    filter(ReplaceTokens, tokens: [
-        version   : project.version,
-        runtime   : "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
-        repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
-    ])
-  }
+processTestResources {
+    with copySpec {
+        exclude '**/*.jar'
+        from sourceSets.main.resources
+        from sourceSets.test.resources
+        destinationDir sourceSets.test.output.classesDir
+        filter(ReplaceTokens, tokens: [
+            version:    project.version,
+            runtime:    "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
+            repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
+        ])
+    }
+    with copySpec { // don't change jar files
+        include '**/*.jar'
+        from sourceSets.test.resources
+        destinationDir sourceSets.test.output.classesDir
+    }
 }
 
-def allProcessResourcesTasks() {
-  sourceSets*.processResourcesTaskName.collect { tasks[it] }
+processResources {
+    filter(ReplaceTokens, tokens: [
+        version:    project.MODULE_VERSION,
+        runtime:    "com.rakuten.tech.mobile.perf:performance-tracking:$project.MODULE_VERSION".toString(),
+        repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
+    ])
 }
 
 dependencies {

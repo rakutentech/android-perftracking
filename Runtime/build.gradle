@@ -56,7 +56,7 @@ android.libraryVariants.all {
 
 dependencies {
   copyJar project(':Core')
-  compile files('libs/Core.jar')
+  compile files("libs/Core-${project.version}.jar")
 
   compile "com.android.support:support-annotations:$CONFIG.versions.android.libraries.support"
   compile "com.google.code.gson:gson:${CONFIG.versions.thirdParty.gson}"
