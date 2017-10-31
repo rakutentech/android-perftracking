@@ -25,13 +25,20 @@ The modules are:
 * Fetches configuration from backend & starts collection of measurements
 * Runtime API for applications to start and prolong measurements and metrics
 
+## Prerequisite
+
+Add the following to your environment's global `gradle.properties`
+
+```
+DEFAULT_CONFIG_URL_PREFIX="url to your configuration server"
+DEFAULT_LOCATION_URL_PREFIX="url to your location server"
+```
+
 ## How to build it
 
 ```bash
 $ git submodule init
 & git submodule update
-$ export DEFAULT_CONFIG_URL_PREFIX="url to your configuration server"
-$ export DEFAULT_LOCATION_URL_PREFIX="url to your location server"
 $ ./gradlew Runtime:assemble Plugin:assemble
 ```
 
