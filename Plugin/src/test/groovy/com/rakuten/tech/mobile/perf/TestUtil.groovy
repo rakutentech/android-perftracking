@@ -10,7 +10,7 @@ class TestUtil {
   final static String detoursPkg = "com.rakuten.tech.mobile.perf.core.detours"
 
   static def resourceFile(name) {
-    new File("src/test/resources/$name")
+    new File(this.classLoader.getResource(name).toURI())
   }
 
   static Logger testLogger() {

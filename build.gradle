@@ -1,33 +1,71 @@
 import com.rakuten.tech.tool.CheckGradleFilesForSnapshotDependencies
 
 buildscript {
-    apply from: "config/index.gradle"
-    apply from: "config-internal/index.gradle"
-    repositories {
-        artifactoryRelease()
-        jcenter()
-        maven { url 'https://maven.google.com' }
-    }
-    dependencies {
-        classpath "com.android.tools.build:gradle:$CONFIG.versions.android.plugin"
-        classpath 'jp.co.rakuten.sdtd.plugin:artifactory:1.2.0'
-        classpath 'jp.co.rakuten.sdtd.plugin:javadoc:1.2.4'
-        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'
-        classpath "net.saliman:gradle-cobertura-plugin:2.4.0"
-    }
+  apply from: "config/index.gradle"
+  apply from: "config-internal/index.gradle"
+  repositories {
+    artifactoryRelease()
+    jcenter()
+    maven { url 'https://maven.google.com' }
+    maven { url "https://plugins.gradle.org/m2/" }
+  }
+  dependencies {
+    classpath "com.android.tools.build:gradle:$CONFIG.versions.android.plugin"
+    classpath 'jp.co.rakuten.sdtd.plugin:javadoc:1.2.4'
+    classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'
+    classpath 'net.saliman:gradle-cobertura-plugin:2.4.0'
+    classpath 'digital.wup:android-maven-publish:3.1.0'
+    classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
+    classpath 'pl.allegro.tech.build:axion-release-plugin:1.8.1'
+  }
 }
 
-allprojects {
-    repositories {
-        maven { url 'https://maven.google.com' }
-        jcenter()
+// do something if a task exists after evaluate
+// receives the task as delegate and parameter
+Project.metaClass.eventuallyHasTask = { String taskName, Closure<Task> cls = null ->
+  delegate.afterEvaluate {
+    def task = it.tasks.find { it.name == taskName }
+    if(task != null && cls != null) {
+      cls.delegate = task
+      cls.resolveStrategy = DELEGATE_FIRST
+      cls(task)
     }
+  }
+}
+
+subprojects { subproject ->
+  apply plugin: 'com.github.ben-manes.versions'
+  dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+      rules.all { ComponentSelection selection ->
+        boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', '-', '_'].any { selection.candidate.version.contains(it) }
+        if (rejected) selection.reject('Release candidate')
+      }
+    }
+  }
+  subproject.eventuallyHasTask('assemble') { dependsOn dependencyUpdates }
+
+  apply plugin: 'pl.allegro.tech.build.axion-release'
+  scmVersion {
+    useHighestVersion = true
+    tag {
+      prefix = 'v'
+      versionSeparator = ''
+    }
+  }
+  subproject.version = scmVersion.version
+  subproject.eventuallyHasTask('uploadJavadoc') { enabled = !subproject.version.contains('-') }
+
+  repositories {
+    maven { url 'https://maven.google.com' }
+    jcenter()
+  }
 }
 
 task preReleaseCheck(type: CheckGradleFilesForSnapshotDependencies) {
-     exclude = [
-        ~/.*\/Example\/.*\.gradle/,
-        ~/.*\/config\/.*\.gradle/,
-        ~/.*\/buildSrc\/.*\.gradle/
-        ]
+  exclude = [
+      ~/.*\/Example\/.*\.gradle/,
+      ~/.*\/config\/.*\.gradle/,
+      ~/.*\/buildSrc\/.*\.gradle/
+  ]
 }

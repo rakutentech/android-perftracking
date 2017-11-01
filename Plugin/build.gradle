@@ -5,123 +5,135 @@ targetCompatibility = 1.7
 
 // Quick-and-dirty way of adding both Stubs and Core without dealing with jars…
 sourceSets {
-    main {
-        java {
-            srcDirs += "$rootProject.projectDir/Stubs/src/main/java"
-            srcDirs += "$rootProject.projectDir/Core/src/main/java"
-        }
+  main {
+    java {
+      srcDirs += "$rootProject.projectDir/Stubs/src/main/java"
+      srcDirs += "$rootProject.projectDir/Core/src/main/java"
     }
+  }
 }
 
 // Inject the version number into the resources
-import org.apache.tools.ant.filters.*
-afterEvaluate {
-    configure(allProcessResourcesTasks()) {
+import org.apache.tools.ant.filters.ReplaceTokens
+
+processTestResources {
+    with copySpec {
+        exclude '**/*.jar'
+        from sourceSets.main.resources
+        from sourceSets.test.resources
+        destinationDir sourceSets.test.output.classesDir
         filter(ReplaceTokens, tokens: [
-            version:    project.MODULE_VERSION,
-            runtime:    "com.rakuten.tech.mobile.perf:performance-tracking:$project.MODULE_VERSION".toString(),
+            version:    project.version,
+            runtime:    "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
             repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
         ])
     }
+    with copySpec { // don't change jar files
+        include '**/*.jar'
+        from sourceSets.test.resources
+        destinationDir sourceSets.test.output.classesDir
+    }
 }
-def allProcessResourcesTasks() {
-    sourceSets*.processResourcesTaskName.collect { tasks[it] }
+
+processResources {
+    filter(ReplaceTokens, tokens: [
+        version:    project.MODULE_VERSION,
+        runtime:    "com.rakuten.tech.mobile.perf:performance-tracking:$project.MODULE_VERSION".toString(),
+        repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
+    ])
 }
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile 'com.android.tools.build:gradle:2.3.3'
-    compile 'org.ow2.asm:asm-all:5.1'
+  compile gradleApi()
+  compile localGroovy()
+  compile 'com.android.tools.build:gradle:2.3.3'
+  compile 'org.ow2.asm:asm-all:5.1'
 }
 
-apply plugin: 'jp.co.rakuten.sdtd.artifactory'
+task sourcesJar(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
 
-artifactory {
-    group = project.MODULE_GROUP
-    artifact = project.MODULE_NAME
-    version = project.MODULE_VERSION
-    description = project.MODULE_DESCRIPTION
-    sourceUrl = project.MODULE_REPOSITORY
+apply from: '../config-internal/publish/java.gradle'
+publishing {
+  publications {
+    plugin(MavenPublication, javaArtifact(artifactId: 'plugin', artifacts: [ sourcesJar ]))
+  }
 }
 
 // testing
 dependencies {
-    testCompile gradleTestKit()
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.8.9'
+  testCompile gradleTestKit()
+  testCompile 'junit:junit:4.12'
+  testCompile 'org.mockito:mockito-core:2.8.9'
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+task unitTest(type: Test) {
+  useJUnit {
+    includeCategories 'com.rakuten.tech.mobile.perf.UnitSpec'
+    excludeCategories 'com.rakuten.tech.mobile.perf.IntegrationSpec'
+  }
 }
 
-task unitTest(type: Test){
-    useJUnit {
-        includeCategories 'com.rakuten.tech.mobile.perf.UnitSpec'
-        excludeCategories 'com.rakuten.tech.mobile.perf.IntegrationSpec'
-    }
-}
-
-task integrationTest(type: Test){
-    useJUnit {
-        excludeCategories 'com.rakuten.tech.mobile.perf.UnitSpec'
-        includeCategories 'com.rakuten.tech.mobile.perf.IntegrationSpec'
-    }
+task integrationTest(type: Test) {
+  useJUnit {
+    excludeCategories 'com.rakuten.tech.mobile.perf.UnitSpec'
+    includeCategories 'com.rakuten.tech.mobile.perf.IntegrationSpec'
+  }
 }
 
 ['test', 'unitTest', 'integrationTest'].each {
-    tasks."$it".doFirst {
-        def tempDir = new File("${project.projectDir}${File.separator}tmp")
-        println "creating temporary test directory $tempDir.absolutePath"
-        if(!tempDir.exists()) tempDir.mkdir()
-    }
-    tasks."$it".doLast {
-        def tempDir = new File("${project.projectDir}${File.separator}tmp")
-        println "deleting temporary test directory $tempDir.absolutePath"
-        if(tempDir.exists()) tempDir.deleteDir()
-    }
-    // local jar and sources jar to debug local code changes
-    tasks."$it".dependsOn(tasks.assemble)
-    tasks."$it".dependsOn(tasks.sourcesJar)
+  tasks."$it".doFirst {
+    def tempDir = new File("${project.projectDir}${File.separator}tmp")
+    println "creating temporary test directory $tempDir.absolutePath"
+    if (!tempDir.exists()) tempDir.mkdir()
+  }
+  tasks."$it".doLast {
+    def tempDir = new File("${project.projectDir}${File.separator}tmp")
+    println "deleting temporary test directory $tempDir.absolutePath"
+    if (tempDir.exists()) tempDir.deleteDir()
+  }
+  // local jar and sources jar to debug local code changes
+  tasks."$it".dependsOn(tasks.assemble)
+  tasks."$it".dependsOn(tasks.sourcesJar)
 }
 
 apply plugin: 'net.saliman.cobertura'
 // see https://github.com/stevesaliman/gradle-cobertura-plugin/blob/master/usage.md
 
 cobertura {
-    coverageDirs = [
-            'build/classes/main'
-    ]
-    coverageSourceDirs = [
-            'src/main/groovy'
-    ]
-    coverageExcludes = [
-            // for some reason '.*android.*' will create an empty report, so this is a bit verbose
-            '.*android.app.*',
-            '.*android.content.*',
-            '.*android.graphics.*',
-            '.*android.os.*',
-            '.*android.support.*',
-            '.*android.telephony.*',
-            '.*android.util.*',
-            '.*android.view.*',
-            '.*android.webkit.*',
-            '.*android.widget.*',
-            '.*com.android.*',
-            '.*com.rakuten.tech.mobile.perf.core.*',
-            '.*it.sephiroth.*',
-            '.*org.apache.http.*'
-    ]
-    coverageFormats = ['html', 'xml']
-    coverageIgnoreTrivial = true
-    coverageCheckLineRate = 80
-    coverageCheckTotalBranchRate = 80
-    // TODO: enable when covered
-    // could use fine grained config with coverageCheckRegexes...
+  coverageDirs = [
+      'build/classes/main'
+  ]
+  coverageSourceDirs = [
+      'src/main/groovy'
+  ]
+  coverageExcludes = [
+      // for some reason '.*android.*' will create an empty report, so this is a bit verbose
+      '.*android.app.*',
+      '.*android.content.*',
+      '.*android.graphics.*',
+      '.*android.os.*',
+      '.*android.support.*',
+      '.*android.telephony.*',
+      '.*android.util.*',
+      '.*android.view.*',
+      '.*android.webkit.*',
+      '.*android.widget.*',
+      '.*com.android.*',
+      '.*com.rakuten.tech.mobile.perf.core.*',
+      '.*it.sephiroth.*',
+      '.*org.apache.http.*'
+  ]
+  coverageFormats = ['html', 'xml']
+  coverageIgnoreTrivial = true
+  coverageCheckLineRate = 80
+  coverageCheckTotalBranchRate = 80
+  // TODO: enable when covered
+  // could use fine grained config with coverageCheckRegexes...
 //    coverageCheckHaltOnFailure = true
-    // TODO: define target branch rate
+  // TODO: define target branch rate
 //    coverageCheckBranchRate = 80
 }
 
