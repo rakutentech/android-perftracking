@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath files('../../build/libs/Plugin-0.2.0.jar')
+        classpath files('../../build/libs/Plugin-@version@.jar')
     }
 }
 

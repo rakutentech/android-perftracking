@@ -1,71 +1,78 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion CONFIG.versions.android.sdk.compile
-    buildToolsVersion CONFIG.versions.android.tools
+  compileSdkVersion CONFIG.versions.android.sdk.compile
+  buildToolsVersion CONFIG.versions.android.tools
 
-    defaultConfig {
-        minSdkVersion CONFIG.versions.android.sdk.min
-        targetSdkVersion CONFIG.versions.android.sdk.target
-        versionName project.MODULE_VERSION
-        resValue 'string', 'perftracking__version', project.MODULE_VERSION
+  defaultConfig {
+    minSdkVersion CONFIG.versions.android.sdk.min
+    targetSdkVersion CONFIG.versions.android.sdk.target
+    versionName project.version
+    resValue 'string', 'perftracking__version', project.version
 
-        def property = { name ->
-            project.hasProperty(name) ? project."${name}" : "";
-        }
-
-        buildConfigField("String", "DEFAULT_CONFIG_URL_PREFIX", "\"${property('DEFAULT_CONFIG_URL_PREFIX')}\"")
-        buildConfigField("String", "DEFAULT_LOCATION_URL_PREFIX", "\"${property('DEFAULT_LOCATION_URL_PREFIX')}\"")
+    def property = { name ->
+      project.hasProperty(name) ? project."${name}" : "";
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
+    buildConfigField("String", "DEFAULT_CONFIG_URL_PREFIX", "\"${property('DEFAULT_CONFIG_URL_PREFIX')}\"")
+    buildConfigField("String", "DEFAULT_LOCATION_URL_PREFIX", "\"${property('DEFAULT_LOCATION_URL_PREFIX')}\"")
+  }
 
-    defaultConfig {
-        consumerProguardFiles 'proguard-rules.pro'
-    }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_7
+    targetCompatibility JavaVersion.VERSION_1_7
+  }
 
-    testOptions {
-        unitTests.all {
-            jacoco {
-                includeNoLocationClasses = true
-            }
-        }
+  defaultConfig {
+    consumerProguardFiles 'proguard-rules.pro'
+  }
+
+  testOptions {
+    unitTests.all {
+      jacoco {
+        includeNoLocationClasses = true
+      }
     }
+  }
+}
+
+apply from: '../config-internal/publish/android.gradle'
+publishing {
+  publications {
+    runtime(MavenPublication, androidArtifact(artifactId: 'performance-tracking'))
+  }
 }
 
 configurations { copyJar }
 
 task copyJar(type: Copy) {
-    from configurations.copyJar
-    into 'libs'
+  from configurations.copyJar
+  into 'libs'
 }
 
 android.libraryVariants.all {
-    project.tasks["generate${it.buildType.name.capitalize()}Sources"].dependsOn copyJar
+  project.tasks["generate${it.buildType.name.capitalize()}Sources"].dependsOn copyJar
 }
 
 dependencies {
-    copyJar project(':Core')
-    compile files('libs/Core.jar')
+  copyJar project(':Core')
+  compile files("libs/Core-${project.version}.jar")
 
-    compile "com.android.support:support-annotations:$CONFIG.versions.android.libraries.support"
-    compile "com.google.code.gson:gson:${CONFIG.versions.thirdParty.gson}"
-    compile "com.android.volley:volley:${CONFIG.versions.android.libraries.volley}"
+  compile "com.android.support:support-annotations:$CONFIG.versions.android.libraries.support"
+  compile "com.google.code.gson:gson:${CONFIG.versions.thirdParty.gson}"
+  compile "com.android.volley:volley:${CONFIG.versions.android.libraries.volley}"
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.assertj:assertj-core:2.6.0'
-    testCompile 'org.skyscreamer:jsonassert:1.2.3'
-    testCompile "org.mockito:mockito-core:2.7.22"
-    testCompile "org.robolectric:shadows-support-v4:3.3.2"
-    testCompile 'org.robolectric:shadows-httpclient:3.3.2'
-    testCompile('org.robolectric:robolectric:3.3.2') {
-        exclude group: 'commons-logging', module: 'commons-logging'
-    }
-    testCompile 'org.robolectric:shadow-api:3.3.2'
-    testCompile 'com.squareup.okio:okio:1.12.0'
+  testCompile 'junit:junit:4.12'
+  testCompile 'org.assertj:assertj-core:2.6.0'
+  testCompile 'org.skyscreamer:jsonassert:1.2.3'
+  testCompile "org.mockito:mockito-core:2.7.22"
+  testCompile "org.robolectric:shadows-support-v4:3.3.2"
+  testCompile 'org.robolectric:shadows-httpclient:3.3.2'
+  testCompile('org.robolectric:robolectric:3.3.2') {
+    exclude group: 'commons-logging', module: 'commons-logging'
+  }
+  testCompile 'org.robolectric:shadow-api:3.3.2'
+  testCompile 'com.squareup.okio:okio:1.12.0'
 }
 
 apply from: "../config/jacoco.gradle"
@@ -73,18 +80,18 @@ apply from: "../config/jacoco.gradle"
 javadoc { exclude = ['**/Measurement.java'] }
 
 task checkUrlPrefixes {
-    doLast {
-        if (!project.hasProperty('DEFAULT_CONFIG_URL_PREFIX') ||
-                !project.hasProperty('DEFAULT_LOCATION_URL_PREFIX')) {
-            throw new GradleException("Cannot Bulid Runtime without default config & location API" +
-                    " prexfixes.\nConfigure 'DEFAULT_CONFIG_URL_PREFIX' and " +
-                    "'DEFAULT_LOCATION_URL_PREFIX' in your environment's global gradle.properties")
-        }
+  doLast {
+    if (!project.hasProperty('DEFAULT_CONFIG_URL_PREFIX') ||
+        !project.hasProperty('DEFAULT_LOCATION_URL_PREFIX')) {
+      throw new GradleException("Cannot Bulid Runtime without default config & location API" +
+          " prexfixes.\nConfigure 'DEFAULT_CONFIG_URL_PREFIX' and " +
+          "'DEFAULT_LOCATION_URL_PREFIX' in your environment's global gradle.properties")
     }
+  }
 }
 
 tasks.whenTaskAdded { task ->
-    if (task.name.contains("assemble")) {
-        task.dependsOn checkUrlPrefixes
-    }
+  if (task.name.contains("assemble")) {
+    task.dependsOn checkUrlPrefixes
+  }
 }
