@@ -37,8 +37,8 @@ processTestResources {
 
 processResources {
     filter(ReplaceTokens, tokens: [
-        version:    project.MODULE_VERSION,
-        runtime:    "com.rakuten.tech.mobile.perf:performance-tracking:$project.MODULE_VERSION".toString(),
+        version:    project.version,
+        runtime:    "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
         repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
     ])
 }
