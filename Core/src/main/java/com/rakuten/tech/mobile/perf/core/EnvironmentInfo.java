@@ -1,5 +1,7 @@
 package com.rakuten.tech.mobile.perf.core;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Build;
 import android.telephony.TelephonyManager;
@@ -9,20 +11,33 @@ import java.util.Observer;
 
 class EnvironmentInfo implements Observer {
 
+  private final static long MEGA_BYTE = 1024 * 1024;
   String device;
   String network;
   final String osname;
   String osversion;
   private String country = null;
   private String region = null;
+  private ActivityManager activityManager;
+  private float batterylevel;
 
-  EnvironmentInfo(Context context, CachingObservable<LocationData> locationObservable) {
+  private float devicetotalmemory;
+
+  EnvironmentInfo(Context context, CachingObservable<LocationData> locationObservable, CachingObservable<Float> batteryInfoObservable) {
 
     locationObservable.addObserver(this);
+    batteryInfoObservable.addObserver(this);
 
     this.osname = "android";
     this.device = Build.MODEL;
     this.osversion = Build.VERSION.RELEASE;
+    this.activityManager = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      this.devicetotalmemory = (float) ((double) (getMemoryInfo().totalMem) / (double) MEGA_BYTE);
+    } else {
+      this.devicetotalmemory = -1L;
+    }
 
     TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
     if (tm != null) {
@@ -48,16 +63,36 @@ class EnvironmentInfo implements Observer {
 
   }
 
-  String getCountry() {
-    synchronized (this) {
-      return this.country;
+  private ActivityManager.MemoryInfo getMemoryInfo() {
+    ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+    if (activityManager != null) {
+      activityManager.getMemoryInfo(mi);
     }
+    return mi;
   }
 
-  String getRegion() {
-    synchronized (this) {
-      return this.region;
-    }
+  float getAppUsedMemory() {
+    return (float)((double)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (double)MEGA_BYTE);
+  }
+
+  float getDeviceTotalMemory() {
+    return this.devicetotalmemory;
+  }
+
+  synchronized float getDeviceFreeMemory() {
+    return (float) ((double) (getMemoryInfo().availMem) / (double) MEGA_BYTE);
+  }
+
+  synchronized float getBatteryLevel() {
+    return this.batterylevel;
+  }
+
+  synchronized String getCountry() {
+    return this.country;
+  }
+
+  synchronized String getRegion() {
+    return this.region;
   }
 
   @Override
@@ -66,6 +101,10 @@ class EnvironmentInfo implements Observer {
       synchronized (this) {
         this.region = ((LocationData) value).region;
         this.country = ((LocationData) value).country;
+      }
+    } else {
+      synchronized (this) {
+        this.batterylevel = (float) value;
       }
     }
   }

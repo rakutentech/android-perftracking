@@ -1,5 +1,21 @@
 package com.rakuten.tech.mobile.perf.core;
 
+import android.content.Context;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.omg.CORBA.portable.OutputStream;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.net.ssl.HttpsURLConnection;
+
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,19 +30,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
-
-import android.content.Context;
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.net.ssl.HttpsURLConnection;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.omg.CORBA.portable.OutputStream;
 
 public class SenderThreadSpec {
 
@@ -179,6 +182,7 @@ public class SenderThreadSpec {
     @Mock HttpsURLConnection conn;
     @Mock Context ctx;
     private CachingObservable<LocationData> location = new CachingObservable<LocationData>(null);
+    private CachingObservable<Float> batteryinfo = new CachingObservable<Float>(null);
     private EventWriter writer;
     private MeasurementBuffer buffer;
     private Runnable populateBufferRunnable;
@@ -193,7 +197,7 @@ public class SenderThreadSpec {
       config.eventHubUrl = ""; // url injected via constructor
       config.header = new HashMap<>();
 
-      envInfo = new EnvironmentInfo(ctx, location);
+      envInfo = new EnvironmentInfo(ctx, location, batteryinfo);
       location.publish(new LocationData("test-land", "test-region"));
       envInfo.network = "test-network";
       envInfo.device = "test-device";

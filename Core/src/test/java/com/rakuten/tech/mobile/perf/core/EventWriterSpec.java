@@ -1,15 +1,7 @@
 package com.rakuten.tech.mobile.perf.core;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import android.content.Context;
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import javax.net.ssl.HttpsURLConnection;
+
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,6 +12,18 @@ import org.mockito.MockitoAnnotations;
 import org.omg.CORBA.portable.OutputStream;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class EventWriterSpec {
 
   private Config config;
@@ -29,6 +33,7 @@ public class EventWriterSpec {
   @Mock HttpsURLConnection conn;
   @Mock Context ctx;
   final private CachingObservable<LocationData> location = new CachingObservable<>(null);
+  final private CachingObservable<Float> batteryinfo = new CachingObservable<Float>(null);
   private EventWriter writer;
 
   @Before public void initMocks() throws IOException {
@@ -39,7 +44,7 @@ public class EventWriterSpec {
     config.debug = true;
     config.eventHubUrl = ""; // url injected via constructor
     config.header = new HashMap<>();
-    envInfo = new EnvironmentInfo(ctx, location);
+    envInfo = new EnvironmentInfo(ctx, location, batteryinfo);
     location.publish(new LocationData("test-land", "test-region"));
     envInfo.network = "test-network";
     envInfo.device = "test-device";
@@ -99,7 +104,7 @@ public class EventWriterSpec {
     writer.begin();
     writer.end();
 
-    String writtenJson = extractWrittenString(outputStream);
+    String writtenJson = trimAppMemDetails(extractWrittenString(outputStream));
     JSONAssert.assertEquals(emptyJson.content, writtenJson, true);
   }
 
@@ -112,7 +117,7 @@ public class EventWriterSpec {
     writer.begin();
     writer.end();
 
-    String writtenJson = extractWrittenString(outputStream);
+    String writtenJson = trimAppMemDetails(extractWrittenString(outputStream));
     JSONAssert.assertEquals(emptyNoEnvJson.content, writtenJson, true);
   }
 
@@ -129,7 +134,7 @@ public class EventWriterSpec {
     writer.write(metric);
     writer.end();
 
-    String writtenString = extractWrittenString(outputStream);
+    String writtenString = trimAppMemDetails(extractWrittenString(outputStream));
     JSONAssert.assertEquals(metricJson.content, writtenString, true);
   }
 
@@ -147,7 +152,7 @@ public class EventWriterSpec {
     writer.write(measurement, "test-metric");
     writer.end();
 
-    String writtenString = extractWrittenString(outputStream);
+    String writtenString = trimAppMemDetails(extractWrittenString(outputStream));
     JSONAssert.assertEquals(methodMeasurementJson.content, writtenString, true);
   }
 
@@ -165,7 +170,7 @@ public class EventWriterSpec {
     writer.write(measurement, "test-metric");
     writer.end();
 
-    String writtenString = extractWrittenString(outputStream);
+    String writtenString = trimAppMemDetails(extractWrittenString(outputStream));
     JSONAssert.assertEquals(urlMeasurementJson.content, writtenString, true);
   }
 
@@ -181,7 +186,7 @@ public class EventWriterSpec {
     writer.write(measurement, "test-metric");
     writer.end();
 
-    String writtenString = extractWrittenString(outputStream);
+    String writtenString = trimAppMemDetails(extractWrittenString(outputStream));
     JSONAssert.assertEquals(urlMeasurementJson.content, writtenString, true);
   }
 
@@ -199,7 +204,7 @@ public class EventWriterSpec {
     writer.write(measurement, "test-metric");
     writer.end();
 
-    String writtenString = extractWrittenString(outputStream);
+    String writtenString = trimAppMemDetails(extractWrittenString(outputStream));
     JSONAssert.assertEquals(customMeasurementJson.content, writtenString, true);
   }
 
@@ -306,7 +311,7 @@ public class EventWriterSpec {
     writer.write(measurement, "test-metric");
     writer.end();
 
-    String writtenString = extractWrittenString(outputStream);
+    String writtenString = trimAppMemDetails(extractWrittenString(outputStream));
     JSONAssert.assertEquals(escapedJson.content, writtenString, true);
   }
 
@@ -380,7 +385,7 @@ public class EventWriterSpec {
 
     writer.end();
 
-    String writtenString = extractWrittenString(outputStream);
+    String writtenString = trimAppMemDetails(extractWrittenString(outputStream));
     JSONAssert.assertEquals(smokeTestJson.content, writtenString, true);
   }
 
@@ -392,5 +397,21 @@ public class EventWriterSpec {
     byte[] writtenBytes = captor.getValue();
     assertThat(writtenBytes).isNotEmpty();
     return new String(writtenBytes);
+  }
+
+  private String trimAppMemDetails(String input) {
+    String output = "";
+    StringTokenizer multiTokenizer = new StringTokenizer(input, ",");
+    while (multiTokenizer.hasMoreTokens()) {
+      String nextToken = multiTokenizer.nextToken();
+      if (!nextToken.contains("app_mem_used")) {
+        if (multiTokenizer.hasMoreTokens()) {
+          output += (nextToken + ",");
+        } else {
+          output += (nextToken);
+        }
+      }
+    }
+    return output;
   }
 }

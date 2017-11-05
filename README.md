@@ -169,6 +169,9 @@ You can verify this by enabling debug logs as shown in [Enable Debug Logs](#debu
 * You can even verify this by enabling debug logs as shown in [Enable Debug Logs](#debug). You will see "SEND_METRIC" AND "SEND" in logs.
 
 ## <a name="changelog"></a> Changelog
+### 0.2.1 (In Progress)
+- **[REM-23958](https://jira.rakuten-it.com/jira/browse/REM-23958)**: Send device Memory and Battery information in tracking data
+
 ### 0.2.0 (2017-10-30)
 - **[REM-23429](https://jira.rakuten-it.com/jira/browse/REM-23429)**: Always update metric's end time when metric prolong is called
 - **[REM-23396](https://jira.rakuten-it.com/jira/browse/REM-23396)**: Add Metric.prolong() to public api and remove StandardMetric class

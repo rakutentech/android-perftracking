@@ -61,6 +61,14 @@ class EventWriter {
         _writer.append("\",\"device\":\"").append(_envInfo.device);
       }
 
+      _writer.append("\",\"app_mem_used\":\"").append(Float.toString(_envInfo.getAppUsedMemory()));
+
+      _writer.append("\",\"device_mem_free\":\"").append(Float.toString(_envInfo.getDeviceFreeMemory()));
+
+      _writer.append("\",\"device_mem_total\":\"").append(Float.toString(_envInfo.getDeviceTotalMemory()));
+
+      _writer.append("\",\"battery_level\":\"").append(Float.toString(_envInfo.getBatteryLevel()));
+
       if (_envInfo.getCountry() != null) {
         _writer.append("\",\"country\":\"").append(_envInfo.getCountry());
       }
