@@ -12,8 +12,8 @@ def config() {
       ],
       deploy: [
         tasks: [
-        'Plugin:publishPluginPublicationToArtifactoryRepository', 
-        'Runtime:publishRuntimePublicationToArtifactoryRepository', 
+        'Plugin:publish',
+        'Runtime:publish',
         'Runtime:uploadJavadoc'
         ],
       ]
