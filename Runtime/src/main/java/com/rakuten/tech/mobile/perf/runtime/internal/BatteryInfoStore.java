@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 
 /**
- * BatteryInfoStore - Handles registering for battery info updates, caching batteryinfo and publishing to observers.
+ * BatteryInfoStore - Handles registering for battery info updates and publishing to observers.
  * Can be subscribed to battery changes like below,
  * <pre>
  *     <code>

@@ -18,10 +18,9 @@ class EnvironmentInfo implements Observer {
   String osversion;
   private String country = null;
   private String region = null;
-  private ActivityManager activityManager;
   private float batterylevel;
-
-  private float devicetotalmemory;
+  private final float devicetotalmemory;
+  private final ActivityManager activityManager;
 
   EnvironmentInfo(Context context, CachingObservable<LocationData> locationObservable, CachingObservable<Float> batteryInfoObservable) {
 
