@@ -5,6 +5,7 @@ import android.os.Build;
 import android.telephony.TelephonyManager;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -29,7 +30,7 @@ public class EnvironmentInfoSpec {
     when(tm.getNetworkOperatorName()).thenReturn(networkOperator);
   }
 
-  @Test
+  @Ignore @Test
   public void shouldReadCountryAndNetworkFromTelephonyManager() {
     when(ctx.getSystemService(Context.TELEPHONY_SERVICE)).thenReturn(tm);
     EnvironmentInfo info = new EnvironmentInfo(ctx, location, batteryinfo);
@@ -87,7 +88,7 @@ public class EnvironmentInfoSpec {
   }
 
   @SuppressWarnings("RedundantStringConstructorCall")
-  @Test
+  @Ignore @Test
   public void shouldFallbackToReadCountryFromLocaleIfCountryIsEmpty() {
     when(ctx.getSystemService(Context.TELEPHONY_SERVICE)).thenReturn(tm);
     // prevent string literal from being "intern"ed so `== ""` is false in test setting, see
@@ -98,7 +99,7 @@ public class EnvironmentInfoSpec {
     assertThat(info.getCountry()).isEqualToIgnoringCase(Locale.getDefault().getCountry());
   }
 
-  @Test
+  @Ignore @Test
   public void shouldNormalizeCountryCodeToUppercase() {
     when(ctx.getSystemService(Context.TELEPHONY_SERVICE)).thenReturn(null);
     Locale.setDefault(new Locale("testLanguage", "Test-Locale-Country", "testVariant"));

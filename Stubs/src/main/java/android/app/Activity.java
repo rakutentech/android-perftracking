@@ -9,7 +9,7 @@ import android.view.View;
 
 public class Activity {
 
-  public static final String ACTIVITY_SERVICE = "ACTIVITY_SERVICE";
+  public static final String ACTIVITY_SERVICE = null;
 
   public Intent getIntent() {
     return null;
