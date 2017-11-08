@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.perf.core;
 import android.content.Context;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,7 +16,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -48,7 +48,7 @@ public class EventWriterSpec {
     location.publish(new LocationData("test-land", "test-region"));
     envInfo.network = "test-network";
     envInfo.device = "test-device";
-    envInfo.osversion = "7.1.1";
+    envInfo.osVersion = "7.1.1";
 
     when(url.openConnection()).thenReturn(conn);
     when(conn.getOutputStream()).thenReturn(outputStream);
@@ -399,19 +399,22 @@ public class EventWriterSpec {
     return new String(writtenBytes);
   }
 
+  /**
+   * Removes a key with name `app_mem_used` and its value from the input string
+   * Due to limitation we couldn't mock Runtime class native methods.
+   * Because of this we cannot validate App used memory in unit test. So removing `app_mem_used` field from actual string.
+   *
+   * @param input String
+   * @return String
+   */
   private String trimAppMemDetails(String input) {
-    String output = "";
-    StringTokenizer multiTokenizer = new StringTokenizer(input, ",");
-    while (multiTokenizer.hasMoreTokens()) {
-      String nextToken = multiTokenizer.nextToken();
-      if (!nextToken.contains("app_mem_used")) {
-        if (multiTokenizer.hasMoreTokens()) {
-          output += (nextToken + ",");
-        } else {
-          output += (nextToken);
-        }
-      }
+    JSONObject data = null;
+    try {
+      data = new JSONObject(input);
+      data.remove("app_mem_used");
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
-    return output;
+    return data != null ? data.toString() : "";
   }
 }

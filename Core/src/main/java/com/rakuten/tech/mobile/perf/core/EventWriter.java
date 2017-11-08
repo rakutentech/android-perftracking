@@ -61,13 +61,21 @@ class EventWriter {
         _writer.append("\",\"device\":\"").append(_envInfo.device);
       }
 
-      _writer.append("\",\"app_mem_used\":\"").append(Float.toString(_envInfo.getAppUsedMemory()));
+      if (_envInfo.getAppUsedMemory() > 0) {
+        _writer.append("\",\"app_mem_used\":\"").append(Float.toString(_envInfo.getAppUsedMemory()));
+      }
 
-      _writer.append("\",\"device_mem_free\":\"").append(Float.toString(_envInfo.getDeviceFreeMemory()));
+      if (_envInfo.getDeviceFreeMemory() > 0) {
+        _writer.append("\",\"device_mem_free\":\"").append(Float.toString(_envInfo.getDeviceFreeMemory()));
+      }
 
-      _writer.append("\",\"device_mem_total\":\"").append(Float.toString(_envInfo.getDeviceTotalMemory()));
+      if (_envInfo.getDeviceTotalMemory() > 0) {
+        _writer.append("\",\"device_mem_total\":\"").append(Float.toString(_envInfo.getDeviceTotalMemory()));
+      }
 
-      _writer.append("\",\"battery_level\":\"").append(Float.toString(_envInfo.getBatteryLevel()));
+      if (_envInfo.getBatteryLevel() > 0) {
+        _writer.append("\",\"battery_level\":\"").append(Float.toString(_envInfo.getBatteryLevel()));
+      }
 
       if (_envInfo.getCountry() != null) {
         _writer.append("\",\"country\":\"").append(_envInfo.getCountry());
@@ -81,12 +89,12 @@ class EventWriter {
         _writer.append("\",\"network\":\"").append(_envInfo.network);
       }
 
-      if (_envInfo.osname != null) {
-        _writer.append("\",\"os\":\"").append(_envInfo.osname);
+      if (_envInfo.osName != null) {
+        _writer.append("\",\"os\":\"").append(_envInfo.osName);
       }
 
-      if (_envInfo.osversion != null) {
-        _writer.append("\",\"os_version\":\"").append(_envInfo.osversion);
+      if (_envInfo.osVersion != null) {
+        _writer.append("\",\"os_version\":\"").append(_envInfo.osVersion);
       }
 
       _writer.append("\",\"measurements\":[");

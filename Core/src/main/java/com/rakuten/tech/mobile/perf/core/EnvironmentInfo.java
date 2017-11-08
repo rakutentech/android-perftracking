@@ -14,12 +14,12 @@ class EnvironmentInfo implements Observer {
   private final static long MEGA_BYTE = 1024 * 1024;
   String device;
   String network;
-  final String osname;
-  String osversion;
+  final String osName;
+  String osVersion;
   private String country = null;
   private String region = null;
-  private float batterylevel;
-  private final float devicetotalmemory;
+  private float batteryLevel;
+  private final float deviceTotalMemory;
   private final ActivityManager activityManager;
 
   EnvironmentInfo(Context context, CachingObservable<LocationData> locationObservable, CachingObservable<Float> batteryInfoObservable) {
@@ -27,15 +27,15 @@ class EnvironmentInfo implements Observer {
     locationObservable.addObserver(this);
     batteryInfoObservable.addObserver(this);
 
-    this.osname = "android";
+    this.osName = "android";
     this.device = Build.MODEL;
-    this.osversion = Build.VERSION.RELEASE;
+    this.osVersion = Build.VERSION.RELEASE;
     this.activityManager = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      this.devicetotalmemory = (float) ((double) (getMemoryInfo().totalMem) / (double) MEGA_BYTE);
+      this.deviceTotalMemory = (float) ((double) (getMemoryInfo(activityManager).totalMem) / (double) MEGA_BYTE);
     } else {
-      this.devicetotalmemory = -1L;
+      this.deviceTotalMemory = -1L;
     }
 
     TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -62,7 +62,7 @@ class EnvironmentInfo implements Observer {
 
   }
 
-  private ActivityManager.MemoryInfo getMemoryInfo() {
+  private static ActivityManager.MemoryInfo getMemoryInfo(ActivityManager activityManager) {
     ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
     if (activityManager != null) {
       activityManager.getMemoryInfo(mi);
@@ -75,15 +75,15 @@ class EnvironmentInfo implements Observer {
   }
 
   float getDeviceTotalMemory() {
-    return this.devicetotalmemory;
+    return this.deviceTotalMemory;
   }
 
   synchronized float getDeviceFreeMemory() {
-    return (float) ((double) (getMemoryInfo().availMem) / (double) MEGA_BYTE);
+    return (float) ((double) (getMemoryInfo(activityManager).availMem) / (double) MEGA_BYTE);
   }
 
   synchronized float getBatteryLevel() {
-    return this.batterylevel;
+    return this.batteryLevel;
   }
 
   synchronized String getCountry() {
@@ -103,7 +103,7 @@ class EnvironmentInfo implements Observer {
       }
     } else {
       synchronized (this) {
-        this.batterylevel = (float) value;
+        this.batteryLevel = (float) value;
       }
     }
   }
