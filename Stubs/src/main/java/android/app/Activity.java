@@ -9,6 +9,8 @@ import android.view.View;
 
 public class Activity {
 
+  public static final String ACTIVITY_SERVICE = null;
+
   public Intent getIntent() {
     return null;
   }

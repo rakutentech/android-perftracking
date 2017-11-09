@@ -42,6 +42,8 @@ public class RuntimeContentProvider extends ContentProvider {
     RequestQueue queue = new RequestQueue(new NoCache(), new BasicNetwork(new HurlStack()));
     queue.start();
 
+    BatteryInfoStore batteryInfoStore = new BatteryInfoStore(context);
+
     String subscriptionKey = Util.getSubscriptionKey(context);
 
     // TODO: remove backwards compatibility before we release 1.0
@@ -57,7 +59,7 @@ public class RuntimeContentProvider extends ContentProvider {
     if (config != null) {
       LocationStore locationStore = new LocationStore(context, queue, subscriptionKey, urlPrefix);
       // Initialise Tracking Manager
-      TrackingManager.initialize(context, config, locationStore.getObservable());
+      TrackingManager.initialize(context, config, locationStore.getObservable(), batteryInfoStore.getObservable());
       Metric.start("_launch");
     }
     return false;

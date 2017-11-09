@@ -28,8 +28,8 @@ public class TrackingManager {
   }
 
   synchronized static void initialize(Context context, Config config,
-      CachingObservable<LocationData> locationObservable) {
-    Tracker.on(context, config, locationObservable);
+      CachingObservable<LocationData> locationObservable, CachingObservable<Float> batteryInfoObservable) {
+    Tracker.on(context, config, locationObservable, batteryInfoObservable);
     INSTANCE = new TrackingManager();
   }
 

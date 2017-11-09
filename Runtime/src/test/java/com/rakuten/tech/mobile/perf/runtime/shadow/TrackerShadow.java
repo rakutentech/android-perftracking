@@ -1,16 +1,19 @@
 package com.rakuten.tech.mobile.perf.runtime.shadow;
 
-import static org.mockito.Mockito.mock;
-
 import android.content.Context;
+
 import com.rakuten.tech.mobile.perf.core.CachingObservable;
 import com.rakuten.tech.mobile.perf.core.Config;
 import com.rakuten.tech.mobile.perf.core.LocationData;
 import com.rakuten.tech.mobile.perf.core.MockTracker;
 import com.rakuten.tech.mobile.perf.core.Tracker;
-import java.net.URL;
+
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+
+import java.net.URL;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Robolectric injected mock to detect calls to static functions of {@code TrackerShadow} in the
@@ -27,7 +30,7 @@ public class TrackerShadow {
   }
 
   @Implementation public static void on(Context context, Config config,
-      CachingObservable<LocationData> observableLocation) { /* noop */ }
+      CachingObservable<LocationData> observableLocation, CachingObservable<Float> observableBattery) { /* noop */ }
 
   @Implementation public static void off() { /* noop */ }
 
