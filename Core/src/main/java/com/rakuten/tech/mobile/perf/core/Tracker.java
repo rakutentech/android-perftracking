@@ -22,12 +22,12 @@ public class Tracker {
    * @param config Performance tracking configuration.
    */
   public static synchronized void on(Context context, Config config,
-      CachingObservable<LocationData> locationObservable) {
+      CachingObservable<LocationData> locationObservable, CachingObservable<Float> batteryInfoObservable) {
     Debug debug = config.debug ? new Debug() : null;
     MeasurementBuffer buffer = new MeasurementBuffer();
     Current current = new Current();
     _tracker = new TrackerImpl(buffer, current, debug);
-    EnvironmentInfo envInfo = new EnvironmentInfo(context, locationObservable);
+    EnvironmentInfo envInfo = new EnvironmentInfo(context, locationObservable, batteryInfoObservable);
     EventWriter writer = new EventWriter(config, envInfo);
     Sender sender = new Sender(buffer, current, writer, debug);
     _senderThread = new SenderThread(sender);

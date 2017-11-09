@@ -1,22 +1,24 @@
 package com.rakuten.tech.mobile.perf.runtime.internal;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
-
 import android.content.Context;
+
 import com.rakuten.tech.mobile.perf.core.CachingObservable;
 import com.rakuten.tech.mobile.perf.core.Config;
 import com.rakuten.tech.mobile.perf.core.LocationData;
 import com.rakuten.tech.mobile.perf.core.MockTracker;
 import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import com.rakuten.tech.mobile.perf.runtime.shadow.TrackerShadow;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @org.robolectric.annotation.Config(shadows = {TrackerShadow.class})
 public class TrackingManagerSpec extends RobolectricUnitSpec {
@@ -26,9 +28,10 @@ public class TrackingManagerSpec extends RobolectricUnitSpec {
   @Mock Config config;
   @Mock MockTracker tracker;
   private CachingObservable<LocationData> location = new CachingObservable<LocationData>(null);
+  private CachingObservable<Float> battery = new CachingObservable<Float>(null);
 
   @Before public void init() {
-    TrackingManager.initialize(context, config, location);
+    TrackingManager.initialize(context, config, location, battery);
     manager = TrackingManager.INSTANCE;
     TrackerShadow.mockTracker = tracker;
   }
@@ -37,13 +40,13 @@ public class TrackingManagerSpec extends RobolectricUnitSpec {
 
   @Test public void shouldCreateInstanceOnInit() {
     TrackingManager.INSTANCE = null;
-    TrackingManager.initialize(context, config, location);
+    TrackingManager.initialize(context, config, location, battery);
     assertThat(TrackingManager.INSTANCE).isNotNull();
   }
 
   @Test public void shouldCreateNewInstanceOnEveryInit() {
     TrackingManager previousInstance = TrackingManager.INSTANCE;
-    TrackingManager.initialize(context, config, location);
+    TrackingManager.initialize(context, config, location, battery);
     assertThat(previousInstance).isNotEqualTo(TrackingManager.INSTANCE);
   }
 
