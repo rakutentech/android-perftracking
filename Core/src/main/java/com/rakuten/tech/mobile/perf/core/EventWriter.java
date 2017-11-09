@@ -62,15 +62,15 @@ class EventWriter {
       }
 
       if (_envInfo.getAppUsedMemory() > 0) {
-        _writer.append("\",\"app_mem_used\":\"").append(Float.toString(_envInfo.getAppUsedMemory()));
+        _writer.append("\",\"app_mem_used\":\"").append(Long.toString(_envInfo.getAppUsedMemory()));
       }
 
       if (_envInfo.getDeviceFreeMemory() > 0) {
-        _writer.append("\",\"device_mem_free\":\"").append(Float.toString(_envInfo.getDeviceFreeMemory()));
+        _writer.append("\",\"device_mem_free\":\"").append(Long.toString(_envInfo.getDeviceFreeMemory()));
       }
 
       if (_envInfo.getDeviceTotalMemory() > 0) {
-        _writer.append("\",\"device_mem_total\":\"").append(Float.toString(_envInfo.getDeviceTotalMemory()));
+        _writer.append("\",\"device_mem_total\":\"").append(Long.toString(_envInfo.getDeviceTotalMemory()));
       }
 
       if (_envInfo.getBatteryLevel() > 0) {
