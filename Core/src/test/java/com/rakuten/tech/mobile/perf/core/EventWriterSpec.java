@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.omg.CORBA.portable.OutputStream;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -21,6 +22,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -58,6 +60,24 @@ public class EventWriterSpec {
     assertThat(writer).isNotNull();
   }
 
+  @Rule public TestData emptyMyJson = new TestData("memory_measurement.json");
+
+  @Test public void shouldWriteMemoryAndBatteryDetailsIntoMeasurement() throws IOException, JSONException {
+
+    EnvironmentInfo myEnvInfo = Mockito.spy(envInfo);
+    doReturn(2000L).when(myEnvInfo).getDeviceTotalMemory();
+    doReturn(500L).when(myEnvInfo).getDeviceFreeMemory();
+    doReturn(0.3f).when(myEnvInfo).getBatteryLevel();
+    doReturn(100L).when(myEnvInfo).getAppUsedMemory();
+
+    EventWriter myWriter = new EventWriter(config, myEnvInfo, url);
+    myWriter.begin();
+    myWriter.end();
+
+    String writtenJson = extractWrittenString(outputStream);
+    JSONAssert.assertEquals(emptyMyJson.content, writtenJson, true);
+
+  }
   // creation & init
 
   @Test public void shouldOpenConnectionOnBegin() throws IOException {
@@ -407,7 +427,7 @@ public class EventWriterSpec {
    * @param input String
    * @return String
    */
-  private String trimAppMemDetails(String input) {
+  private static String trimAppMemDetails(String input) {
     JSONObject data = null;
     try {
       data = new JSONObject(input);
@@ -415,6 +435,6 @@ public class EventWriterSpec {
     } catch (JSONException e) {
       e.printStackTrace();
     }
-    return data != null ? data.toString() : "";
+    return data != null ? data.toString() : "{}";
   }
 }
