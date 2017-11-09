@@ -4,7 +4,7 @@
 def config() {
   return [
       build: [
-        tasks: ['Plugin:assemble', 'Runtime:assemble'],
+        tasks: ['preReleaseCheck', 'Plugin:assemble', 'Runtime:assemble'],
         artifacts: ['Plugin/build/libs/Plugin-*.jar', 'Runtime/build/outputs/aar/Runtime-*.jar']
       ],
       test: [
