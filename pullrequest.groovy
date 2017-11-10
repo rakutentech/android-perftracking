@@ -11,10 +11,6 @@ def config() {
           'Runtime:check', 
           'Core:check',
         ],
-        artifacts: [
-          'Plugin/build/libs/Plugin-*.jar', 
-          'Runtime/build/outputs/aar/Runtime-*.jar',
-        ],
       ],
       deploy: [
         tasks: [
