@@ -12,9 +12,7 @@ Each scenario/metric lists various method, network call measurements. Performanc
 
 ##  <a name="install"></a> Installation procedure
 ### REMS Performance Tracking Credentials
-Your app must be registered in the [Relay Portal](https://rs-portal-web-prd-japaneast-wa.azurewebsites.net/) to use the App Performance Tracking feature.
-Request for an App Performance Tracking Subscription Key through the [API Portal](https://remsapijapaneast.portal.azure-api.net) with your application's package name.
-If you have any questions, please visit our [Developer Portal](https://developers.rakuten.net/hc/en-us/categories/115001441467-Relay) or you may contact us through the [Inquiry Form](https://developers.rakuten.net/hc/en-us/requests/new?ticket_form_id=399907)
+Your app must be registered in the [Relay Portal](https://rs-portal-web-prd-japaneast-wa.azurewebsites.net/) to use the App Performance Tracking feature. To get your subscription key please refer to the [Relay - Guide to get the subscription Key](https://developers.rakuten.net/hc/en-us/articles/115008917068-Relay-Guide-to-get-the-subscription-Key). For more information please visit our [Developer Portal](https://developers.rakuten.net/hc/en-us/categories/115001441467-Relay).
 
 ### #1 Add dependency to buildscript
 ```groovy
@@ -67,7 +65,7 @@ You will see your measurements in the [Relay Portal](https://rs-portal-web-prd-j
 
 ## <a name="customize"></a> Customize Tracking
 ### Metrics
-The Performance Tracking SDK is build around the concepts of **Metrics** - they measure a single event from the user perspective. Examples of metrics are app launch time, a detail screen load time or search result load time. 
+The Performance Tracking SDK is build around the concepts of **Metrics** - they measure a single event from the user perspective. Examples of metrics are app launch time, a detail screen load time or search result load time.
 
 #### Starting Metrics
 To start a metric use the `Metric` API:
