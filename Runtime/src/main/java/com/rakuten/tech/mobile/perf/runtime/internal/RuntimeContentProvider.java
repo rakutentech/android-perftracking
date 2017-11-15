@@ -52,7 +52,7 @@ public class RuntimeContentProvider extends ContentProvider {
     }
     String urlPrefix = Util.getMeta(context,
         "com.rakuten.tech.mobile.perf.ConfigurationUrlPrefix");
-    ConfigStore configStore = new ConfigStore(context, queue, subscriptionKey, urlPrefix);
+    ConfigStore configStore = new ConfigStore(context, queue, subscriptionKey, urlPrefix, Util.getRelayAppId(context));
 
     // Read last config from cache
     Config config = createConfig(context, configStore.getObservable().getCachedValue());

@@ -47,15 +47,17 @@ class ConfigStore extends Store<ConfigurationResult> {
   private final String subscriptionKey;
   private final String urlPrefix;
   private final String packageName;
+  private final String appId;
   private final PackageManager packageManager;
   private final SharedPreferences prefs;
   private final Resources res;
   private final Handler handler;
 
   ConfigStore(Context context, RequestQueue requestQueue, String subscriptionKey,
-      String urlPrefix) {
+      String urlPrefix, String relayAppId) {
     packageManager = context.getPackageManager();
     packageName = context.getPackageName();
+    appId = relayAppId;
     res = context.getResources();
     prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     this.requestQueue = requestQueue;
@@ -81,7 +83,7 @@ class ConfigStore extends Store<ConfigurationResult> {
     ConfigurationParam param = null;
     try {
       param = new ConfigurationParam.Builder()
-          .setAppId(packageName)
+          .setAppId(appId)
           .setAppVersion(packageManager.getPackageInfo(packageName, 0).versionName)
           .setCountryCode(res.getConfiguration().locale.getCountry())
           .setPlatform("android")
