@@ -1,5 +1,7 @@
 package com.rakuten.tech.mobile.perf.runtime.internal;
 
+import android.text.TextUtils;
+
 /**
  * Configuration Parameters
  */
@@ -56,8 +58,8 @@ class ConfigurationParam {
       if (platform == null) {
         throw new IllegalStateException("Platform cannot be null");
       }
-      if (appId == null) {
-        throw new IllegalStateException("App Id cannot be null");
+      if (TextUtils.isEmpty(appId)) {
+        throw new IllegalStateException("App Id cannot be null or empty, Please set proper metadata `com.rakuten.tech.mobile.relay.RelayAppId` in manifest");
       }
       if (appVersion == null) {
         throw new IllegalStateException("App Version cannot be null");
