@@ -63,8 +63,10 @@ allprojects { subproject ->
 }
 
 task ensurePreRelease {
-  if(!version.contains('-')) throw new GradleException("Version $version is not a pre release version, failing build")
-  else println "version $version is pre release version, proceeding with build."
+  doLast {
+    if(!version.contains('-')) throw new GradleException("Version $version is not a pre release version, failing build")
+    else println "version $version is pre release version, proceeding with build."
+  }
 }
 
 task preReleaseCheck(type: CheckGradleFilesForSnapshotDependencies) {
