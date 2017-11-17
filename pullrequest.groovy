@@ -19,12 +19,6 @@ def config() {
         'Runtime:publish',
         ],
       ],
-      reports: [
-        jacoco: [enabled: false],
-        cobertura: [enabled: false],
-        junit: [enabled: false],
-        lint: [enabled: false],
-      ],
     ]
 }
 
