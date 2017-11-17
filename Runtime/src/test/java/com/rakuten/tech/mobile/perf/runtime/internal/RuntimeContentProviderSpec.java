@@ -56,6 +56,7 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
     when(packageManager.getPackageInfo(anyString(), anyInt())).thenReturn(pkgInfo);
     ApplicationInfo appInfo = new ApplicationInfo();
     appInfo.metaData = new Bundle();
+    appInfo.metaData.putCharSequence("com.rakuten.tech.mobile.relay.RelayAppId","testAppId");
     when(packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA))
         .thenReturn(appInfo);
     TrackingManager.INSTANCE = null;

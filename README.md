@@ -169,6 +169,7 @@ You can verify this by enabling debug logs as shown in [Enable Debug Logs](#debu
 ## <a name="changelog"></a> Changelog
 ### 0.2.1 (In Progress)
 - **[REM-23958](https://jira.rakuten-it.com/jira/browse/REM-23958)**: Send device Memory and Battery information in tracking data
+- **[REM-24597](https://jira.rakuten-it.com/jira/browse/REM-24597)**: Use AppID instead of package name while requesting configuration
 
 ### 0.2.0 (2017-10-30)
 - **[REM-23429](https://jira.rakuten-it.com/jira/browse/REM-23429)**: Always update metric's end time when metric prolong is called
