@@ -30,9 +30,9 @@ The modules are:
 ```bash
 $ git submodule init
 & git submodule update
-$ export DEFAULT_CONFIG_URL_PREFIX="url to your configuration server"
-$ export DEFAULT_LOCATION_URL_PREFIX="url to your location server"
-$ ./gradlew Runtime:assemble Plugin:assemble
+$ ./gradlew Runtime:assemble Plugin:assemble \
+    -PDEFAULT_CONFIG_URL_PREFIX="url to your configuration server" \
+    -PDEFAULT_LOCATION_URL_PREFIX="url to your location server"
 ```
 
 ## How to use it
