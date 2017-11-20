@@ -130,3 +130,4 @@ cobertura {
 //    coverageCheckBranchRate = 80
 }
 
+check.dependsOn tasks.cobertura
