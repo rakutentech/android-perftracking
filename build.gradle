@@ -33,7 +33,7 @@ Project.metaClass.eventuallyHasTask = { String taskName, Closure<Task> cls = nul
   }
 }
 
-subprojects { subproject ->
+allprojects { subproject ->
   apply plugin: 'com.github.ben-manes.versions'
   dependencyUpdates.resolutionStrategy = {
     componentSelection { rules ->
@@ -59,6 +59,13 @@ subprojects { subproject ->
   repositories {
     maven { url 'https://maven.google.com' }
     jcenter()
+  }
+}
+
+task ensurePreRelease {
+  doLast {
+    if(!version.contains('-')) throw new GradleException("Version $version is not a pre release version, failing build")
+    else println "version $version is pre release version, proceeding with build."
   }
 }
 
