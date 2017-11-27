@@ -59,7 +59,8 @@ public class RuntimeContentProvider extends ContentProvider {
       LocationStore locationStore = new LocationStore(context, queue, subscriptionKey,
           locationUrlPrefix);
       // Initialise Tracking Manager
-      TrackingManager.initialize(context, config, locationStore.getObservable(), batteryInfoStore.getObservable());
+      TrackingManager.initialize(context, config, locationStore.getObservable(),
+          batteryInfoStore.getObservable());
       Metric.start("_launch");
     }
     return false;

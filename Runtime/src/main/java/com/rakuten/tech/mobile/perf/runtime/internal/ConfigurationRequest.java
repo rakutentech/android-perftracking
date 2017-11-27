@@ -24,15 +24,15 @@ class ConfigurationRequest extends BaseRequest<ConfigurationResult> {
     String prefix = urlPrefix != null ? urlPrefix : DEFAULT_URL_PREFIX;
     Uri uri = Uri.parse(prefix);
     uri = uri.buildUpon()
-        .appendPath("platform").appendPath(param.getPlatform())
-        .appendPath("app").appendPath(param.getAppId())
-        .appendPath("version").appendPath(param.getAppVersion())
+        .appendPath("platform").appendPath(param.platform)
+        .appendPath("app").appendPath(param.appId)
+        .appendPath("version").appendPath(param.appVersion)
         .appendPath("") // for trailing slash
         .build();
     setUrl(uri.toString());
 
-    setQueryParam("sdk", param.getSdkVersion());
-    setQueryParam("country", param.getCountryCode());
+    setQueryParam("sdk", param.sdkVersion);
+    setQueryParam("country", param.countryCode);
   }
 
   @Override
