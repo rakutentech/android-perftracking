@@ -13,7 +13,10 @@ Each scenario/metric lists various method, network call measurements. Performanc
 
 ##  <a name="install"></a> Installation procedure
 ### REMS Performance Tracking Credentials
-Your app must be registered in the [Relay Portal](https://rs-portal-web-prd-japaneast-wa.azurewebsites.net/) to use the App Performance Tracking feature. To get your subscription key please refer to the [Relay - Guide to get the subscription Key](https://developers.rakuten.net/hc/en-us/articles/115008917068-Relay-Guide-to-get-the-subscription-Key). For more information please visit our [Developer Portal](https://developers.rakuten.net/hc/en-us/categories/115001441467-Relay).
+Your app must be registered in the [Relay Portal](https://rs-portal-web-prd-japaneast-wa.azurewebsites.net/) to use the App Performance Tracking feature.
+To get your subscription key please refer to the [Relay - Guide to get the subscription Key](https://developers.rakuten.net/hc/en-us/articles/115008917068-Relay-Guide-to-get-the-subscription-Key).
+To get your app id please refer to the [Relay - Guide to get the app id](https://developers.rakuten.net/hc/en-us/articles/115015498448-Guide-to-get-the-AppID).
+For more information please visit our [Developer Portal](https://developers.rakuten.net/hc/en-us/categories/115001441467-Relay).
 
 ### #1 Add dependency to buildscript
 ```groovy
@@ -29,14 +32,16 @@ buildscript {
 apply plugin: 'com.rakuten.tech.mobile.perf'
 ```
 
-### <a name="subscription-key"></a>#2 Provide Subscription key
-You must provide Configuration api's subscription key as metadata in application manifest file.
+### <a name="subscription-key"></a>#2 Provide Subscription key and App id
+You must provide Configuration api's subscription key and app id as metadata in application manifest file.
 
 ```xml
 <manifest>
     <application>
         <meta-data android:name="com.rakuten.tech.mobile.relay.SubscriptionKey"
                    android:value="subscriptionKey" />
+        <meta-data android:name="com.rakuten.tech.mobile.relay.AppId"
+                   android:value="appid" />
     </application>
 </manifest>
 ```

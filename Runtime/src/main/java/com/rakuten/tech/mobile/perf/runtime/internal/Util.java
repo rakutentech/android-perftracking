@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 class Util {
 
   private static final String SUBSCRIPTION_META_KEY = "com.rakuten.tech.mobile.relay.SubscriptionKey";
-  private static final String RELAY_APP_ID = "com.rakuten.tech.mobile.relay.RelayAppId";
+  private static final String RELAY_APP_ID = "com.rakuten.tech.mobile.relay.AppId";
 
   /**
    * Extract the (shared) relay subscription key from the app's manifest. The key is expected as
@@ -41,8 +41,8 @@ class Util {
    * ```xml
    * <manifest>
    *   <application>
-   *     <meta-data android:name="com.rakuten.tech.mobile.relay.RelayAppId"
-   *     android:value="relayAppId" />
+   *     <meta-data android:name="com.rakuten.tech.mobile.relay.AppId"
+   *     android:value="appId" />
    *   </application>
    * </manifest>
    * ```
