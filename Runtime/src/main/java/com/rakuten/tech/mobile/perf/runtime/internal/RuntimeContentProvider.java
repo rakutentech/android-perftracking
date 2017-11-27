@@ -46,10 +46,6 @@ public class RuntimeContentProvider extends ContentProvider {
 
     String subscriptionKey = Util.getSubscriptionKey(context);
 
-    // TODO: remove backwards compatibility before we release 1.0
-    if (subscriptionKey == null) {
-      subscriptionKey = Util.getMeta(context, "com.rakuten.tech.mobile.perf.SubscriptionKey");
-    }
     String configUrlPrefix = Util
         .getMeta(context, "com.rakuten.tech.mobile.perf.ConfigurationUrlPrefix");
     ConfigStore configStore = new ConfigStore(context, queue, subscriptionKey, configUrlPrefix,

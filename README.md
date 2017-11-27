@@ -8,6 +8,7 @@ Each scenario/metric lists various method, network call measurements. Performanc
 * [Configure Tracking](#configure)
 * [Enable Debug Logs](#debug)
 * [Confirm Performance Tracking SDK Integration](#integration)
+* [Migrate from 0.x to 1.x](#migration-guide-1.0)
 * [Changelog](#changelog)
 
 ##  <a name="install"></a> Installation procedure
@@ -28,7 +29,7 @@ buildscript {
 apply plugin: 'com.rakuten.tech.mobile.perf'
 ```
 
-### #2 Provide Subscription key
+### <a name="subscription-key"></a>#2 Provide Subscription key
 You must provide Configuration api's subscription key as metadata in application manifest file.
 
 ```xml
@@ -166,8 +167,13 @@ You can verify this by enabling debug logs as shown in [Enable Debug Logs](#debu
 * Performance Tracking data of your app will reflect in the relay portal after few hours.
 * You can even verify this by enabling debug logs as shown in [Enable Debug Logs](#debug). You will see "SEND_METRIC" AND "SEND" in logs.
 
+## <a name="migration-guide-1.0"></a> Migrating from 0.x to 1.x
+If you have already integrated the Performance Tracking SDK in a 0.x version (0.1.0, 0.1.1 or 0.2.0) you need to follow these steps to migrate to 1.0.0 and newer.
+
+* Subscription key meta in manifest changed from `com.rakuten.tech.mobile.perf.SubscriptionKey` to `com.rakuten.tech.mobile.relay.SubscriptionKey`. If you still use the former meta key in your manifest replace it with the latter, [refer to the section on configuring the subscription key](#subscription-key).
+
 ## <a name="changelog"></a> Changelog
-### 0.2.1 (In Progress)
+### 1.0.0 (In Progress)
 - **[REM-23958](https://jira.rakuten-it.com/jira/browse/REM-23958)**: Send device Memory and Battery information in tracking data
 - **[REM-24597](https://jira.rakuten-it.com/jira/browse/REM-24597)**: Use AppID instead of package name while requesting configuration
 
