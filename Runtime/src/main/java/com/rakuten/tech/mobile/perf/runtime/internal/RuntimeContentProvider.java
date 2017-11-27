@@ -50,14 +50,18 @@ public class RuntimeContentProvider extends ContentProvider {
     if (subscriptionKey == null) {
       subscriptionKey = Util.getMeta(context, "com.rakuten.tech.mobile.perf.SubscriptionKey");
     }
-    String urlPrefix = Util.getMeta(context,
-        "com.rakuten.tech.mobile.perf.ConfigurationUrlPrefix");
-    ConfigStore configStore = new ConfigStore(context, queue, subscriptionKey, urlPrefix, Util.getRelayAppId(context));
+    String configUrlPrefix = Util
+        .getMeta(context, "com.rakuten.tech.mobile.perf.ConfigurationUrlPrefix");
+    ConfigStore configStore = new ConfigStore(context, queue, subscriptionKey, configUrlPrefix,
+        Util.getRelayAppId(context));
 
     // Read last config from cache
     Config config = createConfig(context, configStore.getObservable().getCachedValue());
     if (config != null) {
-      LocationStore locationStore = new LocationStore(context, queue, subscriptionKey, urlPrefix);
+      String locationUrlPrefix = Util
+          .getMeta(context, "com.rakuten.tech.mobile.perf.LocationUrlPrefix");
+      LocationStore locationStore = new LocationStore(context, queue, subscriptionKey,
+          locationUrlPrefix);
       // Initialise Tracking Manager
       TrackingManager.initialize(context, config, locationStore.getObservable(), batteryInfoStore.getObservable());
       Metric.start("_launch");
