@@ -13,9 +13,9 @@ Each scenario/metric lists various method, network call measurements. Performanc
 
 ##  <a name="install"></a> Installation procedure
 ### REMS Performance Tracking Credentials
-Your app must be registered in the [Relay Portal](https://rs-portal-web-prd-japaneast-wa.azurewebsites.net/) to use the App Performance Tracking feature.
-To get your subscription key please refer to the [Relay - Guide to get the subscription Key](https://developers.rakuten.net/hc/en-us/articles/115008917068-Relay-Guide-to-get-the-subscription-Key).
-To get your app id please refer to the [Relay - Guide to get the app id](https://developers.rakuten.net/hc/en-us/articles/115015498448-Guide-to-get-the-AppID).
+Your app must be registered in the [Rakuten App Studio Portal](https://rs-portal-web-prd-japaneast-wa.azurewebsites.net/) to use the App Performance Tracking feature.
+To get your subscription key please refer to the [Rakuten App Studio - Guide to get the subscription Key](https://developers.rakuten.net/hc/en-us/articles/115008917068-Relay-Guide-to-get-the-subscription-Key).
+To get your app id please refer to the [Rakuten App Studio - Guide to get the app id](https://developers.rakuten.net/hc/en-us/articles/115015498448-Guide-to-get-the-AppID).
 For more information please visit our [Developer Portal](https://developers.rakuten.net/hc/en-us/categories/115001441467-Relay).
 
 ### #1 Add dependency to buildscript
@@ -67,7 +67,7 @@ BUILD SUCCESSFUL
 
 Now your application is ready to automatically track the launch metrics, network requests, view lifecycle methods, runnables, webview loads, onClick listeners, threads, volley's hurl stack and many more. To add custom measurement and structure them around metrics see [Customize Tracking](#customize).
 
-You will see your measurements in the [Relay Portal](https://rs-portal-web-prd-japaneast-wa.azurewebsites.net/), navigate to your Service and click on the "App Performance" feature.  Note that there is a few hours of delay before the data is reflected in Relay. If you obfuscate your app you can upload the `mapping.txt` in the portal and the tracking data will be deobfuscated for you.
+You will see your measurements in the [Rakuten App Studio Portal](https://rs-portal-web-prd-japaneast-wa.azurewebsites.net/), navigate to your Service and click on the "App Performance" feature.  Note that there is a few hours of delay before the data is reflected in Rakuten App Studio. If you obfuscate your app you can upload the `mapping.txt` in the portal and the tracking data will be deobfuscated for you.
 
 ## <a name="customize"></a> Customize Tracking
 ### Metrics
@@ -169,13 +169,13 @@ On first run of your app after integrating Performance Tracking the module will 
 You can verify this by enabling debug logs as shown in [Enable Debug Logs](#debug). You will see "Error loading configuration" log in failure scenario.
 
 ### Check Sending data to eventhub
-* Performance Tracking data of your app will reflect in the relay portal after few hours.
+* Performance Tracking data of your app will reflect in the Rakuten App Studio portal after few hours.
 * You can even verify this by enabling debug logs as shown in [Enable Debug Logs](#debug). You will see "SEND_METRIC" AND "SEND" in logs.
 
 ## <a name="migration-guide-1.0"></a> Migrating from 0.x to 1.x
 If you have already integrated the Performance Tracking SDK in a 0.x version (0.1.0, 0.1.1 or 0.2.0) you need to follow these steps to migrate to 1.0.0 and newer.
 
-* Subscription key meta in manifest changed from `com.rakuten.tech.mobile.perf.SubscriptionKey` to `com.rakuten.tech.mobile.relay.SubscriptionKey`. If you still use the former meta key in your manifest replace it with the latter, [refer to the section on configuring the subscription key](#subscription-key).
+* Subscription key meta in manifest changed from `com.rakuten.tech.mobile.perf.SubscriptionKey` to `com.rakuten.tech.mobile.relay.SubscriptionKey`. If you still use the former meta key in your manifest replace it with the later, [refer to the section on configuring the subscription key](#subscription-key).
 
 ## <a name="changelog"></a> Changelog
 ### 1.0.0 (In Progress)
