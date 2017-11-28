@@ -28,6 +28,7 @@ import java.util.Random;
 public class RuntimeContentProvider extends ContentProvider {
 
   private static final String TAG = RuntimeContentProvider.class.getSimpleName();
+  private String relayAppId;
 
   @Override
   public boolean onCreate() {
@@ -48,8 +49,9 @@ public class RuntimeContentProvider extends ContentProvider {
 
     String configUrlPrefix = Util
         .getMeta(context, "com.rakuten.tech.mobile.perf.ConfigurationUrlPrefix");
+    relayAppId = Util.getRelayAppId(context);
     ConfigStore configStore = new ConfigStore(context, queue, subscriptionKey, configUrlPrefix,
-        Util.getRelayAppId(context));
+        relayAppId);
 
     // Read last config from cache
     Config config = createConfig(context, configStore.getObservable().getCachedValue());
@@ -88,6 +90,7 @@ public class RuntimeContentProvider extends ContentProvider {
     if (randomNumber <= enablePercent) {
       config = new Config();
       config.app = packageName;
+      config.relayappid = relayAppId;
       try {
         config.version = packageManager
             .getPackageInfo(packageName, 0).versionName;

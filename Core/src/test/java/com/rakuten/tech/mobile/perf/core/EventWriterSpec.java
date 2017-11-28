@@ -43,6 +43,7 @@ public class EventWriterSpec {
     config = new Config();
     config.app = "app";
     config.version = "test-version";
+    config.relayappid = "test-relay-app-id";
     config.debug = true;
     config.eventHubUrl = ""; // url injected via constructor
     config.header = new HashMap<>();

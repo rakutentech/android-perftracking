@@ -178,6 +178,9 @@ If you have already integrated the Performance Tracking SDK in a 0.x version (0.
 * Subscription key meta in manifest changed from `com.rakuten.tech.mobile.perf.SubscriptionKey` to `com.rakuten.tech.mobile.relay.SubscriptionKey`. If you still use the former meta key in your manifest replace it with the latter, [refer to the section on configuring the subscription key](#subscription-key).
 
 ## <a name="changelog"></a> Changelog
+### 1.1.0 (In Progress)
+- **[REM-25012](https://jira.rakuten-it.com/jira/browse/REM-25012)**: Send AppID in tracking data
+
 ### 1.0.0 (In Progress)
 - **[REM-23958](https://jira.rakuten-it.com/jira/browse/REM-23958)**: Send device Memory and Battery information in tracking data
 - **[REM-24597](https://jira.rakuten-it.com/jira/browse/REM-24597)**: Use AppID instead of package name while requesting configuration
