@@ -56,7 +56,7 @@ class EventWriter {
       _writer = new BufferedWriter(new OutputStreamWriter(_conn.getOutputStream()));
       _writer.append("{\"app\":\"").append(_config.app)
           .append("\",\"version\":\"").append(_config.version)
-          .append("\",\"relay_app_id\":\"").append(_config.relayappid);
+          .append("\",\"relay_app_id\":\"").append(_config.relayAppId);
 
       if (_envInfo.device != null) {
         _writer.append("\",\"device\":\"").append(_envInfo.device);
