@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.android.volley.RequestQueue;
@@ -43,23 +44,23 @@ class ConfigStore extends Store<ConfigurationResult> {
   private static final String CONFIG_KEY = "config_key";
   private static final int TIME_INTERVAL = 60 * 60 * 1000; // 1 HOUR in milli seconds
 
-  private final RequestQueue requestQueue;
-  private final String subscriptionKey;
-  private final String urlPrefix;
-  private final String packageName;
-  private final String appId;
-  private final PackageManager packageManager;
-  private final SharedPreferences prefs;
-  private final Resources res;
-  private final Handler handler;
+  @Nullable private final String subscriptionKey;
+  @Nullable private final String urlPrefix;
+  @Nullable private final String appId;
+  @NonNull private final RequestQueue requestQueue;
+  @NonNull private final String packageName;
+  @NonNull private final PackageManager packageManager;
+  @NonNull private final SharedPreferences prefs;
+  @NonNull private final Resources res;
+  @NonNull private final Handler handler;
 
-  ConfigStore(Context context, RequestQueue requestQueue, String subscriptionKey,
-      String urlPrefix, String relayAppId) {
-    packageManager = context.getPackageManager();
-    packageName = context.getPackageName();
-    appId = relayAppId;
-    res = context.getResources();
-    prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+  ConfigStore(@NonNull Context context, @NonNull RequestQueue requestQueue,
+      @Nullable String subscriptionKey, @Nullable String urlPrefix, @Nullable String relayAppId) {
+    this.packageManager = context.getPackageManager();
+    this.packageName = context.getPackageName();
+    this.appId = relayAppId;
+    this.res = context.getResources();
+    this.prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     this.requestQueue = requestQueue;
     this.subscriptionKey = subscriptionKey;
     this.urlPrefix = urlPrefix;
@@ -90,12 +91,12 @@ class ConfigStore extends Store<ConfigurationResult> {
           .setSdkVersion(res.getString(R.string.perftracking__version))
           .build();
     } catch (PackageManager.NameNotFoundException e) {
-      Log.d(TAG, e.getMessage());
+      Log.d(TAG, "Error building request to config API", e);
     }
 
     if (subscriptionKey == null) {
-      Log.d(TAG,
-          "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from manifest, automated performance tracking will not work.");
+      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from"+
+          "manifest, automated performance tracking will not work.");
     }
     if (param != null) {
       new ConfigurationRequest(urlPrefix,
@@ -135,14 +136,12 @@ class ConfigStore extends Store<ConfigurationResult> {
   }
 
   private void writeConfigToCache(ConfigurationResult result) {
-    if (prefs != null) {
-      prefs.edit().putString(CONFIG_KEY, new Gson().toJson(result)).apply();
-    }
+    prefs.edit().putString(CONFIG_KEY, new Gson().toJson(result)).apply();
   }
 
   @Nullable
   private ConfigurationResult readConfigFromCache() {
-    String result = prefs != null ? prefs.getString(CONFIG_KEY, null) : null;
+    String result = prefs.getString(CONFIG_KEY, null);
     return result != null ? new Gson().fromJson(result, ConfigurationResult.class) : null;
   }
 }

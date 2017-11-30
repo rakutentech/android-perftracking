@@ -36,13 +36,6 @@ android {
   }
 }
 
-apply from: '../config-internal/publish/android.gradle'
-publishing {
-  publications {
-    runtime(MavenPublication, androidArtifact(artifactId: 'performance-tracking'))
-  }
-}
-
 configurations { copyJar }
 
 task copyJar(type: Copy) {
@@ -76,8 +69,6 @@ dependencies {
 }
 
 apply from: "../config/jacoco.gradle"
-
-javadoc { exclude = ['**/Measurement.java'] }
 
 task checkUrlPrefixes {
   doLast {

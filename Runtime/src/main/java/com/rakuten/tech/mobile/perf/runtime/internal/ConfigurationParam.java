@@ -7,11 +7,11 @@ import android.text.TextUtils;
  */
 class ConfigurationParam {
 
-  private String platform;
-  private String appId;
-  private String appVersion;
-  private String sdkVersion;
-  private String countryCode;
+  final String platform;
+  final String appId;
+  final String appVersion;
+  final String sdkVersion;
+  final String countryCode;
 
   private ConfigurationParam(Builder builder) {
     platform = builder.platform;
@@ -59,7 +59,7 @@ class ConfigurationParam {
         throw new IllegalStateException("Platform cannot be null");
       }
       if (TextUtils.isEmpty(appId)) {
-        throw new IllegalStateException("App Id cannot be null or empty, Please set proper metadata `com.rakuten.tech.mobile.relay.RelayAppId` in manifest");
+        throw new IllegalStateException("App Id cannot be null or empty, Please set proper metadata `com.rakuten.tech.mobile.relay.AppId` in manifest");
       }
       if (appVersion == null) {
         throw new IllegalStateException("App Version cannot be null");
@@ -72,25 +72,5 @@ class ConfigurationParam {
       }
       return new ConfigurationParam(this);
     }
-  }
-
-  String getPlatform() {
-    return platform;
-  }
-
-  String getAppId() {
-    return appId;
-  }
-
-  String getAppVersion() {
-    return appVersion;
-  }
-
-  String getSdkVersion() {
-    return sdkVersion;
-  }
-
-  String getCountryCode() {
-    return countryCode;
   }
 }

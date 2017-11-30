@@ -3,7 +3,6 @@ import com.rakuten.tech.tool.CheckGradleFilesForSnapshotDependencies
 buildscript {
   apply from: "config/index.gradle"
   repositories {
-    artifactoryRelease()
     jcenter()
     maven { url 'https://maven.google.com' }
     maven { url "https://plugins.gradle.org/m2/" }
@@ -49,6 +48,7 @@ allprojects { subproject ->
     tag {
       prefix = 'v'
       versionSeparator = ''
+      branchVersionIncrementer = [ 'feature/.*': 'incrementMinor' ] // increment minor version for new features
     }
   }
   subproject.version = scmVersion.version

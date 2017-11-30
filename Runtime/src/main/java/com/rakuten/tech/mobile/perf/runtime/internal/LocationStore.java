@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.android.volley.RequestQueue;
@@ -40,20 +41,21 @@ class LocationStore extends Store<LocationData> {
   private static final String LOCATION_KEY = "location_key";
   private static final int TIME_INTERVAL = 60 * 60 * 1000; // 1 HOUR in milli seconds
 
-  private final RequestQueue requestQueue;
-  private final String subscriptionKey;
-  private final String urlPrefix;
-  private final SharedPreferences prefs;
-  private final Handler handler;
+  @Nullable private final String subscriptionKey;
+  @Nullable private final String urlPrefix;
+  @NonNull private final RequestQueue requestQueue;
+  @NonNull private final SharedPreferences prefs;
+  @NonNull private final Handler handler;
 
-  LocationStore(Context context, RequestQueue requestQueue, String subscriptionKey,
-      String urlPrefix) {
-    prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+  LocationStore(@NonNull Context context, @NonNull RequestQueue requestQueue,
+      @Nullable String subscriptionKey, @Nullable String urlPrefix) {
+    this.prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     this.requestQueue = requestQueue;
     this.subscriptionKey = subscriptionKey;
     this.urlPrefix = urlPrefix;
+    this.handler = new Handler(Looper.getMainLooper());
+
     getObservable().publish(readLocationFromCache());
-    handler = new Handler(Looper.getMainLooper());
     loadLocationFromApi();
     handler.postDelayed(periodicLocationCheck, TIME_INTERVAL);
   }
@@ -69,10 +71,9 @@ class LocationStore extends Store<LocationData> {
   };
 
   private void loadLocationFromApi() {
-
     if (subscriptionKey == null) {
-      Log.d(TAG,
-          "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from manifest, automated performance tracking will not work.");
+      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from "
+          + "manifest automated performance tracking will not work.");
     }
     new GeoLocationRequest(urlPrefix,
         subscriptionKey,
@@ -93,14 +94,12 @@ class LocationStore extends Store<LocationData> {
   }
 
   private void writeLocationToCache(LocationData result) {
-    if (prefs != null) {
-      prefs.edit().putString(LOCATION_KEY, new Gson().toJson(result)).apply();
-    }
+    prefs.edit().putString(LOCATION_KEY, new Gson().toJson(result)).apply();
   }
 
   @Nullable
   private LocationData readLocationFromCache() {
-    String result = prefs != null ? prefs.getString(LOCATION_KEY, null) : null;
+    String result = prefs.getString(LOCATION_KEY, null);
     return result != null ? new Gson().fromJson(result, LocationData.class) : null;
   }
 
