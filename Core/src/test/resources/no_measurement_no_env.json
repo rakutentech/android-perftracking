@@ -1,5 +1,6 @@
 {
   "app": "app",
+  "relay_app_id": "test-relay-app-id",
   "country": "test-land",
   "region": "test-region",
   "os": "android",

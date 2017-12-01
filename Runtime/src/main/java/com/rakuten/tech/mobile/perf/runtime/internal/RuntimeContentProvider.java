@@ -48,11 +48,12 @@ public class RuntimeContentProvider extends ContentProvider {
 
     String configUrlPrefix = Util
         .getMeta(context, "com.rakuten.tech.mobile.perf.ConfigurationUrlPrefix");
+    String relayAppId = Util.getRelayAppId(context);
     ConfigStore configStore = new ConfigStore(context, queue, subscriptionKey, configUrlPrefix,
-        Util.getRelayAppId(context));
+        relayAppId);
 
     // Read last config from cache
-    Config config = createConfig(context, configStore.getObservable().getCachedValue());
+    Config config = createConfig(context, configStore.getObservable().getCachedValue(), relayAppId);
     if (config != null) {
       String locationUrlPrefix = Util
           .getMeta(context, "com.rakuten.tech.mobile.perf.LocationUrlPrefix");
@@ -74,7 +75,8 @@ public class RuntimeContentProvider extends ContentProvider {
    * @return Configuration for {@link TrackingManager}, may be null
    */
   @Nullable
-  private Config createConfig(@NonNull Context context, @Nullable ConfigurationResult lastConfig) {
+  private Config createConfig(@NonNull Context context, @Nullable ConfigurationResult lastConfig,
+      @Nullable String appId) {
     PackageManager packageManager = context.getPackageManager();
     String packageName = context.getPackageName();
     if (lastConfig == null) {
@@ -88,6 +90,7 @@ public class RuntimeContentProvider extends ContentProvider {
     if (randomNumber <= enablePercent) {
       config = new Config();
       config.app = packageName;
+      config.relayAppId = appId;
       try {
         config.version = packageManager
             .getPackageInfo(packageName, 0).versionName;
