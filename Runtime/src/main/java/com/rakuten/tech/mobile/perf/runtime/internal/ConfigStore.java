@@ -46,7 +46,7 @@ class ConfigStore extends Store<ConfigurationResult> {
 
   @Nullable private final String subscriptionKey;
   @Nullable private final String urlPrefix;
-  @Nullable private final String appId;
+  @NonNull private final String appId;
   @NonNull private final RequestQueue requestQueue;
   @NonNull private final String packageName;
   @NonNull private final PackageManager packageManager;
@@ -55,7 +55,7 @@ class ConfigStore extends Store<ConfigurationResult> {
   @NonNull private final Handler handler;
 
   ConfigStore(@NonNull Context context, @NonNull RequestQueue requestQueue,
-      @Nullable String subscriptionKey, @Nullable String urlPrefix, @Nullable String relayAppId) {
+      @NonNull String relayAppId, @Nullable String subscriptionKey, @Nullable String urlPrefix) {
     this.packageManager = context.getPackageManager();
     this.packageName = context.getPackageName();
     this.appId = relayAppId;
