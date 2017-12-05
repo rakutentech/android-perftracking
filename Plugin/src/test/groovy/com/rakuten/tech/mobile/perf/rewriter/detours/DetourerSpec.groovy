@@ -50,10 +50,10 @@ public class DetourerSpec extends UnitSpec {
   @Test
   void "should rewrite method of URL with URLDetours, if URL class is available in ClassProvider"() {
     DetourLoader detourLoader = new DetourLoader(testLogger())
-    ClassJar jar = new ClassJar(resourceFile("user-testUI.jar"))
+    ClassJar jar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = jar.getClassNode("${detoursPkg}.URLDetours")
     ArrayList<Detourer> detourers = detourLoader.load(classNode)
-    ClassProvider classProvider = new ClassProvider(resourceFile("user-testUI.jar").absolutePath)
+    ClassProvider classProvider = new ClassProvider(resourceFile("usertestui.jar").absolutePath)
     detourer.add(detourers.get(0))
     ClassVisitor visitor = new ClassWriter(classProvider, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES)
     ClassReader reader = jar.getClassReader("${detoursPkg}.URLDetours")

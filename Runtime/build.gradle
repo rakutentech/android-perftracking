@@ -72,7 +72,9 @@ apply from: "../config/jacoco.gradle"
 
 task checkUrlPrefixes {
   doLast {
-    if (!project.hasProperty('DEFAULT_CONFIG_URL_PREFIX') ||
+    if(System.env.CI && System.env.CIRCLECI) {
+      println "allow empty URL prefixes for location and config APIs on circleCI build jobs"
+    } else if (!project.hasProperty('DEFAULT_CONFIG_URL_PREFIX') ||
         !project.hasProperty('DEFAULT_LOCATION_URL_PREFIX')) {
       throw new GradleException("Cannot Bulid Runtime without default config & location API" +
           " prexfixes.\nConfigure 'DEFAULT_CONFIG_URL_PREFIX' and " +

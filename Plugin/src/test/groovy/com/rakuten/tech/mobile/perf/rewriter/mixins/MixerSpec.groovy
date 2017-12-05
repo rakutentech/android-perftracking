@@ -23,7 +23,7 @@ public class MixerSpec extends UnitSpec {
   @Before def void setup() {
     classProvider = new ClassProvider(resourceFile("Core.jar").absolutePath)
     classVisitor = new ClassWriter(classProvider, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-    ClassJar jar = new ClassJar(resourceFile("user-TestUI.jar"))
+    ClassJar jar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = jar.getClassNode("${mixinPkg}.VolleyHurlStackMixin")
     MixinLoader mixinLoader = new MixinLoader(testLogger())
     mixin = mixinLoader.loadMixin(classNode)

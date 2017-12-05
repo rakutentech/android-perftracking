@@ -18,7 +18,7 @@ public class PerformanceTrackingRewriterSpec extends UnitSpec {
     performanceTrackingRewriter = new PerformanceTrackingRewriter();
     performanceTrackingRewriter.compileSdkVersion = "android-23"
     performanceTrackingRewriter.classpath = resourceFile("android23.jar").absolutePath
-    performanceTrackingRewriter.input = resourceFile("user-TestUI.jar").absolutePath
+    performanceTrackingRewriter.input = resourceFile("usertestui.jar").absolutePath
     performanceTrackingRewriter.outputJar = projectDir.newFile("output.jar")
     performanceTrackingRewriter.tempJar = projectDir.newFile("temp.jar")
   }

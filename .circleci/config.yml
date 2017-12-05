@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/code
+    docker:
+      - image: circleci/android:api-27-node8-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - run: git submodule update --init
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "Runtime/build.gradle" }}-{{ checksum  "Plugin/build.gradle" }}-{{ checksum  "Core/build.gradle" }}-{{ checksum  "Stubs/build.gradle" }}
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "Runtime/build.gradle" }}-{{ checksum  "Plugin/build.gradle" }}-{{ checksum  "Core/build.gradle" }}-{{ checksum  "Stubs/build.gradle" }}
+      - run:
+          name: Run Tests
+          command: ./gradlew test
+      - store_artifacts:
+          path: ~/code/Plugin/build/reports
+          destination: plugin-reports/
+      - store_artifacts:
+          path: ~/code/Runtime/build/reports
+          destination: runtime-report/
+      - store_artifacts:
+          path: ~/code/Core/build/reports
+          destination: plugin-report/

@@ -30,11 +30,11 @@ class MaterializationSpec extends UnitSpec {
   String targetClass = "com.rakuten.sample.MainActivity"
 
   @Before void setup() {
-    ClassJar classJar = new ClassJar(resourceFile("user-testUI.jar"))
+    ClassJar classJar = new ClassJar(resourceFile("usertestui.jar"))
     base = new BaseLoader().loadBase(
         classJar.getClassNode("com.rakuten.tech.mobile.perf.core.base.ActivityBase")
     )
-    def classpath = resourceFile("user-TestUI.jar").absolutePath + File.pathSeparator +
+    def classpath = resourceFile("usertestui.jar").absolutePath + File.pathSeparator +
         resourceFile("android23.jar").absolutePath + File.pathSeparator +
         resourceFile("SampleApp.jar")
     provider = new ClassProvider(classpath);
@@ -44,7 +44,7 @@ class MaterializationSpec extends UnitSpec {
     writer = new ClassWriter(provider, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
 
     materialization = new Materialization(base, index++, provider, testLogger());
-    jar = resourceFile("user-TestUI.jar");
+    jar = resourceFile("usertestui.jar");
   }
 
   @Test void "should insert super class in inheritance hierarchy"() {
@@ -63,7 +63,7 @@ class MaterializationSpec extends UnitSpec {
   }
 
   @Test void "should materialize and add the class to ClassJarMaker"() {
-    ClassJar jar = new ClassJar(resourceFile("user-testUI.jar"))
+    ClassJar jar = new ClassJar(resourceFile("usertestui.jar"))
     Base baseStub = spy(new BaseLoader().loadBase(
         jar.getClassNode("com.rakuten.tech.mobile.perf.core.base.WebViewClientBase"))
     )

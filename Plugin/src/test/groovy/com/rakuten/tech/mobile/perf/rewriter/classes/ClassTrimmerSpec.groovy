@@ -29,19 +29,19 @@ class ClassTrimmerSpec extends UnitSpec {
 
     @Test(expected = RuntimeException)
     void "should fail to instantiate with invalid compileSdkVersion"() {
-      ClassProvider provider = new ClassProvider(resourceFile("user-TestUI.jar").absolutePath)
+      ClassProvider provider = new ClassProvider(resourceFile("usertestui.jar").absolutePath)
       classTrimmer = new ClassTrimmer(input, provider, Logging.getLogger(ClassTrimmerSpec.class.getName()))
     }
   }
 
 
   @Before void setup() {
-    ClassProvider provider = new ClassProvider(resourceFile("user-TestUI.jar").absolutePath)
+    ClassProvider provider = new ClassProvider(resourceFile("usertestui.jar").absolutePath)
     classTrimmer = new ClassTrimmer("android-23", provider, Logging.getLogger(ClassTrimmerSpec.class.getName()))
   }
 
   @Test void "should trim methods which has annotation"() {
-    ClassJar classJar = new ClassJar(resourceFile("user-TestUI.jar"))
+    ClassJar classJar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = classJar.getClassNode("com.rakuten.tech.mobile.perf.core.base.FragmentBase")
     int originalMethodSize = classNode.methods.size()
     classTrimmer.trim(classNode)
@@ -49,7 +49,7 @@ class ClassTrimmerSpec extends UnitSpec {
   }
 
   @Test void "should not trim methods which does not have annotation"() {
-    ClassJar classJar = new ClassJar(resourceFile("user-TestUI.jar"))
+    ClassJar classJar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = classJar.getClassNode("com.rakuten.tech.mobile.perf.core.base.WebChromeClientBase")
     int originalMethodSize = classNode.methods.size()
     classTrimmer.trim(classNode)
@@ -57,7 +57,7 @@ class ClassTrimmerSpec extends UnitSpec {
   }
 
   @Test void "should trim methods which has annotation MaxCompileSdkVersion"() {
-    ClassJar classJar = new ClassJar(resourceFile("user-TestUI.jar"))
+    ClassJar classJar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = classJar.getClassNode("com.rakuten.tech.mobile.perf.core.base.SupportV4FragmentBase")
     int originalMethodSize = classNode.methods.size()
     classTrimmer.trim(classNode)

@@ -21,7 +21,7 @@ class ClassJarMakerSpec extends UnitSpec {
   }
 
   @Test void "should populate jar file with valid filepath"() {
-    jar.populate(resourceFile("user-TestUI.jar").absolutePath)
+    jar.populate(resourceFile("usertestui.jar").absolutePath)
     jar.Close()
     ClassProvider classProvider = new ClassProvider(jarTemp.absolutePath)
     assert classProvider.getClass("com.rakuten.tech.mobile.perf.core.Sender")
@@ -29,8 +29,8 @@ class ClassJarMakerSpec extends UnitSpec {
 
   @Test(expected = RuntimeException.class)
   void "should fail to add duplicate entry into jar"() {
-    ClassJar classJar = new ClassJar(resourceFile("user-TestUI.jar"))
-    jar.populate(resourceFile("user-TestUI.jar").absolutePath)
+    ClassJar classJar = new ClassJar(resourceFile("usertestui.jar"))
+    jar.populate(resourceFile("usertestui.jar").absolutePath)
     ArrayList<String> arrayList = classJar.getClasses()
     jar.add(arrayList.get(0), classJar)
   }

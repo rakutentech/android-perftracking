@@ -25,8 +25,8 @@ public class MixinMethodSpec extends UnitSpec {
   ClassWriter writer
 
   @Before def void setup() {
-    jar = new ClassJar(resourceFile("user-TestUI.jar"))
-    provider = new ClassProvider(resourceFile("user-TestUI.jar").absolutePath)
+    jar = new ClassJar(resourceFile("usertestui.jar"))
+    provider = new ClassProvider(resourceFile("usertestui.jar").absolutePath)
     mixinLoader = new MixinLoader(testLogger())
     writer = new ClassWriter(provider, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
   }

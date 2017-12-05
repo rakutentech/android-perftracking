@@ -18,7 +18,7 @@ public class DummyRewriterSpec extends UnitSpec {
     dummyRewriter = new DummyRewriter();
     dummyRewriter.compileSdkVersion = "android-23"
     dummyRewriter.classpath = resourceFile("android23.jar").absolutePath
-    dummyRewriter.input = resourceFile("user-TestUI.jar").absolutePath
+    dummyRewriter.input = resourceFile("usertestui.jar").absolutePath
     dummyRewriter.outputJar = projectDir.newFile("output.jar")
     dummyRewriter.tempJar = projectDir.newFile("temp.jar")
   }

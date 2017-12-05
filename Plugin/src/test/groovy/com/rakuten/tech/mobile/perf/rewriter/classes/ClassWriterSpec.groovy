@@ -11,7 +11,7 @@ public class ClassWriterSpec extends UnitSpec {
   ClassWriter classWriter
 
   @Before def void setup() {
-    classWriter = new ClassWriter(new ClassProvider(resourceFile("user-TestUI.jar").absolutePath),
+    classWriter = new ClassWriter(new ClassProvider(resourceFile("usertestui.jar").absolutePath),
         ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES)
   }
 

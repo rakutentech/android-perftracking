@@ -22,7 +22,7 @@ public class MixinLoaderSpec extends UnitSpec {
 
   @Before def void setup() {
     mixinLoader = new MixinLoader(testLogger())
-    jar = new ClassJar(resourceFile("user-TestUI.jar"))
+    jar = new ClassJar(resourceFile("usertestui.jar"))
     classNode = jar.getClassNode("${mixinPkg}.VolleyHurlStackMixin")
   }
 
