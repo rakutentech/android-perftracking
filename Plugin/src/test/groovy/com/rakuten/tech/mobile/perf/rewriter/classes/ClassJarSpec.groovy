@@ -12,7 +12,7 @@ class ClassJarSpec extends UnitSpec {
   final String existingClass = "com.rakuten.tech.mobile.perf.core.Sender"
 
   @Before void setup() {
-    jar = new ClassJar(resourceFile("user-TestUI.jar"))
+    jar = new ClassJar(resourceFile("usertestui.jar"))
   }
 
   @Test void "should read jar content"() {

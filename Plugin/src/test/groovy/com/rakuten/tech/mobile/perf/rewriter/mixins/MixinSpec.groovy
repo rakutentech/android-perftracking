@@ -48,7 +48,7 @@ class MixinSpec extends UnitSpec {
 
     @Test
     void "should match the input mixin object with the class input as mixin objects conditions are satisfied"() {
-      ClassJar jar = new ClassJar(resourceFile("user-TestUI.jar"))
+      ClassJar jar = new ClassJar(resourceFile("usertestui.jar"))
       ClassProvider provider = new ClassProvider(resourceFile("Core.jar").absolutePath)
       ClassNode classNode = jar.getClassNode(mixinInput)
       MixinLoader mixinLoader = new MixinLoader(testLogger())
@@ -80,7 +80,7 @@ class MixinSpec extends UnitSpec {
 
     @Test
     void "should not match the input mixin object with the class input as mixin objects conditions are not satisfied"() {
-      ClassJar jar = new ClassJar(resourceFile("user-TestUI.jar"))
+      ClassJar jar = new ClassJar(resourceFile("usertestui.jar"))
       ClassProvider provider = new ClassProvider(resourceFile("Core.jar").absolutePath)
       ClassNode classNode = jar.getClassNode(mixinInput)
       MixinLoader mixinLoader = new MixinLoader(testLogger())

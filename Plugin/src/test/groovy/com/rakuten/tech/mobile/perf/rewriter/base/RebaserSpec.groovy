@@ -25,8 +25,8 @@ class RebaserSpec extends UnitSpec {
   ClassReader reader
 
   @Before void setup() {
-    jar = new ClassJar(resourceFile("user-testUI.jar"))
-    classProvider = new ClassProvider(resourceFile("user-testUI.jar").absolutePath)
+    jar = new ClassJar(resourceFile("usertestui.jar"))
+    classProvider = new ClassProvider(resourceFile("usertestui.jar").absolutePath)
     rebaser = new Rebaser(jar, classProvider, testLogger())
     visitor = new ClassWriter(classProvider, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES)
     base = new BaseLoader().loadBase(

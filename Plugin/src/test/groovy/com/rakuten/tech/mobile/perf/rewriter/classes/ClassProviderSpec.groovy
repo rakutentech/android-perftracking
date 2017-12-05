@@ -11,7 +11,7 @@ class ClassProviderSpec extends UnitSpec {
   ClassProvider provider
 
   @Before void setup() {
-    provider = new ClassProvider(resourceFile("user-TestUI.jar").absolutePath)
+    provider = new ClassProvider(resourceFile("usertestui.jar").absolutePath)
   }
 
   @Test void "should provide existing class"() {

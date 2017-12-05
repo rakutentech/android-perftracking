@@ -19,7 +19,7 @@ public class DetourLoaderSpec extends UnitSpec {
   }
 
   @Test void "should only load detours of type CallDetour"() {
-    ClassJar jar = new ClassJar(resourceFile("user-testUI.jar"))
+    ClassJar jar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = jar.getClassNode("${detoursPkg}.URLDetours")
 
     ArrayList<Detourer> detourers = detourLoader.load(classNode)
@@ -29,7 +29,7 @@ public class DetourLoaderSpec extends UnitSpec {
   }
 
   @Test void "should not load detours if input classNode does not contain detour annotation"() {
-    ClassJar jar = new ClassJar(resourceFile("user-testUI.jar"))
+    ClassJar jar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = jar.getClassNode("com.rakuten.tech.mobile.perf.core.mixins.ActivityMixin")
 
     ArrayList<Detourer> detourers = detourLoader.load(classNode)
