@@ -78,7 +78,10 @@ dependencies {
 apply from: "../config/jacoco.gradle"
 
 apply from: '../config-internal/javadoc.gradle'
-javadoc { exclude = ['**/Measurement.java'] }
+javadoc { 
+  name = 'performance-tracking'
+  exclude = ['**/Measurement.java'] 
+}
 
 task checkUrlPrefixes {
   doLast {

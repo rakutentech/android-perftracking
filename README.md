@@ -12,6 +12,9 @@ Each scenario/metric lists various method, network call measurements. Performanc
 * [Changelog](#changelog)
 
 ##  <a name="install"></a> Installation procedure
+### Supported Android Versions
+This SDK supports Android API level 15 (Ice Cream Sandwich) and above.
+
 ### REMS Performance Tracking Credentials
 Your app must be registered in the [Rakuten App Studio Portal](https://rs-portal-web-prd-japaneast-wa.azurewebsites.net/) to use the App Performance Tracking feature.
 To get your subscription key please refer to the [Rakuten App Studio - Guide to get the subscription Key](https://developers.rakuten.net/hc/en-us/articles/115008917068-Relay-Guide-to-get-the-subscription-Key).
@@ -25,7 +28,7 @@ buildscript {
         maven { url 'http://artifactory.raksdtd.com/artifactory/libs-release' }
     }
     dependencies {
-        classpath 'com.rakuten.tech.mobile.perf:plugin:0.2.0'
+        classpath 'com.rakuten.tech.mobile.perf:plugin:1.0.0'
     }
 }
 
@@ -181,7 +184,7 @@ If you have already integrated the Performance Tracking SDK in a 0.x version (0.
 ### 1.1.0 (In Progress)
 - **[REM-25012](https://jira.rakuten-it.com/jira/browse/REM-25012)**: Send AppID in tracking data
 
-### 1.0.0 (In Progress)
+### 1.0.0 (2017-12-01)
 - **[REM-23958](https://jira.rakuten-it.com/jira/browse/REM-23958)**: Send device Memory and Battery information in tracking data
 - **[REM-24597](https://jira.rakuten-it.com/jira/browse/REM-24597)**: Use AppID instead of package name while requesting configuration
 
