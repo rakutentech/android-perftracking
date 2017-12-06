@@ -13,4 +13,5 @@ public class Config {
   public String eventHubUrl;
   public Map<String, String> header;
   public boolean debug;
+  public String relayAppId;
 }

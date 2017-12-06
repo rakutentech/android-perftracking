@@ -1,7 +1,16 @@
 package com.rakuten.tech.mobile.perf.core;
 
-import android.content.Context;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -13,18 +22,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.omg.CORBA.portable.OutputStream;
 import org.skyscreamer.jsonassert.JSONAssert;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class EventWriterSpec {
 
@@ -43,6 +40,7 @@ public class EventWriterSpec {
     config = new Config();
     config.app = "app";
     config.version = "test-version";
+    config.relayAppId = "test-relay-app-id";
     config.debug = true;
     config.eventHubUrl = ""; // url injected via constructor
     config.header = new HashMap<>();
@@ -62,7 +60,8 @@ public class EventWriterSpec {
 
   @Rule public TestData emptyMyJson = new TestData("memory_measurement.json");
 
-  @Test public void shouldWriteMemoryAndBatteryDetailsIntoMeasurement() throws IOException, JSONException {
+  @Test public void shouldWriteMemoryAndBatteryDetailsIntoMeasurement()
+      throws IOException, JSONException {
 
     EnvironmentInfo myEnvInfo = Mockito.spy(envInfo);
     doReturn(2000L).when(myEnvInfo).getDeviceTotalMemory();

@@ -95,7 +95,7 @@ class ConfigStore extends Store<ConfigurationResult> {
     }
 
     if (subscriptionKey == null) {
-      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from"+
+      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from" +
           "manifest, automated performance tracking will not work.");
     }
     if (param != null) {
