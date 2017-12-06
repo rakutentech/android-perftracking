@@ -8,6 +8,7 @@ dependencies {
 }
 
 apply plugin: "jacoco"
+check.dependsOn 'jacocoTestReport'
 
 dependencies {
   testCompile 'junit:junit:4.12'
