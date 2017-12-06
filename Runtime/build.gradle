@@ -69,6 +69,7 @@ dependencies {
 }
 
 apply from: "../config/jacoco.gradle"
+check.dependsOn 'jacocoTestReport'
 
 task checkUrlPrefixes {
   doLast {

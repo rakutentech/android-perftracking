@@ -20,7 +20,7 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "Runtime/build.gradle" }}-{{ checksum  "Plugin/build.gradle" }}-{{ checksum  "Core/build.gradle" }}-{{ checksum  "Stubs/build.gradle" }}
       - run:
           name: Run Tests
-          command: ./gradlew test
+          command: ./gradlew check
       - store_artifacts:
           path: ~/code/Plugin/build/reports
           destination: plugin-reports/
@@ -30,3 +30,5 @@ jobs:
       - store_artifacts:
           path: ~/code/Core/build/reports
           destination: plugin-report/
+    post:
+      - bash <(curl -s https://codecov.io/bash)
