@@ -5,9 +5,13 @@ jobs:
     docker:
       - image: circleci/android:api-27-node8-alpha
     environment:
-      JVM_OPTS: -Xmx3200m
+      # from https://discuss.circleci.com/t/circle-ci-v2-and-android-memory-issues/11207
+      JVM_OPTS: "-Xmx1024m -XX:+PrintFlagsFinal -XX:+PrintGCDetails"
+      _JAVA_OPTIONS: "-Xmx1024m"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false"
     steps:
       - checkout
+      - run: env
       - run: git submodule update --init
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "Runtime/build.gradle" }}-{{ checksum  "Plugin/build.gradle" }}-{{ checksum  "Core/build.gradle" }}-{{ checksum  "Stubs/build.gradle" }}
@@ -20,14 +24,14 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "Runtime/build.gradle" }}-{{ checksum  "Plugin/build.gradle" }}-{{ checksum  "Core/build.gradle" }}-{{ checksum  "Stubs/build.gradle" }}
       - run:
           name: Run Tests
-          command: ./gradlew check
+          command: ./gradlew check --info
       - store_artifacts:
           path: ~/code/Plugin/build/reports
           destination: plugin-reports/
       - store_artifacts:
           path: ~/code/Runtime/build/reports
-          destination: runtime-report/
+          destination: runtime-reports/
       - store_artifacts:
           path: ~/code/Core/build/reports
-          destination: plugin-report/
+          destination: core-reports/
       - run: bash <(curl -s https://codecov.io/bash)
