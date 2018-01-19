@@ -1,4 +1,6 @@
 # Performance Tracking
+[![codecov](https://codecov.io/gh/rakutentech/android-perftracking/branch/master/graph/badge.svg)](https://codecov.io/gh/rakutentech/android-perftracking)
+[![CircleCI](https://circleci.com/gh/rakutentech/android-perftracking.svg?style=svg)](https://circleci.com/gh/rakutentech/android-perftracking)
 
 Measure performance of android applications.
  
@@ -29,7 +31,7 @@ The modules are:
 
 ```bash
 $ git submodule init
-& git submodule update
+$ git submodule update
 $ ./gradlew Runtime:assemble Plugin:assemble \
     -PDEFAULT_CONFIG_URL_PREFIX="url to your configuration server" \
     -PDEFAULT_LOCATION_URL_PREFIX="url to your location server"
