@@ -23,6 +23,7 @@ import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import com.rakuten.tech.mobile.perf.runtime.TestData;
 import com.rakuten.tech.mobile.perf.runtime.shadow.RequestQueueShadow;
 import com.rakuten.tech.mobile.perf.runtime.shadow.TrackerShadow;
+import com.rakuten.tech.mobile.perf.runtime.shadow.UtilShadow;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,11 +34,14 @@ import org.robolectric.annotation.Config;
 @Config(shadows = {
     RequestQueueShadow.class, // prevent network requests from runtime side
     TrackerShadow.class, // prevent network requests from core side
-    StoreShadow.class // fake cache
+    StoreShadow.class, // fake cache
+    UtilShadow.class   // fake debug build
 })
 public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
 
   @Rule public TestData config = new TestData("configuration-api-response.json");
+  @Rule public TestData configZeroPercent = new TestData(
+      "configuration-api-response-zero-percent.json");
 
   @Mock PackageManager packageManager;
   /* Spy */ private MockedQueue queue;
@@ -61,6 +65,7 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
         .thenReturn(appInfo);
     TrackingManager.INSTANCE = null;
     clearInvocations(TrackerShadow.mockTracker);
+    UtilShadow.mockDebugBuild = false;
   }
 
   @Test public void shouldNotStartTrackingOnEmptyCache() {
@@ -74,6 +79,17 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
 
   @Test public void shouldStartTrackingAndLaunchMetricOnCachedConfig() {
     StoreShadow.cachedContent = new Gson().fromJson(config.content, ConfigurationResult.class);
+
+    provider.onCreate();
+
+    assertThat(TrackingManager.INSTANCE).isNotNull();
+    verify(TrackerShadow.mockTracker).startMetric("_launch");
+  }
+
+  @Test public void shouldStartTrackingForDebugBuildEvenifEnablePercentIsZero() {
+    StoreShadow.cachedContent = new Gson()
+        .fromJson(configZeroPercent.content, ConfigurationResult.class);
+    UtilShadow.mockDebugBuild = true;
 
     provider.onCreate();
 
@@ -104,7 +120,6 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
     assertThat(TrackingManager.INSTANCE).isNotNull();
     verify(TrackerShadow.mockTracker).startMetric("_launch");
   }
-
 
   @Test public void shouldNotImplementAnyContentProviderMethods() {
     assertThat(provider.query(null, null, null, null, null)).isNull();

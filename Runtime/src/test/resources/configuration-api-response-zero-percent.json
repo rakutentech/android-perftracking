@@ -1,0 +1,9 @@
+{
+  "enablePercent": 0,
+  "sendHeaders": {
+    "Authorization": "SharedAccessSignature sr=AAAA&sig=YNu53ea4ueo2u324Fdy414mRM3F1s&se=151333345&skn=SendOnly",
+    "BrokerProperties": "{\"PartitionKey\": \"com.rakuten.tech.mobile.perf.example/1.0.0\"}",
+    "Content-Type": "application/atom+xml;type=entry;charset=utf-8"
+  },
+  "sendUrl": "https://secrect.event.host.net/measurements/messages?timeout=5&api-version=2014-01"
+}

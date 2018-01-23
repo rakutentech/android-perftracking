@@ -68,8 +68,17 @@ dependencies {
   testCompile 'com.squareup.okio:okio:1.12.0'
 }
 
-apply from: "../config/jacoco.gradle"
-check.dependsOn 'jacocoTestReport'
+apply from: "../config/quality/jacoco/android.gradle"
+apply from: "../config/quality/checkstyle/android.gradle"
+apply from: "../config/quality/pmd/android.gradle"
+
+checkstyle { // TODO: fix all findbugs warnings
+  ignoreFailures = true
+}
+
+pmd { // TODO: fix all findbugs warnings
+  ignoreFailures = true
+}
 
 task checkUrlPrefixes {
   doLast {

@@ -68,26 +68,28 @@ public class RuntimeContentProvider extends ContentProvider {
   }
 
   /**
-   * Configuration for {@link TrackingManager}
+   * Configuration for {@link TrackingManager}.
    *
-   * @param context    application context
+   * @param context application context
    * @param lastConfig cached config, may be null
    * @return Configuration for {@link TrackingManager}, may be null
    */
   @Nullable
-  private Config createConfig(@NonNull Context context, @Nullable ConfigurationResult lastConfig,
-      @Nullable String appId) {
-    PackageManager packageManager = context.getPackageManager();
-    String packageName = context.getPackageName();
+  private Config createConfig(@NonNull final Context context,
+      @Nullable final ConfigurationResult lastConfig,
+      @Nullable final String appId) {
     if (lastConfig == null) {
       return null;
     }
+    PackageManager packageManager = context.getPackageManager();
+    String packageName = context.getPackageName();
     Config config = null; // configuration for TrackingManager
 
+    boolean appDebuggable = Util.isAppDebuggable(context);
     double enablePercent = lastConfig.getEnablePercent();
-
     double randomNumber = new Random(System.currentTimeMillis()).nextDouble() * 100.0;
-    if (randomNumber <= enablePercent) {
+    boolean enableTracking = (randomNumber <= enablePercent);
+    if (appDebuggable || enableTracking) {
       config = new Config();
       config.app = packageName;
       config.relayAppId = appId;
@@ -114,31 +116,31 @@ public class RuntimeContentProvider extends ContentProvider {
 
   @Nullable
   @Override
-  public Cursor query(@NonNull Uri uri, String[] projection, String selection,
-      String[] selectionArgs, String sortOrder) {
+  public Cursor query(@NonNull final Uri uri, final String[] projection, final String selection,
+      final String[] selectionArgs, final String sortOrder) {
     return null;
   }
 
   @Nullable
   @Override
-  public String getType(@NonNull Uri uri) {
+  public String getType(@NonNull final Uri uri) {
     return null;
   }
 
   @Nullable
   @Override
-  public Uri insert(@NonNull Uri uri, ContentValues values) {
+  public Uri insert(@NonNull final Uri uri, final ContentValues values) {
     return null;
   }
 
   @Override
-  public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+  public int delete(@NonNull final Uri uri, final String selection, final String[] selectionArgs) {
     return 0;
   }
 
   @Override
-  public int update(@NonNull Uri uri, ContentValues values, String selection,
-      String[] selectionArgs) {
+  public int update(@NonNull final Uri uri, final ContentValues values, final String selection,
+      final String[] selectionArgs) {
     return 0;
   }
 }
