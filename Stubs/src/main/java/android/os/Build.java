@@ -12,10 +12,4 @@ public class Build {
     public static final int SDK_INT = new Random().nextInt();
 
   }
-
-  public static class VERSION_CODES {
-
-    public static final int JELLY_BEAN = new Random().nextInt();
-
-  }
 }
