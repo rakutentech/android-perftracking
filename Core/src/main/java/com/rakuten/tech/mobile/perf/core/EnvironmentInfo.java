@@ -32,7 +32,8 @@ class EnvironmentInfo implements Observer {
     this.osVersion = Build.VERSION.RELEASE;
     this.activityManager = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    // Hard code Build.VERSION_CODES.JELLY_BEAN to avoid crash on lower os version.
+    if (Build.VERSION.SDK_INT >= 16) {
       this.deviceTotalMemory = Math.round((double) (getMemoryInfo(activityManager).totalMem) / (double) MEGA_BYTE);
     } else {
       this.deviceTotalMemory = -1L;
