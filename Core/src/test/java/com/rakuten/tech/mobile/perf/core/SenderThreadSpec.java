@@ -235,7 +235,7 @@ public class SenderThreadSpec {
 
       senderThread.start();
 
-      Thread.sleep(10); // give the thread some time to die
+      Thread.sleep(100); // give the thread some time to die
 
       assertThat(senderThread.isAlive()).isFalse();
     }
