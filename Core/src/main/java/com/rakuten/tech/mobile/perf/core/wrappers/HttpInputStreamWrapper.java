@@ -8,10 +8,12 @@ public class HttpInputStreamWrapper extends InputStream {
 
   private final InputStream _stream;
   private final int _id;
+  private final int _statusCode;
 
-  public HttpInputStreamWrapper(InputStream stream, int id) {
+  public HttpInputStreamWrapper(InputStream stream, int id, int statusCode) {
     _stream = stream;
     _id = id;
+    _statusCode = statusCode;
   }
 
   @Override
@@ -21,7 +23,7 @@ public class HttpInputStreamWrapper extends InputStream {
 
   @Override
   public void close() throws IOException {
-    Tracker.endUrl(_id);
+    Tracker.endUrl(_id, _statusCode);
     _stream.close();
   }
 

@@ -109,8 +109,12 @@ class TrackerImpl {
     return 0;
   }
 
-  void endUrl(int trackingId) {
-    endMeasurement(trackingId);
+  void endUrl(int trackingId, int statusCode) {
+    if (statusCode != 0) {
+      endMeasurement(trackingId, statusCode);
+    } else {
+      endMeasurement(trackingId);
+    }
 
     if (_debug != null) {
       Measurement m = _measurementBuffer.getByTrackingId(trackingId);
@@ -162,10 +166,15 @@ class TrackerImpl {
   }
 
   private void endMeasurement(int trackingId) {
+    endMeasurement(trackingId, null);
+  }
+
+  private void endMeasurement(int trackingId, Object c) {
     if (trackingId != 0) {
       Measurement m = _measurementBuffer.getByTrackingId(trackingId);
       if (m != null) {
         m.endTime = System.currentTimeMillis();
+        m.c = c;
       }
     }
   }

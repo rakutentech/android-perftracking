@@ -42,6 +42,10 @@ class Debug {
       s.append(",b=").append(m.b);
     }
 
+    if (m.c != null) {
+      s.append(",c=").append(m.c);
+    }
+
     s.append(",startTime=").append(m.startTime);
     s.append(",endTime=").append(m.endTime);
 

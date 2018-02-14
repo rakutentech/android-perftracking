@@ -13,6 +13,7 @@ public class Measurement {
   byte type;
   Object a;
   Object b;
+  Object c;
   long startTime;
   long endTime;
   String activityName;
@@ -22,6 +23,7 @@ public class Measurement {
     type = 0;
     a = null;
     b = null;
+    c = null;
     startTime = 0;
     endTime = 0;
     activityName = null;

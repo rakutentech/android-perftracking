@@ -171,6 +171,9 @@ class EventWriter {
             if (m.b != null) {
               _writer.append(",\"verb\":\"").append((String) m.b).append('"');
             }
+            if (m.c != null) {
+              _writer.append(",\"status_code\":").append(m.c.toString());
+            }
             break;
 
           case Measurement.CUSTOM:

@@ -26,6 +26,7 @@ public class MeasurementBufferSpec {
     Measurement next = buffer.next();
     assertThat(next.a).isNull();
     assertThat(next.b).isNull();
+    assertThat(next.c).isNull();
     assertThat(next.startTime).isEqualTo(0L);
     assertThat(next.endTime).isEqualTo(0L);
     assertThat(next.type).isEqualTo((byte) 0);

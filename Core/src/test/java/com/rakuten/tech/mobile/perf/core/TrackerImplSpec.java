@@ -194,7 +194,7 @@ public class TrackerImplSpec {
     int id = tracker.startUrl(new URL("https://rakuten.co.jp"), "GET");
     Thread.sleep(10);
     long beforeEnd = System.currentTimeMillis();
-    tracker.endUrl(id);
+    tracker.endUrl(id, 200);
 
     verify(buffer, times(1)).next();
     assertThat(buffer.measurements).isNotEmpty();
@@ -276,7 +276,7 @@ public class TrackerImplSpec {
     id = tracker.startMethod(new Object(), "methodName");
     tracker.endMethod(id);
     id = tracker.startUrl(new URL("https://rakuten.co.jp"), "GET");
-    tracker.endUrl(id);
+    tracker.endUrl(id, 200);
 
     verify(buffer, times(4)).next();
     // no exception
@@ -290,7 +290,7 @@ public class TrackerImplSpec {
     int id = tracker.startMethod(new Object(), "method");
     tracker.endMethod(id);
     id = tracker.startUrl(new URL("https://rakuten.co.jp"), "GET");
-    tracker.endUrl(id);
+    tracker.endUrl(id, 200);
     id = tracker.startCustom("custom");
     tracker.endCustom(id);
 
@@ -304,7 +304,7 @@ public class TrackerImplSpec {
     tracker.endMetric();
     tracker.endCustom(0);
     tracker.endMethod(1);
-    tracker.endUrl(2);
+    tracker.endUrl(2, 200);
 
     // no exception
   }

@@ -162,12 +162,13 @@ public class Tracker {
   /**
    * Ends URL measurement.
    * @param trackingId Tracking ID returned from startUrl
+   * @param statusCode Response status code
    */
-  public static void endUrl(int trackingId) {
+  public static void endUrl(int trackingId, int statusCode) {
     try {
       TrackerImpl t = _tracker;
       if (t != null) {
-        t.endUrl(trackingId);
+        t.endUrl(trackingId, statusCode);
       }
     } catch (Throwable t) {
       Tracker.off();

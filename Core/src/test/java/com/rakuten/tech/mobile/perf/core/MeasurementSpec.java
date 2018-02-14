@@ -10,6 +10,7 @@ public class MeasurementSpec {
     Measurement measurement = new Measurement();
     measurement.a = "a";
     measurement.b = "b";
+    measurement.c = "c";
     measurement.startTime = 12345L;
     measurement.endTime = 54321L;
     measurement.trackingId = 9; // the best number
@@ -19,6 +20,7 @@ public class MeasurementSpec {
     measurement.clear();
     assertThat(measurement.a).isNull();
     assertThat(measurement.b).isNull();
+    assertThat(measurement.c).isNull();
     assertThat(measurement.activityName).isNull();
     assertThat(measurement.type).isEqualTo((byte) 0);
     assertThat(measurement.trackingId).isEqualTo(0);
@@ -30,6 +32,7 @@ public class MeasurementSpec {
     Measurement measurement = new Measurement();
     measurement.a = "a";
     measurement.b = "b";
+    measurement.c = "c";
     measurement.startTime = 12345L;
     measurement.endTime = 54321L;
     measurement.trackingId = 9; // the best number
@@ -40,6 +43,7 @@ public class MeasurementSpec {
     measurement.clear();
     assertThat(measurement.a).isNull();
     assertThat(measurement.b).isNull();
+    assertThat(measurement.c).isNull();
     assertThat(measurement.activityName).isNull();
     assertThat(measurement.type).isEqualTo((byte) 0);
     assertThat(measurement.trackingId).isEqualTo(0);
