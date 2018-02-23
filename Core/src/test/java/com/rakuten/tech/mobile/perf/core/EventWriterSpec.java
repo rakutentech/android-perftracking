@@ -182,6 +182,7 @@ public class EventWriterSpec {
     measurement.type = Measurement.URL;
     measurement.a = new URL("https://rakuten.co.jp/some/path?and=some&url=params");
     measurement.b = "VERB";
+    measurement.c = 200;
     measurement.startTime = 0L;
     measurement.endTime = 999;
 
@@ -198,6 +199,7 @@ public class EventWriterSpec {
     measurement.type = Measurement.URL;
     measurement.a = "https://rakuten.co.jp/some/path?and=some&url=params";
     measurement.b = "VERB";
+    measurement.c = 200;
     measurement.startTime = 0L;
     measurement.endTime = 999;
 

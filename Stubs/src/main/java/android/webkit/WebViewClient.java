@@ -9,4 +9,9 @@ public class WebViewClient {
 
   public void onPageFinished(WebView view, String url) {
   }
+
+  public void onReceivedHttpError(WebView view, WebResourceRequest request,
+      WebResourceResponse errorResponse) {
+  }
+
 }

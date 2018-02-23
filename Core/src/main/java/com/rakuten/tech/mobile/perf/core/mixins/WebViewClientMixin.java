@@ -1,6 +1,8 @@
 package com.rakuten.tech.mobile.perf.core.mixins;
 
 import android.graphics.Bitmap;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.rakuten.tech.mobile.perf.core.Tracker;
@@ -22,9 +24,19 @@ public class WebViewClientMixin extends WebViewClientBase {
   public void onPageFinished(WebView view, String url) {
     Tracker.prolongMetric();
     Tracker.endMetric();
-    Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId);
+    Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, 200);
     com_rakuten_tech_mobile_perf_page_trackingId = 0;
     onPageFinished(view, url);
+  }
+
+  @ReplaceMethod
+  public void onReceivedHttpError(WebView view, WebResourceRequest request,
+      WebResourceResponse errorResponse) {
+    Tracker.prolongMetric();
+    Tracker.endMetric();
+    Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, errorResponse.getStatusCode());
+    com_rakuten_tech_mobile_perf_page_trackingId = 0;
+    onReceivedHttpError(view, request, errorResponse);
   }
 }
 

@@ -86,7 +86,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     _conn.disconnect();
 
     if (_state == STARTED) {
-      Tracker.endUrl(_id);
+      Tracker.endUrl(_id, 0);
       _state = ENDED;
     }
   }
@@ -116,7 +116,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     int result = _conn.getResponseCode();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id);
+      Tracker.endUrl(_id, result);
       _state = ENDED;
     }
 
@@ -133,7 +133,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     String result = _conn.getResponseMessage();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id);
+      Tracker.endUrl(_id, _conn.getResponseCode());
       _state = ENDED;
     }
 
@@ -300,10 +300,11 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     }
 
     InputStream stream = _conn.getInputStream();
+    int statusCode = _conn.getResponseCode();
 
     if (stream == null) {
       if (_state == STARTED) {
-        Tracker.endUrl(_id);
+        Tracker.endUrl(_id, _conn.getResponseCode());
         _state = ENDED;
       }
       return null;
@@ -313,7 +314,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
       _state = INPUT;
     }
 
-    return new HttpInputStreamWrapper(stream, _id);
+    return new HttpInputStreamWrapper(stream, _id, statusCode);
   }
 
   @Override

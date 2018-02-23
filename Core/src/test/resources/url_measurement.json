@@ -12,7 +12,8 @@
       "metric": "test-metric",
       "start": 0,
       "time": 999,
-      "verb": "VERB"
+      "verb": "VERB",
+      "status_code": 200
     }
   ],
   "network": "test-network",
