@@ -24,3 +24,11 @@ processTestResources {
   from sourceSets.test.resources
   destinationDir sourceSets.test.output.classesDir
 }
+
+jacocoTestReport {
+  reports {
+    csv.enabled false
+    html.enabled true
+    xml.enabled true
+  }
+}
