@@ -27,8 +27,6 @@ public final class Util {
   private static final String SUBSCRIPTION_META_KEY =
       "com.rakuten.tech.mobile.relay.SubscriptionKey";
   private static final String RELAY_APP_ID = "com.rakuten.tech.mobile.relay.AppId";
-  private static final X500Principal DEBUG_DN = new X500Principal(
-      "C=US, O=Android, CN=Android Debug");
 
   private Util() {
   }
@@ -107,8 +105,10 @@ public final class Util {
       for (Signature signature : signatures) {
         ByteArrayInputStream stream = new ByteArrayInputStream(signature.toByteArray());
         X509Certificate cert = (X509Certificate) certificateFactory.generateCertificate(stream);
-        boolean debuggable = DEBUG_DN.equals(cert.getSubjectX500Principal());
-        if (debuggable) {
+        String principal = cert.getSubjectX500Principal().toString();
+        if (principal.contains("C=US") &&
+            principal.contains("O=Android") &&
+            principal.contains("CN=Android Debug")) {
           return true;
         }
       }
