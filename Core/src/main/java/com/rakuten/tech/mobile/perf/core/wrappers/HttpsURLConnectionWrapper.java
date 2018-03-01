@@ -150,11 +150,6 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     _conn.setFixedLengthStreamingMode(contentLength);
   }
 
-  //@Override
-  //public void setFixedLengthStreamingMode(long contentLength) {
-  //    _conn.setFixedLengthStreamingMode(contentLength);
-  //}
-
   @Override
   public void setInstanceFollowRedirects(boolean followRedirects) {
     _conn.setInstanceFollowRedirects(followRedirects);
@@ -216,11 +211,6 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
   public int getContentLength() {
     return _conn.getContentLength();
   }
-
-  //@Override
-  //public long getContentLengthLong() {
-  //    return _conn.getContentLengthLong();
-  //}
 
   @Override
   public String getContentType() {
@@ -299,22 +289,30 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
       _state = STARTED;
     }
 
-    InputStream stream = _conn.getInputStream();
     int statusCode = _conn.getResponseCode();
+    try {
+      InputStream stream = _conn.getInputStream();
 
-    if (stream == null) {
+      if (stream == null) {
+        if (_state == STARTED) {
+          Tracker.endUrl(_id, statusCode);
+          _state = ENDED;
+        }
+        return null;
+      }
+
       if (_state == STARTED) {
-        Tracker.endUrl(_id, _conn.getResponseCode());
+        _state = INPUT;
+      }
+
+      return new HttpInputStreamWrapper(stream, _id, statusCode);
+    } catch (IOException e) {
+      if (_state == STARTED) {
+        Tracker.endUrl(_id, statusCode);
         _state = ENDED;
       }
-      return null;
+      throw e;
     }
-
-    if (_state == STARTED) {
-      _state = INPUT;
-    }
-
-    return new HttpInputStreamWrapper(stream, _id, statusCode);
   }
 
   @Override
