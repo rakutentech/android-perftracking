@@ -15,7 +15,6 @@ import android.support.annotation.VisibleForTesting;
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import javax.security.auth.x500.X500Principal;
 
 /**
  * Shared functions for Relay SDKs.
@@ -27,8 +26,6 @@ public final class Util {
   private static final String SUBSCRIPTION_META_KEY =
       "com.rakuten.tech.mobile.relay.SubscriptionKey";
   private static final String RELAY_APP_ID = "com.rakuten.tech.mobile.relay.AppId";
-  private static final X500Principal DEBUG_DN = new X500Principal(
-      "C=US, O=Android, CN=Android Debug");
 
   private Util() {
   }
@@ -95,7 +92,7 @@ public final class Util {
    */
   @RestrictTo(LIBRARY)
   @VisibleForTesting(otherwise = PACKAGE_PRIVATE)
-  public static boolean isAppDebuggable(@NonNull final Context context) {
+  static boolean isAppDebuggable(@NonNull final Context context) {
     try {
       PackageManager packageManager = context.getPackageManager();
       PackageInfo packageInfo = packageManager
@@ -107,10 +104,8 @@ public final class Util {
       for (Signature signature : signatures) {
         ByteArrayInputStream stream = new ByteArrayInputStream(signature.toByteArray());
         X509Certificate cert = (X509Certificate) certificateFactory.generateCertificate(stream);
-        boolean debuggable = DEBUG_DN.equals(cert.getSubjectX500Principal());
-        if (debuggable) {
-          return true;
-        }
+        String principal = cert.getSubjectX500Principal().toString().toUpperCase();
+        return principal.contains("C=US") && principal.contains("O=ANDROID") && principal.contains("CN=ANDROID DEBUG");
       }
     } catch (Exception e) {
       // Things went south, anyway the app is not debuggable.
