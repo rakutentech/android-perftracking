@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import com.rakuten.tech.mobile.perf.runtime.TestRawData;
@@ -57,6 +58,14 @@ public class UtilSpec extends RobolectricUnitSpec {
   @Test
   public void shouldReturnFalseIfSignatureIsMissing()
       throws PackageManager.NameNotFoundException {
+
+    assertThat(Util.isAppDebuggable(context)).isFalse();
+  }
+
+  @Test
+  public void shouldReturnFalseIfExceptionOccurs()
+      throws PackageManager.NameNotFoundException {
+    when(packageManager.getPackageInfo(anyString(), anyInt())).thenThrow(new NameNotFoundException());
 
     assertThat(Util.isAppDebuggable(context)).isFalse();
   }
