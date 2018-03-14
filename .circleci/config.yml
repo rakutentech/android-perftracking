@@ -24,7 +24,7 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "Runtime/build.gradle" }}-{{ checksum  "Plugin/build.gradle" }}-{{ checksum  "Core/build.gradle" }}-{{ checksum  "Stubs/build.gradle" }}
       - run:
           name: Run Tests
-          command: ./gradlew check --info
+          command: ./gradlew check --stacktrace
       - store_artifacts:
           path: ~/code/Plugin/build/reports
           destination: plugin-reports/
