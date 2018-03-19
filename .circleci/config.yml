@@ -34,4 +34,10 @@ jobs:
       - store_artifacts:
           path: ~/code/Core/build/reports
           destination: core-reports/
+      - store_test_results:
+          path: ~/code/Plugin/build/test-results/test
+      - store_test_results:
+          path: ~/code/Runtime/build/test-results/testReleaseUnitTest
+      - store_test_results:
+          path: ~/code/Core/build/test-results/test
       - run: bash <(curl -s https://codecov.io/bash)
