@@ -26,7 +26,7 @@ public class PerfPluginExtensionIntegrationSpec extends IntegrationSpec {
     buildFile << resourceFile("example_app_ext_all_enabled").text
     def result = GradleRunner.create()
         .withProjectDir(projectDir.root)
-        .withArguments('assembleDebug', '--debug')
+        .withArguments('assembleDebug', '--debug', '--offline')
         .build()
 
     assert result.task(':transformClassesWithPerfTrackingForDebug').outcome == TaskOutcome.SUCCESS
