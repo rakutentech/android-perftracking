@@ -3,7 +3,9 @@ import com.rakuten.tech.tool.CheckGradleFilesForSnapshotDependencies
 buildscript {
   apply from: "config/index.gradle"
   repositories {
-    jcenter()
+    // try to work around jcenters akamai misconfiguration issue
+    // see https://github.com/gradle/gradle/issues/4703
+    jcenter { url "http://jcenter.bintray.com" }
     maven { url 'https://maven.google.com' }
     maven { url "https://plugins.gradle.org/m2/" }
   }
