@@ -49,6 +49,10 @@ class PerfPlugin implements Plugin<Project> {
           url repository
         }
       }
+
+      dependencies {
+        compile 'com.rakuten.tech.mobile:crash-reporting-plugin:0.3.0'
+      }
     }
 
     project.dependencies.compile runtime
