@@ -1,3 +1,10 @@
+# files copied by gradle
+Plugin/src/test/resources/Core.jar
+Plugin/src/test/resources/Stubs.jar
+# byte code written by failed tests
+Plugin/testOutput
+
+
 ##################################
 # Android Project Files
 

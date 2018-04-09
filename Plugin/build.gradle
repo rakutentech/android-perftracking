@@ -13,36 +13,6 @@ sourceSets {
   }
 }
 
-// Inject the version number into the resources
-import org.apache.tools.ant.filters.ReplaceTokens
-
-processTestResources {
-    with copySpec {
-        exclude '**/*.jar'
-        from sourceSets.main.resources
-        from sourceSets.test.resources
-        destinationDir sourceSets.test.output.classesDir
-        filter(ReplaceTokens, tokens: [
-            version:    project.version,
-            runtime:    "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
-            repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
-        ])
-    }
-    with copySpec { // don't change jar files
-        include '**/*.jar'
-        from sourceSets.test.resources
-        destinationDir sourceSets.test.output.classesDir
-    }
-}
-
-processResources {
-    filter(ReplaceTokens, tokens: [
-        version:    project.version,
-        runtime:    "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
-        repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
-    ])
-}
-
 dependencies {
   implementation gradleApi()
   implementation localGroovy()
@@ -50,11 +20,70 @@ dependencies {
   implementation 'org.ow2.asm:asm-all:5.1'
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+// ------ Testing ------
+
+configurations {
+  testResourceJars
+}
+
 // testing
 dependencies {
   testImplementation gradleTestKit()
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.mockito:mockito-core:2.8.9'
+  testResourceJars project(':Core')
+}
+
+sourceSets {
+  test {
+    // put main and test classes on the junit classpath - Android studio fails to do so 😕
+    ['groovy/test', 'groovy/main', 'java/main'].forEach {
+      output.dir("$buildDir/classes/$it")
+    }
+  }
+}
+
+task copyCoreAndStubsJars(type: Copy) {
+  from configurations.testResourceJars
+  into sourceSets.test.resources.srcDirs[0]
+
+  rename { it.replace("-$version", "") } // strip version for consistent resource name
+}
+
+// Inject the version number into the resources
+import org.apache.tools.ant.filters.ReplaceTokens
+
+processTestResources {
+  dependsOn copyCoreAndStubsJars
+  with copySpec {
+    exclude '**/*.jar'
+    from sourceSets.main.resources
+    from sourceSets.test.resources
+    destinationDir sourceSets.test.java.outputDir
+    filter(ReplaceTokens, tokens: [
+        version   : project.version,
+        runtime   : "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
+        repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
+    ])
+  }
+  with copySpec { // don't change jar files
+    include '**/*.jar'
+    from sourceSets.test.resources
+    destinationDir sourceSets.test.java.outputDir
+  }
+}
+
+processResources {
+  filter(ReplaceTokens, tokens: [
+      version   : project.version,
+      runtime   : "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
+      repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
+  ])
 }
 
 task unitTest(type: Test) {
@@ -71,20 +100,15 @@ task integrationTest(type: Test) {
   }
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
-}
-
 ['test', 'unitTest', 'integrationTest'].each {
   tasks."$it".doFirst {
     def tempDir = new File("${project.projectDir}${File.separator}tmp")
-    println "creating temporary test directory $tempDir.absolutePath"
+    logger.info("creating temporary test directory $tempDir.absolutePath")
     if (!tempDir.exists()) tempDir.mkdir()
   }
   tasks."$it".doLast {
     def tempDir = new File("${project.projectDir}${File.separator}tmp")
-    println "deleting temporary test directory $tempDir.absolutePath"
+    logger.info("deleting temporary test directory $tempDir.absolutePath")
     if (tempDir.exists()) tempDir.deleteDir()
   }
   // local jar and sources jar to debug local code changes
