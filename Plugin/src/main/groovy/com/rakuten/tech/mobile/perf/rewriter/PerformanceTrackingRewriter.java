@@ -52,7 +52,7 @@ public class PerformanceTrackingRewriter implements Rewriter {
     Detourer detourer = new Detourer(provider);
 
     MixinLoader mixinLoader = new MixinLoader(_log);
-    Mixer mixer = new Mixer();
+    Mixer mixer = new Mixer(_log);
 
     BaseLoader baseLoader = new BaseLoader();
     Rebaser rebaser = new Rebaser(temp, provider, _log);

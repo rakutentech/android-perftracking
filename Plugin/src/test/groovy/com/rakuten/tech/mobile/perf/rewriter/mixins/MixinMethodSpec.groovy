@@ -14,7 +14,6 @@ import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 
 import static com.rakuten.tech.mobile.perf.TestUtil.*
-import static org.mockito.ArgumentMatchers.*
 import static org.mockito.Mockito.*
 
 public class MixinMethodSpec extends UnitSpec {
@@ -34,7 +33,7 @@ public class MixinMethodSpec extends UnitSpec {
   @Test def void "should invoke visit method on the provided class parameters"() {
     def mixinName = "${mixinPkg}.AdapterViewOnItemClickListenerMixin"
     Mixin mixin = mixinLoader.loadMixin(jar.getClassNode(mixinName))
-    ClassVisitor visitorMock = spy(mixin.rewrite(provider.getClass(mixinName), writer))
+    ClassVisitor visitorMock = spy(mixin.rewrite(writer))
     ClassReader reader = jar.getClassReader(mixinName)
 
     reader.accept(visitorMock, 0)
@@ -48,7 +47,7 @@ public class MixinMethodSpec extends UnitSpec {
   def void "should invoke visit method on the provided class parameters, and visit instance fields if exists withing the method"() {
     def mixinName = "${mixinPkg}.ActivityMixin"
     Mixin mixin = mixinLoader.loadMixin(jar.getClassNode(mixinName))
-    ClassVisitor visitorMock = spy(mixin.rewrite(provider.getClass(mixinName), writer))
+    ClassVisitor visitorMock = spy(mixin.rewrite(writer))
     ClassReader reader = jar.getClassReader(mixinName)
 
     reader.accept(visitorMock, 0)
@@ -71,7 +70,7 @@ public class MixinMethodSpec extends UnitSpec {
     mixin.fields.add(0, mixinFieldMock)
     Class clazz = provider.getClass("${mixinPkg}.VolleyHurlStackMixin")
     ClassReader reader = jar.getClassReader("${mixinPkg}.VolleyHurlStackMixin")
-    ClassVisitor visitor = mixin.rewrite(clazz, writer)
+    ClassVisitor visitor = mixin.rewrite(writer)
 
     reader.accept(visitor, 0)
 
