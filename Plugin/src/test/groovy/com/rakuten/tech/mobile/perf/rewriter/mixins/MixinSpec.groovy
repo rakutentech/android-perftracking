@@ -108,10 +108,12 @@ class MixinSpec extends UnitSpec {
     def originalClassBytes = readClassByteCode(runnableReader)
     def mixedClassBytes = readClassByteCode(runnableReader, mixin.&rewrite)
 
-    writeClassToFile("actual", mixedClassBytes)
+    def testFile = writeClassToFile("actual", mixedClassBytes)
 
     assert originalClassBytes == mixedClassBytes
     assertThatBytecode(originalClassBytes).isEqualTo(mixedClassBytes)
+
+    testFile.delete()
   }
 
   @RunWith(Parameterized)

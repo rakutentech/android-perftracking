@@ -101,13 +101,14 @@ public class Mixin {
       @Override
       public MethodVisitor visitMethod(int access, String name, String desc, String signature,
           String[] exceptions) {
-        if ((access & Opcodes.ACC_NATIVE) == 0) {
+
+        if ((access & (Opcodes.ACC_NATIVE | Opcodes.ACC_ABSTRACT)) > 0) {
+          _log.debug("Excluding native or abstract method from rewriting " + name);
+        } else {
           final MixinMethod method = methods.get(name + desc);
           if (method != null) {
             return method.rewrite(_className, originalClass, access, name, desc, signature, exceptions);
           }
-        } else {
-          _log.debug("Native method excluded from rewriting " + name);
         }
         return super.visitMethod(access, name, desc, signature, exceptions);
       }
