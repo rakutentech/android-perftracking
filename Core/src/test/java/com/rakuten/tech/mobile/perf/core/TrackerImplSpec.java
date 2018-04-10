@@ -26,6 +26,7 @@ public class TrackerImplSpec {
   /* Spy */ private MockBuffer buffer;
   /* Spy */ private AtomicReference<Metric> metric;
   private TrackerImpl tracker;
+  private TrackerImpl disabledNonMetricMeasurementTracker;
 
   private class MockBuffer extends MeasurementBuffer {
 
@@ -54,7 +55,8 @@ public class TrackerImplSpec {
     metric = spy(current.metric);
     buffer = spy(new MockBuffer());
     metricField.set(current, metric);
-    tracker = new TrackerImpl(buffer, current, debug);
+    tracker = new TrackerImpl(buffer, current, debug, true);
+    disabledNonMetricMeasurementTracker = new TrackerImpl(buffer, current, debug, false);
   }
 
   // metrics
@@ -81,13 +83,18 @@ public class TrackerImplSpec {
     assertThat(m.b).isNull();
   }
 
+  @Test public void shouldInitializeMeasurementOnStartMetricWhenNonMetricMeasurementsDisabled() {
+    disabledNonMetricMeasurementTracker.startMetric("some metric");
+
+    verify(buffer, times(1)).next();
+  }
+
   @Test public void shouldRetainNewMetricOnStartMetric() {
     tracker.startMetric("metric ID");
 
     ArgumentCaptor<Metric> captor = ArgumentCaptor.forClass(Metric.class);
-    verify(metric, times(2)).set(captor.capture());
-    assertThat(captor.getAllValues().get(0)).isNull(); // cleared old metric
-    assertThat(captor.getAllValues().get(1).id).isEqualTo("metric ID"); // set new metric
+    verify(metric, times(1)).set(captor.capture());
+    assertThat(captor.getAllValues().get(0).id).isEqualTo("metric ID"); // set new metric
   }
 
   @Test public void shouldOnlyRetainOneMetricAtATime() {
@@ -175,6 +182,22 @@ public class TrackerImplSpec {
     assertThat(m.endTime).isGreaterThanOrEqualTo(beforeEnd);
   }
 
+  @Test public void shouldNotInitializeMethodMeasurementWhenNonMetricMeasurementsDisabledAndMetricIsNull() {
+    metric.set(null);
+
+    disabledNonMetricMeasurementTracker.startMethod(new Object(), "testMethod");
+
+    verify(buffer, never()).next();
+  }
+
+  @Test public void shouldInitializeMethodMeasurementWhenMetricExists() {
+    metric.set(new Metric());
+
+    disabledNonMetricMeasurementTracker.startMethod(new Object(), "testMethod");
+
+    verify(buffer, times(1)).next();
+  }
+
   // url measurements
 
   @Test public void shouldInitializeNewUrlMeasurement() throws MalformedURLException {
@@ -222,6 +245,24 @@ public class TrackerImplSpec {
     assertThat(m.b).isEqualTo(null);
   }
 
+  @Test public void shouldNotInitializeUrlMeasurementWhenNonMetricMeasurementsDisabledAndMetricIsNull()
+      throws MalformedURLException {
+    metric.set(null);
+
+    disabledNonMetricMeasurementTracker.startUrl(new URL("https://rakuten.co.jp"), "GET");
+
+    verify(buffer, never()).next();
+  }
+
+  @Test public void shouldInitializeUrlMeasurementWhenMetricExists()
+      throws MalformedURLException {
+    metric.set(new Metric());
+
+    disabledNonMetricMeasurementTracker.startUrl(new URL("https://rakuten.co.jp"), "GET");
+
+    verify(buffer, times(1)).next();
+  }
+
   // custom measurements
 
   @Test public void shouldInitializeNewCustomMeasurement() {
@@ -251,6 +292,22 @@ public class TrackerImplSpec {
     tracker.startCustom(null);
 
     verify(buffer, never()).next();
+  }
+
+  @Test public void shouldNotInitializeCustomMeasurementWhenNonMetricMeasurementsDisabledAndMetricIsNull() {
+    metric.set(null);
+
+    disabledNonMetricMeasurementTracker.startCustom("testId");
+
+    verify(buffer, never()).next();
+  }
+
+  @Test public void shouldInitializeCustomMeasurementWhenMetricExists() {
+    metric.set(new Metric());
+
+    disabledNonMetricMeasurementTracker.startCustom("testId");
+
+    verify(buffer, times(1)).next();
   }
 
   // unexpected collaborator behavior
@@ -283,7 +340,7 @@ public class TrackerImplSpec {
   }
 
   @Test public void shouldNotFailWithNullDebug() throws MalformedURLException {
-    tracker = new TrackerImpl(buffer, new Current(), null);
+    tracker = new TrackerImpl(buffer, new Current(), null, true);
     tracker.startMetric("m");
     tracker.prolongMetric();
     tracker.endMetric();

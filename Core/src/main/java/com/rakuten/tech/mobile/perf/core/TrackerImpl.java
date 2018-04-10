@@ -3,14 +3,16 @@ package com.rakuten.tech.mobile.perf.core;
 class TrackerImpl {
 
   private String activityName = null;
-  private final MeasurementBuffer _measurementBuffer;
-  private final Current _current;
-  private final Debug _debug;
+  private final MeasurementBuffer measurementBuffer;
+  private final Current current;
+  private final Debug debug;
+  private final boolean trackMeasurementWithoutMetric;
 
-  TrackerImpl(MeasurementBuffer measurementBuffer, Current current, Debug debug) {
-    _measurementBuffer = measurementBuffer;
-    _current = current;
-    _debug = debug;
+  TrackerImpl(MeasurementBuffer measurementBuffer, Current current, Debug debug, boolean trackMeasurementWithoutMetric) {
+    this.measurementBuffer = measurementBuffer;
+    this.current = current;
+    this.debug = debug;
+    this.trackMeasurementWithoutMetric = trackMeasurementWithoutMetric;
   }
 
   void updateActivityName(String name) {
@@ -24,48 +26,49 @@ class TrackerImpl {
   }
 
   void startMetric(String metricId) {
-    _current.metric.set(null);
-
     Metric metric = new Metric();
     metric.id = metricId;
+    current.metric.set(metric);
 
     Measurement m = startMeasurement(Measurement.METRIC, metric, null);
-    if (m != null) {
-      metric.startTime = m.startTime;
-      metric.endTime = m.startTime;
-      _current.metric.set(metric);
+    if (m == null) {
+      current.metric.set(null);
+      return;
+    }
 
-      if (_debug != null) {
-        _debug.log("METRIC_START", metric);
-      }
+    metric.startTime = m.startTime;
+    metric.endTime = m.startTime;
+
+    if (debug != null) {
+      debug.log("METRIC_START", metric);
     }
   }
 
   void prolongMetric() {
-    Metric metric = _current.metric.get();
+    Metric metric = current.metric.get();
 
     if (metric != null) {
       long now = System.currentTimeMillis();
       metric.endTime = now;
       if (now - metric.startTime > Metric.MAX_TIME) {
-        _current.metric.compareAndSet(metric, null);
+        current.metric.compareAndSet(metric, null);
       }
 
-      if (_debug != null) {
-        _debug.log("METRIC_PROLONG", metric);
+      if (debug != null) {
+        debug.log("METRIC_PROLONG", metric);
       }
     }
   }
 
   void endMetric() {
-    if (_debug != null) {
-      Metric metric = _current.metric.get();
+    if (debug != null) {
+      Metric metric = current.metric.get();
       if (metric != null) {
-        _debug.log("METRIC_END", metric);
+        debug.log("METRIC_END", metric);
       }
     }
 
-    _current.metric.set(null);
+    current.metric.set(null);
   }
 
   public int startMethod(Object object, String method) {
@@ -73,8 +76,8 @@ class TrackerImpl {
       Measurement m = startMeasurement(Measurement.METHOD, object.getClass().getName(), method);
       if (m != null) {
 
-        if (_debug != null) {
-          _debug.log("METHOD_START", m, null);
+        if (debug != null) {
+          debug.log("METHOD_START", m, null);
         }
 
         return m.trackingId;
@@ -86,10 +89,10 @@ class TrackerImpl {
   public void endMethod(int trackingId) {
     endMeasurement(trackingId);
 
-    if (_debug != null) {
-      Measurement m = _measurementBuffer.getByTrackingId(trackingId);
+    if (debug != null) {
+      Measurement m = measurementBuffer.getByTrackingId(trackingId);
       if (m != null) {
-        _debug.log("METHOD_END", m, null);
+        debug.log("METHOD_END", m, null);
       }
     }
   }
@@ -99,8 +102,8 @@ class TrackerImpl {
       Measurement m = startMeasurement(Measurement.URL, url, verb);
       if (m != null) {
 
-        if (_debug != null) {
-          _debug.log("URL_START", m, null);
+        if (debug != null) {
+          debug.log("URL_START", m, null);
         }
 
         return m.trackingId;
@@ -116,10 +119,10 @@ class TrackerImpl {
       endMeasurement(trackingId);
     }
 
-    if (_debug != null) {
-      Measurement m = _measurementBuffer.getByTrackingId(trackingId);
+    if (debug != null) {
+      Measurement m = measurementBuffer.getByTrackingId(trackingId);
       if (m != null) {
-        _debug.log("URL_END", m, null);
+        debug.log("URL_END", m, null);
       }
     }
   }
@@ -129,8 +132,8 @@ class TrackerImpl {
       Measurement m = startMeasurement(Measurement.CUSTOM, measurementId, null);
       if (m != null) {
 
-        if (_debug != null) {
-          _debug.log("CUSTOM_START", m, null);
+        if (debug != null) {
+          debug.log("CUSTOM_START", m, null);
         }
 
         return m.trackingId;
@@ -142,16 +145,20 @@ class TrackerImpl {
   void endCustom(int trackingId) {
     endMeasurement(trackingId);
 
-    if (_debug != null) {
-      Measurement m = _measurementBuffer.getByTrackingId(trackingId);
+    if (debug != null) {
+      Measurement m = measurementBuffer.getByTrackingId(trackingId);
       if (m != null) {
-        _debug.log("CUSTOM_END", m, null);
+        debug.log("CUSTOM_END", m, null);
       }
     }
   }
 
   private Measurement startMeasurement(byte type, Object a, Object b) {
-    Measurement m = _measurementBuffer.next();
+    if (!trackMeasurementWithoutMetric && current.metric.get() == null) {
+      return null;
+    }
+
+    Measurement m = measurementBuffer.next();
     if (m == null) {
       return null;
     }
@@ -171,7 +178,7 @@ class TrackerImpl {
 
   private void endMeasurement(int trackingId, Object c) {
     if (trackingId != 0) {
-      Measurement m = _measurementBuffer.getByTrackingId(trackingId);
+      Measurement m = measurementBuffer.getByTrackingId(trackingId);
       if (m != null) {
         m.endTime = System.currentTimeMillis();
         m.c = c;

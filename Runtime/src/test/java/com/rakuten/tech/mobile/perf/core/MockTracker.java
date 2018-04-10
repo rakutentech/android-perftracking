@@ -6,8 +6,8 @@ package com.rakuten.tech.mobile.perf.core;
  */
 public class MockTracker extends TrackerImpl {
 
-  private MockTracker(MeasurementBuffer measurementBuffer, Current current, Debug debug) {
-    super(measurementBuffer, current, debug);
+  private MockTracker(MeasurementBuffer measurementBuffer, Current current, Debug debug, boolean shouldEnableNonMetricMeasurement) {
+    super(measurementBuffer, current, debug, shouldEnableNonMetricMeasurement);
   }
 
   public void startMetric(String metricId) {
