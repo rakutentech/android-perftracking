@@ -100,6 +100,20 @@ class MixinSpec extends UnitSpec {
     assertThatBytecode(originalClassBytes).isEqualTo(mixedClassBytes)
   }
 
+  @Test
+  void "should not mixin to abstract methods"() {
+    def runnableReader = readClass('mixins/AbstractImplementationOfRunnable')
+    mixin = loadMixinFromCore('RunnableMixin')
+
+    def originalClassBytes = readClassByteCode(runnableReader)
+    def mixedClassBytes = readClassByteCode(runnableReader, mixin.&rewrite)
+
+    writeClassToFile("actual", mixedClassBytes)
+
+    assert originalClassBytes == mixedClassBytes
+    assertThatBytecode(originalClassBytes).isEqualTo(mixedClassBytes)
+  }
+
   @RunWith(Parameterized)
   static class ShouldMixin extends UnitSpec {
     private Mixin mixin
