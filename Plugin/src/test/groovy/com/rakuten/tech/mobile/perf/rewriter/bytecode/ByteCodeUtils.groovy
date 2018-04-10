@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.perf.rewriter.bytecode
 
+import groovy.transform.PackageScope
 import org.objectweb.asm.*
 
 class ByteCodeUtils {
@@ -97,8 +98,9 @@ class ByteCodeUtils {
     new ClassReader(loadTestDataClassAsStream(className))
   }
 
+  @PackageScope
   static void log(String message, Object... args) {
     // uncomment for detailed logging of byte code comparison
-    System.out.println(String.format(message, args))
+//    System.out.println(String.format(message, args))
   }
 }

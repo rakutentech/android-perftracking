@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import com.rakuten.tech.mobile.perf.core.base.ActivityBase;
 
-
+// this is test data only for mixin, not rebasing, so parent class is ActivityBase, not Activity
 public class ChildOfActivity extends ActivityBase {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
