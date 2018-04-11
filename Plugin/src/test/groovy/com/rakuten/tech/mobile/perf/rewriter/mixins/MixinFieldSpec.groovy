@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.perf.rewriter.mixins
 
-import com.rakuten.tech.mobile.perf.UnitSpec
 import org.junit.Before
 import org.junit.Test
 import org.objectweb.asm.ClassVisitor
@@ -10,7 +9,7 @@ import static com.rakuten.tech.mobile.perf.TestUtil.testLogger
 import static org.mockito.ArgumentMatchers.*
 import static org.mockito.Mockito.*
 
-public class MixinFieldSpec extends UnitSpec {
+public class MixinFieldSpec {
   MixinField mixinField
 
   @Before def void setup() {

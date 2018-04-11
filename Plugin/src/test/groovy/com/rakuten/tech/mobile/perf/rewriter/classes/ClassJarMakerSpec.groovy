@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.perf.rewriter.classes
 
-import com.rakuten.tech.mobile.perf.UnitSpec
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -8,7 +7,7 @@ import org.junit.rules.TemporaryFolder
 
 import static com.rakuten.tech.mobile.perf.TestUtil.resourceFile
 
-class ClassJarMakerSpec extends UnitSpec {
+class ClassJarMakerSpec {
 
   @Rule public final TemporaryFolder projectDir = new TemporaryFolder(new File("tmp"))
 

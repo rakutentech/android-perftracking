@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.perf.rewriter.mixins
 
-import com.rakuten.tech.mobile.perf.UnitSpec
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassJar
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassProvider
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassWriter
@@ -13,7 +12,7 @@ import static com.rakuten.tech.mobile.perf.TestUtil.*
 import static org.mockito.ArgumentMatchers.any
 import static org.mockito.Mockito.*
 
-class MixerSpec extends UnitSpec {
+class MixerSpec {
   ClassVisitor classVisitor
   Mixin mixin
   Mixer mixer

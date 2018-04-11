@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.perf.rewriter.base
 
-import com.rakuten.tech.mobile.perf.UnitSpec
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassJar
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassJarMaker
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassProvider
@@ -15,7 +14,7 @@ import static com.rakuten.tech.mobile.perf.TestUtil.resourceFile
 import static com.rakuten.tech.mobile.perf.TestUtil.testLogger
 import static org.mockito.Mockito.spy
 
-class MaterializationSpec extends UnitSpec {
+class MaterializationSpec {
   @Rule public final TemporaryFolder tempDir = new TemporaryFolder()
   def index = 1
   File jar
