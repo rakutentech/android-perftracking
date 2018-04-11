@@ -15,9 +15,12 @@ android {
   }
 
   testOptions {
-    unitTests.all {
-      jacoco {
-        includeNoLocationClasses = true
+    unitTests{
+      includeAndroidResources = true
+      all {
+        jacoco {
+          includeNoLocationClasses = true
+        }
       }
     }
   }
@@ -36,9 +39,9 @@ android.libraryVariants.all {
 
 dependencies {
   copyJar project(':Core')
-  compile files("libs/Core-${project.version}.jar")
+  implementation files("libs/Core-${project.version}.jar")
 
-  compileOnly "com.android.support:support-annotations:$CONFIG.versions.android.libraries.support"
+  api "com.android.support:support-annotations:$CONFIG.versions.android.libraries.support"
   implementation "com.google.code.gson:gson:${CONFIG.versions.thirdParty.gson}"
   implementation "com.android.volley:volley:${CONFIG.versions.android.libraries.volley}"
 
@@ -52,7 +55,7 @@ dependencies {
     exclude group: 'commons-logging', module: 'commons-logging'
   }
   testImplementation 'org.robolectric:shadow-api:3.3.2'
-  testImplementation 'com.squareup.okio:okio:1.12.0'
+  testImplementation 'com.squareup.okio:okio:1.14.0'
 }
 
 apply from: "../config/quality/jacoco/android.gradle"
