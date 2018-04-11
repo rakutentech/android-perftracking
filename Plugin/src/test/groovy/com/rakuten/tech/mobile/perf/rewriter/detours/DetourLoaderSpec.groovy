@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.perf.rewriter.detours
 
-import com.rakuten.tech.mobile.perf.UnitSpec
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassJar
 import org.junit.Before
 import org.junit.Test
@@ -11,7 +10,7 @@ import static com.rakuten.tech.mobile.perf.TestUtil.*
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
-public class DetourLoaderSpec extends UnitSpec {
+public class DetourLoaderSpec {
   DetourLoader detourLoader
 
   @Before void setUp() {

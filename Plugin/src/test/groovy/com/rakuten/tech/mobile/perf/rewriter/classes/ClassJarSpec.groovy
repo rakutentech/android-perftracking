@@ -1,12 +1,11 @@
 package com.rakuten.tech.mobile.perf.rewriter.classes
 
-import com.rakuten.tech.mobile.perf.UnitSpec
 import org.junit.Before
 import org.junit.Test
 
 import static com.rakuten.tech.mobile.perf.TestUtil.resourceFile
 
-class ClassJarSpec extends UnitSpec {
+class ClassJarSpec {
   ClassJar jar
 
   final String existingClass = "com.rakuten.tech.mobile.perf.core.Sender"

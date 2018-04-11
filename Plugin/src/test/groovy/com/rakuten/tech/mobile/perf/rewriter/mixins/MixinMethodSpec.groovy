@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.perf.rewriter.mixins
 
-import com.rakuten.tech.mobile.perf.UnitSpec
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassJar
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassProvider
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassWriter
@@ -14,9 +13,10 @@ import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 
 import static com.rakuten.tech.mobile.perf.TestUtil.*
+import static org.mockito.ArgumentMatchers.*
 import static org.mockito.Mockito.*
 
-public class MixinMethodSpec extends UnitSpec {
+public class MixinMethodSpec {
 
   ClassJar jar
   ClassProvider provider

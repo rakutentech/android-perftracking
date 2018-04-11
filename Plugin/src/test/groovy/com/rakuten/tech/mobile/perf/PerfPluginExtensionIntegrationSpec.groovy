@@ -11,7 +11,7 @@ import org.junit.rules.TemporaryFolder
 
 import static com.rakuten.tech.mobile.perf.TestUtil.resourceFile
 
-public class PerfPluginExtensionIntegrationSpec extends IntegrationSpec {
+public class PerfPluginExtensionIntegrationSpec {
   @Rule public final TemporaryFolder projectDir = new TemporaryFolder(new File("tmp"))
   File buildFile
 

@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.perf.rewriter.classes
 
-import com.rakuten.tech.mobile.perf.UnitSpec
 import org.gradle.api.logging.Logging
 import org.junit.Before
 import org.junit.Test
@@ -11,12 +10,11 @@ import org.objectweb.asm.tree.ClassNode
 
 import static com.rakuten.tech.mobile.perf.TestUtil.resourceFile
 
-
-class ClassTrimmerSpec extends UnitSpec {
+class ClassTrimmerSpec {
   ClassTrimmer classTrimmer
 
   @RunWith(Parameterized)
-  static class ClassTrimmerSpecParameterized extends UnitSpec {
+  static class ClassTrimmerSpecParameterized {
     private String input
 
     @Parameters( name = "input = {0}") static Collection<Object[]> data() {

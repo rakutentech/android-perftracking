@@ -6,7 +6,7 @@ targetCompatibility = 1.7
 // Quick-and-dirty way of adding both Stubs and Core without dealing with jars…
 sourceSets {
   main {
-    java {
+    groovy {
       srcDirs += "$rootProject.projectDir/Stubs/src/main/java"
       srcDirs += "$rootProject.projectDir/Core/src/main/java"
     }
@@ -58,100 +58,61 @@ task copyCoreAndStubsJars(type: Copy) {
 // Inject the version number into the resources
 import org.apache.tools.ant.filters.ReplaceTokens
 
+def replaceTokens = [ // keys that we replace during resource processing
+        version   : project.version,
+        runtime   : "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
+        repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
+]
+
 processTestResources {
   dependsOn copyCoreAndStubsJars
   with copySpec {
     exclude '**/*.jar'
     from sourceSets.main.resources
     from sourceSets.test.resources
-    destinationDir sourceSets.test.java.outputDir
-    filter(ReplaceTokens, tokens: [
-        version   : project.version,
-        runtime   : "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
-        repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
-    ])
+    destinationDir sourceSets.test.groovy.outputDir
+    filter(ReplaceTokens, tokens: replaceTokens)
   }
   with copySpec { // don't change jar files
     include '**/*.jar'
     from sourceSets.test.resources
-    destinationDir sourceSets.test.java.outputDir
+    destinationDir sourceSets.test.groovy.outputDir
   }
 }
 
 processResources {
-  filter(ReplaceTokens, tokens: [
-      version   : project.version,
-      runtime   : "com.rakuten.tech.mobile.perf:performance-tracking:$project.version".toString(),
-      repository: 'http://artifactory.raksdtd.com/artifactory/libs-release'
-  ])
+  filter(ReplaceTokens, tokens: replaceTokens)
 }
 
-task unitTest(type: Test) {
-  useJUnit {
-    includeCategories 'com.rakuten.tech.mobile.perf.UnitSpec'
-    excludeCategories 'com.rakuten.tech.mobile.perf.IntegrationSpec'
-  }
+def tmpDir = { cls ->
+  def tmpDir = new File("${project.projectDir}${File.separator}tmp")
+  if (!tmpDir.exists()) cls(tmpDir)
 }
 
-task integrationTest(type: Test) {
-  useJUnit {
-    excludeCategories 'com.rakuten.tech.mobile.perf.UnitSpec'
-    includeCategories 'com.rakuten.tech.mobile.perf.IntegrationSpec'
-  }
+tasks.test.doFirst {
+  tmpDir { it.mkdir() }
 }
-
-['test', 'unitTest', 'integrationTest'].each {
-  tasks."$it".doFirst {
-    def tempDir = new File("${project.projectDir}${File.separator}tmp")
-    logger.info("creating temporary test directory $tempDir.absolutePath")
-    if (!tempDir.exists()) tempDir.mkdir()
-  }
-  tasks."$it".doLast {
-    def tempDir = new File("${project.projectDir}${File.separator}tmp")
-    logger.info("deleting temporary test directory $tempDir.absolutePath")
-    if (tempDir.exists()) tempDir.deleteDir()
-  }
-  // local jar and sources jar to debug local code changes
-  tasks."$it".dependsOn(tasks.assemble)
-  tasks."$it".dependsOn(tasks.sourcesJar)
+tasks.test.doLast {
+  tmpDir { it.deleteDir() }
 }
+// local jar and sources jar to debug local code changes
+tasks.test.dependsOn(tasks.assemble)
+tasks.test.dependsOn(tasks.sourcesJar)
 
 apply plugin: 'net.saliman.cobertura'
 // see https://github.com/stevesaliman/gradle-cobertura-plugin/blob/master/usage.md
 
+
 cobertura {
-  coverageDirs = [
-      'build/classes/main'
-  ]
   coverageSourceDirs = [
-      'src/main/groovy'
+      sourceSets.main.groovy.srcDirs
   ]
-  coverageExcludes = [
-      // for some reason '.*android.*' will create an empty report, so this is a bit verbose
-      '.*android.app.*',
-      '.*android.content.*',
-      '.*android.graphics.*',
-      '.*android.os.*',
-      '.*android.support.*',
-      '.*android.telephony.*',
-      '.*android.util.*',
-      '.*android.view.*',
-      '.*android.webkit.*',
-      '.*android.widget.*',
-      '.*com.android.*',
-      '.*com.rakuten.tech.mobile.perf.core.*',
-      '.*it.sephiroth.*',
-      '.*org.apache.http.*'
+  coverageDirs = [
+      sourceSets.main.groovy.outputDir
   ]
+  coverageEncoding = 'UTF-8'
   coverageFormats = ['html', 'xml']
   coverageIgnoreTrivial = true
-  coverageCheckLineRate = 80
-  coverageCheckTotalBranchRate = 80
-  // TODO: enable when covered
-  // could use fine grained config with coverageCheckRegexes...
-//    coverageCheckHaltOnFailure = true
-  // TODO: define target branch rate
-//    coverageCheckBranchRate = 80
 }
 
 check.dependsOn tasks.cobertura

@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.perf.rewriter.mixins
 import android.app.Activity
 import android.webkit.WebChromeClient
 import com.android.volley.toolbox.HurlStack
-import com.rakuten.tech.mobile.perf.UnitSpec
 import com.rakuten.tech.mobile.perf.rewriter.bytecode.ByteCodeTestData
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassJar
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassProvider
@@ -16,13 +15,11 @@ import org.junit.runners.Parameterized.Parameters
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.tree.ClassNode
 
-import java.lang.reflect.Array
-
 import static com.rakuten.tech.mobile.perf.TestUtil.resourceFile
 import static com.rakuten.tech.mobile.perf.TestUtil.testLogger
 import static com.rakuten.tech.mobile.perf.rewriter.bytecode.ByteCodeUtils.*
 
-class MixinSpec extends UnitSpec {
+class MixinSpec {
 
   Mixin mixin
 
@@ -72,7 +69,7 @@ class MixinSpec extends UnitSpec {
   // ---- expected byte code weaving ----
 
   @RunWith(Parameterized)
-  static class ShouldMixin extends UnitSpec {
+  static class ShouldMixin {
     private Mixin mixin
     private ByteCodeTestData testData
 
@@ -117,7 +114,7 @@ class MixinSpec extends UnitSpec {
   // ---- expect no byte code weaving ----
 
   @RunWith(Parameterized)
-  static class ShouldNotMixin extends UnitSpec {
+  static class ShouldNotMixin {
     private Mixin mixin
     private List<ClassReader> testData
 
@@ -173,7 +170,7 @@ class MixinSpec extends UnitSpec {
   // ---- mixin matching with some real classes ----
 
   @RunWith(Parameterized)
-  static class MixinShouldMatch extends UnitSpec {
+  static class MixinShouldMatch {
     private Mixin mixin
     private List<Class> classesThatShouldMatch
     private List<Class> classesThatShouldNotMatch

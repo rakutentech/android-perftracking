@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.perf.rewriter.detours
 
-import com.rakuten.tech.mobile.perf.UnitSpec
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassJar
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassProvider
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassWriter
@@ -16,7 +15,7 @@ import static org.mockito.ArgumentMatchers.any
 import static org.mockito.ArgumentMatchers.eq
 import static org.mockito.Mockito.*
 
-public class DetourerSpec extends UnitSpec {
+public class DetourerSpec {
   Detourer detourer
 
   @Before void setUp() {

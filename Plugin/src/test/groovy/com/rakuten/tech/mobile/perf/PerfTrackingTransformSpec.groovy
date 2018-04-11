@@ -12,7 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
-public class PerfTrackingTransformSpec extends UnitSpec {
+public class PerfTrackingTransformSpec {
 
   // Mocks
   Context ctx
