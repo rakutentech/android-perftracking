@@ -50,7 +50,7 @@ allprojects { subproject ->
     tag {
       prefix = 'v'
       versionSeparator = ''
-      branchVersionIncrementer = [ 'feature/.*': 'incrementMinor' ] // increment minor version for new features
+      versionIncrementer 'incrementMinor'
     }
   }
   subproject.version = scmVersion.version

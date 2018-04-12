@@ -121,7 +121,9 @@ public class PerformanceTrackingRewriter implements Rewriter {
             outputMaker.add(name, cw.toByteArray());
 
           } catch (Throwable e) {
-            _log.error("Failed to rewrite class: " + name, e);
+            _log.lifecycle("Skipping rewriting class " + name +
+                ", run with --debug for more details");
+            _log.debug("Error encountered during rewriting:", e);
             outputMaker.add(name, temp);
           }
         } else {
