@@ -1,13 +1,7 @@
-apply plugin: 'com.android.library'
+apply from: '../config/android/library.gradle'
 
 android {
-  compileSdkVersion CONFIG.versions.android.sdk.compile
-  buildToolsVersion CONFIG.versions.android.tools
-
   defaultConfig {
-    minSdkVersion CONFIG.versions.android.sdk.min
-    targetSdkVersion CONFIG.versions.android.sdk.target
-    versionName project.version
     resValue 'string', 'perftracking__version', project.version
 
     def property = { name ->
@@ -16,21 +10,17 @@ android {
 
     buildConfigField("String", "DEFAULT_CONFIG_URL_PREFIX", "\"${property('DEFAULT_CONFIG_URL_PREFIX')}\"")
     buildConfigField("String", "DEFAULT_LOCATION_URL_PREFIX", "\"${property('DEFAULT_LOCATION_URL_PREFIX')}\"")
-  }
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_7
-    targetCompatibility JavaVersion.VERSION_1_7
-  }
-
-  defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
   }
 
   testOptions {
-    unitTests.all {
-      jacoco {
-        includeNoLocationClasses = true
+    unitTests{
+      includeAndroidResources = true
+      all {
+        jacoco {
+          includeNoLocationClasses = true
+        }
       }
     }
   }
@@ -49,23 +39,23 @@ android.libraryVariants.all {
 
 dependencies {
   copyJar project(':Core')
-  compile files("libs/Core-${project.version}.jar")
+  implementation files("libs/Core-${project.version}.jar")
 
-  compile "com.android.support:support-annotations:$CONFIG.versions.android.libraries.support"
-  compile "com.google.code.gson:gson:${CONFIG.versions.thirdParty.gson}"
-  compile "com.android.volley:volley:${CONFIG.versions.android.libraries.volley}"
+  api "com.android.support:support-annotations:$CONFIG.versions.android.libraries.support"
+  implementation "com.google.code.gson:gson:${CONFIG.versions.thirdParty.gson}"
+  implementation "com.android.volley:volley:${CONFIG.versions.android.libraries.volley}"
 
-  testCompile 'junit:junit:4.12'
-  testCompile 'org.assertj:assertj-core:2.6.0'
-  testCompile 'org.skyscreamer:jsonassert:1.2.3'
-  testCompile "org.mockito:mockito-core:2.7.22"
-  testCompile "org.robolectric:shadows-support-v4:3.3.2"
-  testCompile 'org.robolectric:shadows-httpclient:3.3.2'
-  testCompile('org.robolectric:robolectric:3.3.2') {
+  testImplementation 'junit:junit:4.12'
+  testImplementation 'org.assertj:assertj-core:2.6.0'
+  testImplementation 'org.skyscreamer:jsonassert:1.2.3'
+  testImplementation "org.mockito:mockito-core:2.7.22"
+  testImplementation "org.robolectric:shadows-support-v4:3.3.2"
+  testImplementation 'org.robolectric:shadows-httpclient:3.3.2'
+  testImplementation('org.robolectric:robolectric:3.3.2') {
     exclude group: 'commons-logging', module: 'commons-logging'
   }
-  testCompile 'org.robolectric:shadow-api:3.3.2'
-  testCompile 'com.squareup.okio:okio:1.12.0'
+  testImplementation 'org.robolectric:shadow-api:3.3.2'
+  testImplementation 'com.squareup.okio:okio:1.14.0'
 }
 
 apply from: "../config/quality/jacoco/android.gradle"
