@@ -12,7 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
-public class PerfTrackingTransformSpec {
+class PerfTrackingTransformSpec {
 
   // Mocks
   Context ctx
@@ -24,7 +24,8 @@ public class PerfTrackingTransformSpec {
 
   @Rule public final TemporaryFolder tempDir = new TemporaryFolder()
 
-  @Before public void setup() {
+  @Before
+  void setup() {
     def android = [
         bootClasspath    : [""],
         compileSdkVersion: "android-23"
@@ -53,7 +54,8 @@ public class PerfTrackingTransformSpec {
     ] as TransformOutputProvider
   }
 
-  @Test public void "should use performance tracking rewriter when enabled"() {
+  @Test
+  void "should use performance tracking rewriter when enabled"() {
     def (inputs, referenceInputs) = [[], []]
     transform.enableRewrite = true
 
@@ -62,7 +64,8 @@ public class PerfTrackingTransformSpec {
     assert transform.rewriter instanceof PerformanceTrackingRewriter
   }
 
-  @Test public void "should use dummy rewriter when disabled"() {
+  @Test
+  void "should use dummy rewriter when disabled"() {
     def (inputs, referenceInputs) = [[], []]
     transform.enableRewrite = false
 
@@ -71,7 +74,8 @@ public class PerfTrackingTransformSpec {
     assert transform.rewriter instanceof DummyRewriter
   }
 
-  @Test public void "should limit transformation scopes for apg 3"() {
+  @Test
+  void "should limit transformation scopes for apg 3"() {
     agp.version = '3.0.0'
 
     assert transform.getScopes().size() == 3
@@ -79,7 +83,8 @@ public class PerfTrackingTransformSpec {
     assert !transform.getScopes().contains(QualifiedContent.Scope.SUB_PROJECTS_LOCAL_DEPS)
   }
 
-  @Test public void "should announce all transformation scopes for apg 2"() {
+  @Test
+  void "should announce all transformation scopes for apg 2"() {
     agp.version = '2.3.3'
 
     assert transform.getScopes().size() == 5

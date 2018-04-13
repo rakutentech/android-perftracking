@@ -23,6 +23,7 @@ class ClassJarMakerSpec {
     jar.populate(resourceFile("usertestui.jar").absolutePath)
     jar.Close()
     ClassProvider classProvider = new ClassProvider(jarTemp.absolutePath)
+
     assert classProvider.getClass("com.rakuten.tech.mobile.perf.core.Sender")
   }
 
@@ -49,6 +50,7 @@ class ClassJarMakerSpec {
     jar.Close()
     ClassJar classJar = new ClassJar(jarTemp)
     ArrayList<String> arrayList = classJar.getClasses()
+
     assert arrayList.contains("com.rakuten.test")
   }
 

@@ -10,7 +10,7 @@ import static com.rakuten.tech.mobile.perf.TestUtil.*
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.when
 
-public class DetourLoaderSpec {
+class DetourLoaderSpec {
   DetourLoader detourLoader
 
   @Before void setUp() {

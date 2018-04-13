@@ -10,7 +10,7 @@ import static org.mockito.ArgumentMatchers.eq
 import static org.mockito.Mockito.mock
 import static org.mockito.Mockito.verify
 
-public class CallDetourSpec {
+class CallDetourSpec {
   CallDetour callDetour
 
   @Before void setUp() {
@@ -21,18 +21,15 @@ public class CallDetourSpec {
   void "should match if the input ownerClass or any of it's super classes is equal to the owner of the callDetour"() {
     callDetour.owner = "java.lang.Object"
 
-    boolean match = callDetour.matchOwner(null, String.class)
+    assert callDetour.matchOwner(null, String.class)
 
-    assert match
   }
 
   @Test
   void "should not match if the input ownerClass or any of it's super classes is not equal to the owner of the callDetour"() {
     callDetour.owner = "java.lang.Integer"
 
-    boolean match = callDetour.matchOwner(null, String.class)
-
-    assert !match
+    assert !callDetour.matchOwner(null, String.class)
   }
 
   @Test

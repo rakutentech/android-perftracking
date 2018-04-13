@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.MethodNode
 
 import static com.rakuten.tech.mobile.perf.TestUtil.*
 
-public class MixinLoaderSpec {
+class MixinLoaderSpec {
   MixinLoader mixinLoader
   ClassJar jar
   ClassNode classNode
@@ -19,13 +19,15 @@ public class MixinLoaderSpec {
   final String testFieldName = "testFieldName"
   final String testMethodName = "testMethodName"
 
-  @Before def void setup() {
+  @Before
+  void setup() {
     mixinLoader = new MixinLoader(testLogger())
     jar = new ClassJar(resourceFile("usertestui.jar"))
     classNode = jar.getClassNode("${mixinPkg}.VolleyHurlStackMixin")
   }
 
-  @Test def void "should create Mixin Object for classNode with MixSubclassOf annotation"() {
+  @Test
+  void "should create Mixin Object for classNode with MixSubclassOf annotation"() {
     classNode = jar.getClassNode("${mixinPkg}.ActivityMixin")
 
     String subClassName = mixinLoader.loadMixin(classNode).targetSubclassOf
@@ -33,7 +35,8 @@ public class MixinLoaderSpec {
     assert subClassName != null
   }
 
-  @Test def void "should create Mixin Object for classNode with MixImplementationOf annotation"() {
+  @Test
+  void "should create Mixin Object for classNode with MixImplementationOf annotation"() {
     classNode = jar.getClassNode("${mixinPkg}.AdapterViewOnItemClickListenerMixin")
 
     String targetImplementationName = mixinLoader.loadMixin(classNode).targetImplementationOf
@@ -41,14 +44,15 @@ public class MixinLoaderSpec {
     assert targetImplementationName != null
   }
 
-  @Test def void "should create Mixin Object for classNode with MixClass annotation"() {
+  @Test
+  void "should create Mixin Object for classNode with MixClass annotation"() {
     String className = mixinLoader.loadMixin(classNode).mixinClass
 
     assert className != null
   }
 
   @Test
-  def void "should create a mixin object with fields if the ClassNode contains visible annotations, but exclude null AnnotationNode"() {
+  void "should create a mixin object with fields if the ClassNode contains visible annotations, but exclude null AnnotationNode"() {
     classNode.fields = [createFieldNode(testFieldName, [new AnnotationNode(addFieldAnnotationDec)], null),
                         createFieldNode(null, null, null)]
 
@@ -59,7 +63,7 @@ public class MixinLoaderSpec {
   }
 
   @Test
-  def void "should create a mixin object with fields if the ClassNode contains invisible annotation, but exclude null AnnotationNode"() {
+  void "should create a mixin object with fields if the ClassNode contains invisible annotation, but exclude null AnnotationNode"() {
     classNode.fields = [createFieldNode(testFieldName, null, [new AnnotationNode(addFieldAnnotationDec)]),
                         createFieldNode(null, null, null)]
 
@@ -70,7 +74,7 @@ public class MixinLoaderSpec {
   }
 
   @Test
-  def void "should create a mixin object with fields if the ClassNode contains visible annotations, but exclude empty AnnotationNodeList"() {
+  void "should create a mixin object with fields if the ClassNode contains visible annotations, but exclude empty AnnotationNodeList"() {
     classNode.fields = [createFieldNode(testFieldName, [new AnnotationNode(addFieldAnnotationDec)], null),
                         createFieldNode(null, [], null)]
 
@@ -81,7 +85,7 @@ public class MixinLoaderSpec {
   }
 
   @Test
-  def void "should create a mixin object with fields if the ClassNode contains invisible annotation, but exclude empty AnnotationNodeList"() {
+  void "should create a mixin object with fields if the ClassNode contains invisible annotation, but exclude empty AnnotationNodeList"() {
     classNode.fields = [
         createFieldNode(testFieldName, null, [new AnnotationNode(addFieldAnnotationDec)]),
         createFieldNode(null, null, [])
@@ -94,7 +98,7 @@ public class MixinLoaderSpec {
   }
 
   @Test
-  def void "should create a mixin object with methods if the ClassNode contains visible annotations, but exclude null AnnotationNode"() {
+  void "should create a mixin object with methods if the ClassNode contains visible annotations, but exclude null AnnotationNode"() {
     classNode.methods = [
         createMethodNode(testMethodName, [new AnnotationNode(replaceMethodAnnotationDec)], null),
         createMethodNode(null, null, null)
@@ -106,7 +110,7 @@ public class MixinLoaderSpec {
   }
 
   @Test
-  def void "should create a mixin object with methods if the ClassNode contains invisible annotation, but exclude null AnnotationNode"() {
+  void "should create a mixin object with methods if the ClassNode contains invisible annotation, but exclude null AnnotationNode"() {
     classNode.methods = [
         createMethodNode(testMethodName, null, [new AnnotationNode(replaceMethodAnnotationDec)]),
         createMethodNode(null, null, null)
@@ -118,7 +122,7 @@ public class MixinLoaderSpec {
   }
 
   @Test
-  def void "should create a mixin object with methods if the ClassNode contains visible annotations, but exclude empty AnnotationNodeList"() {
+  void "should create a mixin object with methods if the ClassNode contains visible annotations, but exclude empty AnnotationNodeList"() {
     classNode.methods = [
         createMethodNode(testMethodName, [new AnnotationNode(replaceMethodAnnotationDec)], null),
         createMethodNode(null, [], null)
@@ -130,7 +134,7 @@ public class MixinLoaderSpec {
   }
 
   @Test
-  def void "should create a mixin object with methods if the ClassNode contains invisible annotation, but exclude empty AnnotationNodeList"() {
+  void "should create a mixin object with methods if the ClassNode contains invisible annotation, but exclude empty AnnotationNodeList"() {
     classNode.methods = [
         createMethodNode(testMethodName, null, [new AnnotationNode(replaceMethodAnnotationDec)]),
         createMethodNode(null, null, [])
