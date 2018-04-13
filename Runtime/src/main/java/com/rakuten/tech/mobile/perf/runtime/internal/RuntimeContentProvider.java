@@ -107,6 +107,7 @@ public class RuntimeContentProvider extends ContentProvider {
       } catch (PackageManager.NameNotFoundException | NullPointerException e) {
         config.debug = false;
       }
+      config.enableNonMetricMeasurement = lastConfig.shouldEnableNonMetricMeasurement();
       config.eventHubUrl = lastConfig.getSendUrl();
       config.header = lastConfig.getHeader();
     }

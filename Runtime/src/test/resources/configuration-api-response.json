@@ -1,5 +1,6 @@
 {
   "enablePercent": 100,
+  "enableNonMetricMeasurement": true,
   "sendHeaders": {
     "Authorization": "SharedAccessSignature sr=AAAA&sig=YNu53ea4ueo2u324Fdy414mRM3F1s&se=151333345&skn=SendOnly",
     "BrokerProperties": "{\"PartitionKey\": \"com.rakuten.tech.mobile.perf.example/1.0.0\"}",

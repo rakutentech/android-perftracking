@@ -15,6 +15,8 @@ class ConfigurationResult implements Parcelable {
 
   @SerializedName("enablePercent")
   private double enablePercent;
+  @SerializedName("enableNonMetricMeasurement")
+  private boolean enableNonMetricMeasurement;
   @SerializedName("sendUrl")
   private String sendUrl;
   @SerializedName("sendHeaders")
@@ -22,6 +24,7 @@ class ConfigurationResult implements Parcelable {
 
   private ConfigurationResult(Parcel in) {
     enablePercent = in.readDouble();
+    enableNonMetricMeasurement = in.readByte() == 1;
     sendUrl = in.readString();
     Bundle bundle = in.readBundle();
     header = new HashMap<>();
@@ -33,6 +36,7 @@ class ConfigurationResult implements Parcelable {
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeDouble(enablePercent);
+    dest.writeByte((byte) (enableNonMetricMeasurement ? 1 : 0));
     dest.writeString(sendUrl);
     Bundle bundle = new Bundle();
     for (String key : header.keySet()) {
@@ -60,6 +64,10 @@ class ConfigurationResult implements Parcelable {
 
   double getEnablePercent() {
     return enablePercent;
+  }
+
+  boolean shouldEnableNonMetricMeasurement() {
+    return enableNonMetricMeasurement;
   }
 
   String getSendUrl() {
