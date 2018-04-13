@@ -5,7 +5,6 @@ import android.webkit.WebChromeClient
 import com.android.volley.toolbox.HurlStack
 import com.rakuten.tech.mobile.perf.rewriter.bytecode.ByteCodeTestData
 import com.rakuten.tech.mobile.perf.rewriter.classes.ClassJar
-import com.rakuten.tech.mobile.perf.rewriter.classes.ClassProvider
 import com.rakuten.tech.mobile.perf.testdata.mixins.*
 import org.junit.Before
 import org.junit.Test
@@ -239,16 +238,5 @@ class MixinSpec {
     ClassNode mixinClassNode = new ClassJar(resourceFile("Core.jar")).getClassNode(
         "com.rakuten.tech.mobile.perf.core.mixins.$mixinClassName")
     new MixinLoader(testLogger()).loadMixin(mixinClassNode)
-  }
-
-  /**
-   * Load a class object from a jar that's in test resources
-   * @param className fully qualified class name
-   * @param jarName jar name
-   * @return class object
-   */
-  static Class loadClassFromJar(String className, String jarName) {
-    ClassProvider provider = new ClassProvider(resourceFile(jarName).absolutePath)
-    provider.getClass(className)
   }
 }

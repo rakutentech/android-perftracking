@@ -16,21 +16,23 @@ import static com.rakuten.tech.mobile.perf.TestUtil.*
 import static org.mockito.ArgumentMatchers.*
 import static org.mockito.Mockito.*
 
-public class MixinMethodSpec {
+class MixinMethodSpec {
 
   ClassJar jar
   ClassProvider provider
   MixinLoader mixinLoader
   ClassWriter writer
 
-  @Before def void setup() {
+  @Before
+  void setup() {
     jar = new ClassJar(resourceFile("usertestui.jar"))
     provider = new ClassProvider(resourceFile("usertestui.jar").absolutePath)
     mixinLoader = new MixinLoader(testLogger())
-    writer = new ClassWriter(provider, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+    writer = new ClassWriter(provider, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES)
   }
 
-  @Test def void "should invoke visit method on the provided class parameters"() {
+  @Test
+  void "should invoke visit method on the provided class parameters"() {
     def mixinName = "${mixinPkg}.AdapterViewOnItemClickListenerMixin"
     Mixin mixin = mixinLoader.loadMixin(jar.getClassNode(mixinName))
     ClassVisitor visitorMock = spy(mixin.rewrite(writer))
@@ -44,7 +46,7 @@ public class MixinMethodSpec {
   }
 
   @Test
-  def void "should invoke visit method on the provided class parameters, and visit instance fields if exists withing the method"() {
+  void "should invoke visit method on the provided class parameters, and visit instance fields if exists withing the method"() {
     def mixinName = "${mixinPkg}.ActivityMixin"
     Mixin mixin = mixinLoader.loadMixin(jar.getClassNode(mixinName))
     ClassVisitor visitorMock = spy(mixin.rewrite(writer))
@@ -58,7 +60,7 @@ public class MixinMethodSpec {
   }
 
   @Test
-  def void "Should call add method of MixinField class, If any Field Node exists in input classNode"() {
+  void "Should call add method of MixinField class, If any Field Node exists in input classNode"() {
     ClassNode classNode = jar.getClassNode("${mixinPkg}.VolleyHurlStackMixin")
     classNode.fields = [
         createFieldNode("testMethodName", Type.OBJECT, [

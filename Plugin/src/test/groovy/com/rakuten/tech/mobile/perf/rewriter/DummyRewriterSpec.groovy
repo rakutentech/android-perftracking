@@ -9,12 +9,13 @@ import org.objectweb.asm.tree.ClassNode
 
 import static com.rakuten.tech.mobile.perf.TestUtil.resourceFile
 
-public class DummyRewriterSpec {
+class DummyRewriterSpec {
   @Rule public final TemporaryFolder projectDir = new TemporaryFolder()
   DummyRewriter dummyRewriter
 
-  @Before def void setup() {
-    dummyRewriter = new DummyRewriter();
+  @Before
+  void setup() {
+    dummyRewriter = new DummyRewriter()
     dummyRewriter.compileSdkVersion = "android-23"
     dummyRewriter.classpath = resourceFile("android23.jar").absolutePath
     dummyRewriter.input = resourceFile("usertestui.jar").absolutePath
@@ -23,10 +24,10 @@ public class DummyRewriterSpec {
   }
 
   @Test
-  def void "should copy the content of input jar file to output jar file with out transformation"() {
+  void "should copy the content of input jar file to output jar file with out transformation"() {
     dummyRewriter.rewrite()
 
-    ClassJar temp = new ClassJar(new File(dummyRewriter.outputJar));
+    ClassJar temp = new ClassJar(new File(dummyRewriter.outputJar))
     ClassNode classNode = temp.getClassNode("jp.co.rakuten.sdtd.user.ui.BaseActivity")
     def instrumentedMethod = classNode.methods.find {
       it.name == "com_rakuten_tech_mobile_perf_onCreate"
@@ -35,12 +36,12 @@ public class DummyRewriterSpec {
   }
 
   @Test
-  def void "should rewrite AppPerformanceConfig class, set enable value to false and add to output JAR"() {
+  void "should rewrite AppPerformanceConfig class, set enable value to false and add to output JAR"() {
     dummyRewriter.input = resourceFile("TestAppPerformanceConfig.jar").absolutePath
 
     dummyRewriter.rewrite()
 
-    ClassJar temp = new ClassJar(new File(dummyRewriter.outputJar));
+    ClassJar temp = new ClassJar(new File(dummyRewriter.outputJar))
     assert temp.hasClass("com.rakuten.tech.mobile.perf.runtime.internal.AppPerformanceConfig")
     ClassNode classNode = temp.getClassNode("com.rakuten.tech.mobile.perf.runtime.internal.AppPerformanceConfig")
     assert classNode.fields.size() > 0

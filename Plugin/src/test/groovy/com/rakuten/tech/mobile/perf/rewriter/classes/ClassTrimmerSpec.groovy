@@ -42,7 +42,9 @@ class ClassTrimmerSpec {
     ClassJar classJar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = classJar.getClassNode("com.rakuten.tech.mobile.perf.core.base.FragmentBase")
     int originalMethodSize = classNode.methods.size()
+
     classTrimmer.trim(classNode)
+
     assert classNode.methods.size() != originalMethodSize
   }
 
@@ -50,7 +52,9 @@ class ClassTrimmerSpec {
     ClassJar classJar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = classJar.getClassNode("com.rakuten.tech.mobile.perf.core.base.WebChromeClientBase")
     int originalMethodSize = classNode.methods.size()
+
     classTrimmer.trim(classNode)
+
     assert classNode.methods.size() == originalMethodSize
   }
 
@@ -58,7 +62,9 @@ class ClassTrimmerSpec {
     ClassJar classJar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = classJar.getClassNode("com.rakuten.tech.mobile.perf.core.base.SupportV4FragmentBase")
     int originalMethodSize = classNode.methods.size()
+
     classTrimmer.trim(classNode)
+
     assert classNode.methods.size() != originalMethodSize
   }
 }
