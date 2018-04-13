@@ -58,15 +58,17 @@ dependencies {
   testImplementation 'com.squareup.okio:okio:1.14.0'
 }
 
-apply from: "../config/quality/jacoco/android.gradle"
-apply from: "../config/quality/checkstyle/android.gradle"
-apply from: "../config/quality/pmd/android.gradle"
+apply from: "../config/quality/android.gradle"
 
-checkstyle { // TODO: fix all findbugs warnings
+checkstyle { // TODO: fix all warnings
   ignoreFailures = true
 }
 
-pmd { // TODO: fix all findbugs warnings
+pmd { // TODO: fix all warnings
+  ignoreFailures = true
+}
+
+findbugs { // TODO: fix all warnings
   ignoreFailures = true
 }
 
