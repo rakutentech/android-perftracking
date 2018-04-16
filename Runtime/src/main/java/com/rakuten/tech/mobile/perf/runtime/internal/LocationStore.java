@@ -62,6 +62,7 @@ class LocationStore extends Store<LocationData> {
 
   @SuppressWarnings("FieldCanBeLocal")
   private final Runnable periodicLocationCheck = new Runnable() {
+    @Override
     public void run() {
       if (Tracker.isTrackerRunning()) {
         handler.postDelayed(this, TIME_INTERVAL);

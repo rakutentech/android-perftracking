@@ -10,21 +10,26 @@ public class MockTracker extends TrackerImpl {
     super(measurementBuffer, current, debug, shouldEnableNonMetricMeasurement);
   }
 
+  @Override
   public void startMetric(String metricId) {
   }
 
+  @Override
   public void prolongMetric() {
   }
 
+  @Override
   public void endMetric() {
   }
 
+  @Override
   public void endMethod(int trackingId) {
   }
 
   public void endUrl(int trackingId) {
   }
 
+  @Override
   public void endCustom(int trackingId) {
   }
 
@@ -33,14 +38,17 @@ public class MockTracker extends TrackerImpl {
 
   private int count = 0;
 
+  @Override
   public int startMethod(Object object, String method) {
     return count++;
   }
 
+  @Override
   public int startUrl(Object url, String verb) {
     return count++;
   }
 
+  @Override
   public int startCustom(String measurementId) {
     return count++;
   }

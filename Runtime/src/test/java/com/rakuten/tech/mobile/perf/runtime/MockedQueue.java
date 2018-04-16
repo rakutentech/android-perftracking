@@ -357,7 +357,7 @@ public class MockedQueue extends RequestQueue {
    * Checks if there is a appropriate response set up for the request. If found, the response will be pushed to the request and the
    * response will be removed from {@link #rules}. Otherwise, a {@link TimeoutError} will be delivered as response.
    */
-  private synchronized void processRequest(Request request) {
+  private synchronized void processRequest(Request<?> request) {
     // look for a suitable response
     for (Rule rule : rules) {
       if (rule.apply(request)) {

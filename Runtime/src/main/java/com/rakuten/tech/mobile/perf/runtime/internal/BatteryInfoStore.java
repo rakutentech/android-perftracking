@@ -28,6 +28,7 @@ class BatteryInfoStore extends Store<Float> {
   BatteryInfoStore(Context context) {
 
     context.registerReceiver(new BroadcastReceiver() {
+      @Override
       public void onReceive(Context c, Intent i) {
 
         int level = i.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);

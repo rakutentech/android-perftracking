@@ -72,6 +72,7 @@ class ConfigStore extends Store<ConfigurationResult> {
 
   @SuppressWarnings("FieldCanBeLocal")
   private final Runnable periodicCheck = new Runnable() {
+    @Override
     public void run() {
       if (Tracker.isTrackerRunning()) {
         handler.postDelayed(this, TIME_INTERVAL);

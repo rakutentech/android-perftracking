@@ -10,10 +10,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -104,8 +104,7 @@ public class BaseRequestTest extends RobolectricUnitSpec {
   }
 
   @Test
-  public void parseNetworkResponse_successResponse()
-      throws UnsupportedEncodingException, ExecutionException, InterruptedException {
+  public void parseNetworkResponse_successResponse() {
     Response<String> actual = request.parseNetworkResponse(createResponse("hello world"));
     assertThat(actual.result).isEqualTo("hello world");
     assertThat(actual.error).isNull();
@@ -114,8 +113,7 @@ public class BaseRequestTest extends RobolectricUnitSpec {
   }
 
   @Test
-  public void parseNetworkResponse_errorResponse()
-      throws UnsupportedEncodingException, ExecutionException, InterruptedException {
+  public void parseNetworkResponse_errorResponse() {
     request.mThrowException = true;
     Response<String> actual = request.parseNetworkResponse(createResponse("hello world"));
     assertThat(actual.result).isNull();
@@ -126,13 +124,13 @@ public class BaseRequestTest extends RobolectricUnitSpec {
 
   @Test
   public void parseNetworkResponse_withHeaderCachingInstruction()
-      throws UnsupportedEncodingException, ExecutionException, InterruptedException {
+      throws UnsupportedEncodingException {
     Map<String, String> headers = new HashMap<>();
     headers.put("Cache-Control", "max-age=1"); // 1sec
-    NetworkResponse response = new NetworkResponse(200, "hello world".getBytes(), headers, false);
+    NetworkResponse response = new NetworkResponse(200, "hello world".getBytes("utf-8"), headers, false);
     Response<String> actual = request.parseNetworkResponse(response);
     assertThat(actual.cacheEntry).isNotNull();
-    assertThat(actual.cacheEntry.data).isEqualTo("hello world".getBytes());
+    assertThat(actual.cacheEntry.data).isEqualTo("hello world".getBytes(Charset.forName("utf-8")));
     assertThat(actual.cacheEntry.etag).isNull();
     assertThat(actual.cacheEntry.responseHeaders).hasSize(1);
     assertThat(actual.cacheEntry.ttl).isGreaterThan(System.currentTimeMillis());
@@ -140,10 +138,10 @@ public class BaseRequestTest extends RobolectricUnitSpec {
   }
 
   private NetworkResponse createResponse(String text) {
-    return new NetworkResponse(200, text.getBytes(), Collections.<String, String>emptyMap(), false);
+    return new NetworkResponse(200, text.getBytes(Charset.forName("utf-8")), Collections.<String, String>emptyMap(), false);
   }
 
-  private class TestRequest extends BaseRequest<String> {
+  private static class TestRequest extends BaseRequest<String> {
 
     private boolean mThrowException = false;
 

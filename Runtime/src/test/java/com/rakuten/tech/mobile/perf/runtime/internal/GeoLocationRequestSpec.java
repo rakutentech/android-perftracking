@@ -51,8 +51,7 @@ public class GeoLocationRequestSpec extends RobolectricUnitSpec {
     GeoLocationRequest request = new GeoLocationRequest(null, "", null, null);
     GeoLocationResult response = request.parseResponse(data.content);
     assertThat(response).isNotNull();
-    assertThat(response.getRegionName().equals("Tokyo"));
-
+    assertThat(response.getRegionName()).isEqualTo("Tokyo");
   }
 
   @Test(expected = VolleyError.class)

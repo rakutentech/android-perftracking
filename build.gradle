@@ -61,6 +61,12 @@ allprojects { subproject ->
     maven { url 'https://maven.google.com' }
     jcenter()
   }
+
+  gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+      options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-Xlint" << "-Xmaxwarns" << "1000" << "-Xmaxerrs" << "1000"
+    }
+  }
 }
 
 task ensurePreRelease {
