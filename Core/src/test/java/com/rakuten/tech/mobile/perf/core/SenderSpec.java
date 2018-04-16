@@ -20,9 +20,9 @@ import org.mockito.MockitoAnnotations;
 
 public class SenderSpec {
 
-  private Sender sender;
-  private MeasurementBuffer measurementBuffer;
-  private Current current;
+  Sender sender;
+  MeasurementBuffer measurementBuffer;
+  Current current;
   @Mock EventWriter eventWriter;
 
   @Before public void init() {
@@ -32,184 +32,200 @@ public class SenderSpec {
     sender = new Sender(measurementBuffer, current, eventWriter, new Debug(), true);
   }
 
-  @Test public void shouldSendMeasurements() throws IOException {
-    setUpCustomMeasurements(measurementBuffer, 10);
-    sender.send(0);
-    ArgumentCaptor<Measurement> captor = ArgumentCaptor.forClass(Measurement.class);
-    verify(eventWriter, times(1)).begin();
-    verify(eventWriter, times(10)).write(captor.capture(), (String) isNull());
-    for (Measurement measurement : captor.getAllValues()) {
-      assertThat(measurement.a).isNull();// as measurements are cleared once sent.
-    }
-    verify(eventWriter, times(1)).end();
-  }
-
-  @Test public void shouldNotFailSendingMeasurementWhenDebugIsNull() throws IOException {
-    sender = new Sender(measurementBuffer, current, eventWriter, null, true);
-    setUpCustomMeasurements(measurementBuffer, 10);
-    sender.send(0);
-    verify(eventWriter, times(1)).begin();
-    verify(eventWriter, times(10)).write(any(Measurement.class), (String) isNull());
-    verify(eventWriter, times(1)).end();
-  }
-
-  @Test public void shouldSendMetric() throws IOException {
-    setUp10CustomMetric(measurementBuffer);
-    sender.send(0);
-    ArgumentCaptor<Metric> captor = ArgumentCaptor.forClass(Metric.class);
-    verify(eventWriter, times(1)).begin();
-    verify(eventWriter, times(9)).write(captor.capture());
-    for (Metric metric : captor.getAllValues()) {
-      assertThat(metric.id).isEqualTo("custom-metric");
-    }
-    verify(eventWriter, times(1)).end();
-  }
-
-  @Test public void shouldNotFailSendingMetricWhenDebugIsNull() throws IOException {
-    sender = new Sender(measurementBuffer, current, eventWriter, null, true);
-    setUp10CustomMetric(measurementBuffer);
-    sender.send(0);
-    verify(eventWriter, times(1)).begin();
-    verify(eventWriter, times(9)).write(any(Metric.class));
-    verify(eventWriter, times(1)).end();
-  }
-
-  @Test public void shouldSendMetricWithNegativeBuffer() throws IOException {
-    setUp10CustomMetric(measurementBuffer);
-    measurementBuffer.nextTrackingId.set(-5);
-    sender.send(0);
-    verify(eventWriter, times(1)).begin();
-    verify(eventWriter, times(9)).write(any(Metric.class));
-    verify(eventWriter, times(1)).end();
-  }
-
-  @Test public void shouldNotSendMetricBufferSizeGreaterThenMax() throws IOException {
-    setUp10CustomMetric(measurementBuffer);
-    measurementBuffer.nextTrackingId.set(513);
-    sender.send(513);
-    verify(eventWriter, never()).begin();
-    verify(eventWriter, never()).write(any(Measurement.class), (String) any());
-    verify(eventWriter, never()).write(any(Metric.class));
-    verify(eventWriter, never()).end();
-
-  }
-
-  @Test public void shouldSendMeasurementsGreaterEndTime() throws IOException {
-    setUp10CustomMeasurementLesserEndTime(measurementBuffer);
-    sender.send(0);
-    verify(eventWriter, never()).begin();
-    verify(eventWriter, never()).write(any(Measurement.class), (String) any());
-    verify(eventWriter, never()).write(any(Metric.class));
-    verify(eventWriter, never()).end();
-  }
-
-  @Test public void shouldNotSendMeasurementsAndMetric() throws IOException {
-    setUp10CustomMeasurementAndMetricLesserEndTime(measurementBuffer);
-    current.metric.set((Metric) measurementBuffer.at[3].a);
-    sender.send(0);
-    verify(eventWriter, times(1)).begin();
-    verify(eventWriter, times(1)).write(any(Measurement.class), (String) isNotNull());
-    verify(eventWriter, times(1)).end();
-  }
-
-  @Test public void shouldNotSendMetricLesserThanMaxTime() throws IOException {
-    setUp10CustomMetricLesserThanMaxTime(measurementBuffer);
-    current.metric.set((Metric) measurementBuffer.at[3].a);
-    sender.send(0);
-    verify(eventWriter, never()).begin();
-    verify(eventWriter, never()).write(any(Measurement.class), (String) any());
-    verify(eventWriter, never()).write(any(Metric.class));
-    verify(eventWriter, never()).end();
-  }
-
-  @Test public void shouldNotSendMeasurementsLesserThanMaxTime() throws IOException {
-    setUp10CustomMeasurementLesserThanMaxTime(measurementBuffer);
-    sender.send(0);
-    verify(eventWriter, never()).begin();
-    verify(eventWriter, never()).write(any(Measurement.class), (String) any());
-    verify(eventWriter, never()).write(any(Metric.class));
-    verify(eventWriter, never()).end();
-  }
-
-  @Test public void shouldOnlySendWithAtLeast10EntriesInTheBuffer() throws IOException {
-    setUpCustomMeasurements(measurementBuffer, 8);
-    int startIndex = 0;
-    int nextStartIndex = sender.send(startIndex);
-    assertThat(nextStartIndex).isEqualTo(startIndex);
-    verify(eventWriter, never()).begin();
-
-    setUpCustomMeasurements(measurementBuffer, 2);
-    nextStartIndex = sender.send(startIndex);
-    assertThat(nextStartIndex).isGreaterThan(startIndex);
-    verify(eventWriter).begin();
-    verify(eventWriter, atLeastOnce()).write(any(Measurement.class), (String) any());
-    verify(eventWriter).end();
-  }
-
-  @Test public void shouldSendIfBufferIsFull() throws IOException {
-    setUp10CustomMetric(measurementBuffer);
-    int startIndex = 0;
-    startIndex = sender.send(startIndex);
-    setupFullBuffer(measurementBuffer);
-    clearInvocations(eventWriter);
-
-    sender.send(startIndex);
-
-    verify(eventWriter).begin();
-    verify(eventWriter, times(MeasurementBuffer.SIZE))
-        .write(any(Measurement.class), (String) any());
-    verify(eventWriter).end();
-  }
-
-  @Test public void shouldReturnNextStartIndex() throws IOException {
-    setUp10CustomMetric(measurementBuffer);
-    int startIndex = 0;
-    int nextStartIndex = sender.send(startIndex);
-
-    clearInvocations(eventWriter);
-
-    setUp10CustomMetric(measurementBuffer);
-
-    for (int i = startIndex; i < nextStartIndex; i++) { // all previous measurement are cleared
-      assertThat(measurementBuffer.at[i]).is(cleared());
-    }
-    for (int i = nextStartIndex; i < measurementBuffer.nextTrackingId.get(); i++) {
-      assertThat(measurementBuffer.at[i]).isNot(cleared()); // new measurements
+  public static class FullSendingBehaviorSpec extends SenderSpec {
+    @Before public void initSender() {
+      sender = new Sender(measurementBuffer, current, eventWriter, new Debug(), true);
     }
 
-    sender.send(nextStartIndex);
+    @Test public void shouldSendMeasurements() throws IOException {
+      setUpCustomMeasurements(measurementBuffer, 10);
+      sender.send(0);
+      ArgumentCaptor<Measurement> captor = ArgumentCaptor.forClass(Measurement.class);
+      verify(eventWriter, times(1)).begin();
+      verify(eventWriter, times(10)).write(captor.capture(), (String) isNull());
+      for (Measurement measurement : captor.getAllValues()) {
+        assertThat(measurement.a).isNull();// as measurements are cleared once sent.
+      }
+      verify(eventWriter, times(1)).end();
+    }
 
-    verify(eventWriter).begin();
-    verify(eventWriter, times(10)).write(any(Metric.class));
-    verify(eventWriter).end();
+    @Test public void shouldSendMetric() throws IOException {
+      setUpCustomMetrics(measurementBuffer, 10);
+      sender.send(0);
+      ArgumentCaptor<Metric> captor = ArgumentCaptor.forClass(Metric.class);
+      verify(eventWriter, times(1)).begin();
+      verify(eventWriter, times(9)).write(captor.capture());
+      for (Metric metric : captor.getAllValues()) {
+        assertThat(metric.id).isEqualTo("custom-metric");
+      }
+      verify(eventWriter, times(1)).end();
+    }
 
-    for (int i = startIndex; i < measurementBuffer.nextTrackingId.get(); i++) {
-      assertThat(measurementBuffer.at[i]).is(cleared()); // all previous measurement are cleared
+    @Test public void shouldSendMetricWithNegativeBuffer() throws IOException {
+      setUpCustomMetrics(measurementBuffer, 10);
+      measurementBuffer.nextTrackingId.set(-5);
+      sender.send(0);
+      verify(eventWriter, times(1)).begin();
+      verify(eventWriter, times(9)).write(any(Metric.class));
+      verify(eventWriter, times(1)).end();
+    }
+
+    @Test public void shouldNotSendMetricBufferSizeGreaterThenMax() throws IOException {
+      setUpCustomMetrics(measurementBuffer, 10);
+      measurementBuffer.nextTrackingId.set(513);
+      sender.send(513);
+      verify(eventWriter, never()).begin();
+      verify(eventWriter, never()).write(any(Measurement.class), (String) any());
+      verify(eventWriter, never()).write(any(Metric.class));
+      verify(eventWriter, never()).end();
+
+    }
+
+    @Test public void shouldSendMeasurementsGreaterEndTime() throws IOException {
+      setUp10CustomMeasurementLesserEndTime(measurementBuffer);
+      sender.send(0);
+      verify(eventWriter, never()).begin();
+      verify(eventWriter, never()).write(any(Measurement.class), (String) any());
+      verify(eventWriter, never()).write(any(Metric.class));
+      verify(eventWriter, never()).end();
+    }
+
+    @Test public void shouldNotSendMeasurementsAndMetric() throws IOException {
+      setUp10CustomMeasurementAndMetricLesserEndTime(measurementBuffer);
+      current.metric.set((Metric) measurementBuffer.at[3].a);
+      sender.send(0);
+      verify(eventWriter, times(1)).begin();
+      verify(eventWriter, times(1)).write(any(Measurement.class), (String) isNotNull());
+      verify(eventWriter, times(1)).end();
+    }
+
+    @Test public void shouldNotSendMetricLesserThanMaxTime() throws IOException {
+      setUp10CustomMetricLesserThanMaxTime(measurementBuffer);
+      current.metric.set((Metric) measurementBuffer.at[3].a);
+      sender.send(0);
+      verify(eventWriter, never()).begin();
+      verify(eventWriter, never()).write(any(Measurement.class), (String) any());
+      verify(eventWriter, never()).write(any(Metric.class));
+      verify(eventWriter, never()).end();
+    }
+
+    @Test public void shouldNotSendMeasurementsLesserThanMaxTime() throws IOException {
+      setUp10CustomMeasurementLesserThanMaxTime(measurementBuffer);
+      sender.send(0);
+      verify(eventWriter, never()).begin();
+      verify(eventWriter, never()).write(any(Measurement.class), (String) any());
+      verify(eventWriter, never()).write(any(Metric.class));
+      verify(eventWriter, never()).end();
+    }
+
+    @Test public void shouldOnlySendWithAtLeast10EntriesInTheBuffer() throws IOException {
+      setUpCustomMeasurements(measurementBuffer, 8);
+      int startIndex = 0;
+      int nextStartIndex = sender.send(startIndex);
+      assertThat(nextStartIndex).isEqualTo(startIndex);
+      verify(eventWriter, never()).begin();
+
+      setUpCustomMeasurements(measurementBuffer, 2);
+      nextStartIndex = sender.send(startIndex);
+      assertThat(nextStartIndex).isGreaterThan(startIndex);
+      verify(eventWriter).begin();
+      verify(eventWriter, atLeastOnce()).write(any(Measurement.class), (String) any());
+      verify(eventWriter).end();
+    }
+
+    @Test public void shouldSendIfBufferIsFull() throws IOException {
+      setUpCustomMetrics(measurementBuffer, 10);
+      int startIndex = 0;
+      startIndex = sender.send(startIndex);
+      setupFullBuffer(measurementBuffer);
+      clearInvocations(eventWriter);
+
+      sender.send(startIndex);
+
+      verify(eventWriter).begin();
+      verify(eventWriter, times(MeasurementBuffer.SIZE))
+          .write(any(Measurement.class), (String) any());
+      verify(eventWriter).end();
+    }
+
+    @Test public void shouldReturnNextStartIndex() throws IOException {
+      setUpCustomMetrics(measurementBuffer, 10);
+      int startIndex = 0;
+      int nextStartIndex = sender.send(startIndex);
+
+      clearInvocations(eventWriter);
+
+      setUpCustomMetrics(measurementBuffer, 10);
+
+      for (int i = startIndex; i < nextStartIndex; i++) { // all previous measurement are cleared
+        assertThat(measurementBuffer.at[i]).is(cleared());
+      }
+      for (int i = nextStartIndex; i < measurementBuffer.nextTrackingId.get(); i++) {
+        assertThat(measurementBuffer.at[i]).isNot(cleared()); // new measurements
+      }
+
+      sender.send(nextStartIndex);
+
+      verify(eventWriter).begin();
+      verify(eventWriter, times(10)).write(any(Metric.class));
+      verify(eventWriter).end();
+
+      for (int i = startIndex; i < measurementBuffer.nextTrackingId.get(); i++) {
+        assertThat(measurementBuffer.at[i]).is(cleared()); // all previous measurement are cleared
+      }
     }
   }
 
-  @Test public void shouldNotSendMeasurementsWithoutAMetricWhenNonMetricMeasurementsDisabled() throws IOException {
-    sender = new Sender(measurementBuffer, current, eventWriter, new Debug(), false);
-    setUpCustomMeasurements(measurementBuffer, 10);
+  public static class DebugIsNullSendingBehaviorSpec extends SenderSpec {
+    @Before public void initSender() {
+      sender = new Sender(measurementBuffer, current, eventWriter, null, true);
+    }
 
-    sender.send(0);
+    @Test public void shouldNotFailSendingMeasurement() throws IOException {
+      setUpCustomMeasurements(measurementBuffer, 10);
+      sender.send(0);
+      verify(eventWriter, times(1)).begin();
+      verify(eventWriter, times(10)).write(any(Measurement.class), (String) isNull());
+      verify(eventWriter, times(1)).end();
+    }
 
-    verify(eventWriter, never()).begin();
+
+    @Test public void shouldNotFailSendingMetric() throws IOException {
+      setUpCustomMetrics(measurementBuffer, 10);
+      sender.send(0);
+      verify(eventWriter, times(1)).begin();
+      verify(eventWriter, times(9)).write(any(Metric.class));
+      verify(eventWriter, times(1)).end();
+    }
   }
 
-  @Test public void shouldSendMeasurementsWithAMetricWhenNonMetricMeasurementsDisabled() throws IOException {
-    sender = new Sender(measurementBuffer, current, eventWriter, new Debug(), false);
-    setUp10CustomMetric(measurementBuffer);
-    setUpCustomMeasurements(measurementBuffer, 10);
+  public static class DisabledSendingMeasurementsWithoutMetricBehaviorSpec extends SenderSpec {
+    @Before
+    public void initSender() {
+      sender = new Sender(measurementBuffer, current, eventWriter, new Debug(), false);
+    }
 
-    sender.send(0);
+    @Test public void shouldNotSendMeasurementsWithoutAMetric() throws IOException {
+      setUpCustomMeasurements(measurementBuffer, 10);
 
-    verify(eventWriter, times(10)).write((Measurement) any(), (String) any());
+      sender.send(0);
+
+      verify(eventWriter, never()).begin();
+    }
+
+    @Test public void shouldSendMeasurementsWithAMetric() throws IOException {
+      setUpCustomMetrics(measurementBuffer, 1);
+      setUpCustomMeasurements(measurementBuffer, 10);
+
+      sender.send(0);
+
+      verify(eventWriter, times(10)).write((Measurement) any(), (String) any());
+    }
   }
 
-    /* setup test fixtures */
+  /* setup test fixtures */
 
-  private void setupFullBuffer(MeasurementBuffer buffer) {
+  protected void setupFullBuffer(MeasurementBuffer buffer) {
     for (Measurement next = buffer.next(); next != null; next = buffer.next()) {
       next.type = Measurement.CUSTOM;
       next.a = "custom-measurement";
@@ -218,7 +234,7 @@ public class SenderSpec {
     }
   }
 
-  private void setUpCustomMeasurements(MeasurementBuffer measurementBuffer, int count) {
+  protected void setUpCustomMeasurements(MeasurementBuffer measurementBuffer, int count) {
     for (int i = 0; i < count; i++) {
       Measurement measurement = measurementBuffer.next();
       measurement.type = Measurement.CUSTOM;
@@ -228,7 +244,7 @@ public class SenderSpec {
     }
   }
 
-  private void setUp10CustomMeasurementLesserThanMaxTime(MeasurementBuffer measurementBuffer) {
+  protected void setUp10CustomMeasurementLesserThanMaxTime(MeasurementBuffer measurementBuffer) {
     for (int i = 0; i < 10; i++) {
       Measurement measurement = measurementBuffer.next();
       measurement.type = Measurement.CUSTOM;
@@ -238,7 +254,7 @@ public class SenderSpec {
     }
   }
 
-  private void setUp10CustomMeasurementLesserEndTime(MeasurementBuffer measurementBuffer) {
+  protected void setUp10CustomMeasurementLesserEndTime(MeasurementBuffer measurementBuffer) {
     for (int i = 0; i < 10; i++) {
       Measurement measurement = measurementBuffer.next();
       measurement.type = Measurement.CUSTOM;
@@ -248,7 +264,7 @@ public class SenderSpec {
     }
   }
 
-  private void setUp10CustomMeasurementAndMetricLesserEndTime(MeasurementBuffer measurementBuffer) {
+  protected void setUp10CustomMeasurementAndMetricLesserEndTime(MeasurementBuffer measurementBuffer) {
     for (int i = 0; i < 10; i++) {
       Measurement measurement = measurementBuffer.next();
       measurement.type = Measurement.CUSTOM;
@@ -274,7 +290,7 @@ public class SenderSpec {
     }
   }
 
-  private void setUp10CustomMetricLesserThanMaxTime(MeasurementBuffer measurementBuffer) {
+  protected void setUp10CustomMetricLesserThanMaxTime(MeasurementBuffer measurementBuffer) {
     for (int i = 0; i < 10; i++) {
       Measurement measurement = measurementBuffer.next();
       measurement.type = Measurement.CUSTOM;
@@ -292,8 +308,8 @@ public class SenderSpec {
     }
   }
 
-  private void setUp10CustomMetric(MeasurementBuffer measurementBuffer) {
-    for (int i = 0; i < 10; i++) {
+  protected void setUpCustomMetrics(MeasurementBuffer measurementBuffer, int count) {
+    for (int i = 0; i < count; i++) {
       Measurement measurement = measurementBuffer.next();
       measurement.type = Measurement.METRIC;
       Metric metric = new Metric();
@@ -304,7 +320,7 @@ public class SenderSpec {
     }
   }
 
-  private Condition<Measurement> cleared() {
+  protected Condition<Measurement> cleared() {
     return new Condition<Measurement>() {
       @Override
       public boolean matches(Measurement value) {
