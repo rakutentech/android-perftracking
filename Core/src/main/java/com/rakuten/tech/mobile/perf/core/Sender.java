@@ -7,20 +7,21 @@ class Sender {
   private static final long MIN_TIME = 5L; // 5 ms
   private static final int MIN_COUNT = 10;
 
-  private final MeasurementBuffer _buffer;
-  private final Current _current;
-  private final EventWriter _writer;
-  private final Debug _debug;
-  private Metric _metric;
-  private int _sent;
-  private boolean sendMeasurementWithoutMetric;
+
+  private final MeasurementBuffer buffer;
+  private final Current current;
+  private final EventWriter writer;
+  private final Debug debug;
+  private Metric metric;
+  private int sent;
+  private final boolean sendMeasurementWithoutMetric;
 
   Sender(MeasurementBuffer buffer, Current current, EventWriter writer,
       Debug debug, boolean sendMeasurementWithoutMetric) {
-    _buffer = buffer;
-    _current = current;
-    _writer = writer;
-    _debug = debug;
+    this.buffer = buffer;
+    this.current = current;
+    this.writer = writer;
+    this.debug = debug;
     this.sendMeasurementWithoutMetric = sendMeasurementWithoutMetric;
   }
 
@@ -35,14 +36,14 @@ class Sender {
    * @return next unsent index, i.e. {@code startIndex} for the next call to send
    */
   int send(int startIndex) throws IOException {
-    int endIndex = _buffer.nextTrackingId.get() % MeasurementBuffer.SIZE;
+    int endIndex = buffer.nextTrackingId.get() % MeasurementBuffer.SIZE;
     if (endIndex < 0) {
       endIndex += MeasurementBuffer.SIZE;
     }
 
     int count;
 
-    if (startIndex == endIndex && _buffer.next() == null) {
+    if (startIndex == endIndex && buffer.next() == null) {
       count = MeasurementBuffer.SIZE;
     } else {
       count = endIndex - startIndex;
@@ -70,33 +71,33 @@ class Sender {
    * @return last sent index + 1, i.e. {@code startIndex} for the next call to send
    */
   private int send(int startIndex, int count) throws IOException {
-    _sent = 0;
+    sent = 0;
     long now = System.currentTimeMillis();
-    Metric _savedMetric = _metric == null ? null : _metric.copy();
+    Metric savedMetric = metric == null ? null : metric.copy();
 
     try {
       int endIndex = (startIndex + count) % MeasurementBuffer.SIZE;
       for (int i = startIndex; count > 0; count--, i = (i + 1) % MeasurementBuffer.SIZE) {
-        Measurement m = _buffer.at[i];
+        Measurement m = buffer.at[i];
 
         if (m.type == Measurement.METRIC) {
 
-          if (_metric != null) {
-            send(_metric);
-            _metric = null;
+          if (metric != null) {
+            send(metric);
+            metric = null;
           }
 
-          Metric metric = (Metric) m.a;
+          Metric measurementMetric = (Metric) m.a;
 
-          if (metric == _current.metric.get()) {
+          if (measurementMetric == current.metric.get()) {
             if (now - m.startTime < Metric.MAX_TIME) {
               return i;
             }
 
-            _current.metric.compareAndSet(metric, null);
+            current.metric.compareAndSet(measurementMetric, null);
           }
 
-          _metric = metric;
+          this.metric = measurementMetric;
           m.clear();
         } else {
           if (m.endTime == 0) {
@@ -108,20 +109,20 @@ class Sender {
             continue;
           }
 
-          if ((_metric != null) && (m.startTime > _metric.endTime)) {
-            send(_metric);
-            _metric = null;
+          if ((metric != null) && (m.startTime > metric.endTime)) {
+            send(metric);
+            metric = null;
           }
 
-          if ((_metric != null) && (m.type == Measurement.URL)) {
-            _metric.urls++;
+          if ((metric != null) && (m.type == Measurement.URL)) {
+            metric.urls++;
           }
 
           // When `enableNonMetricMeasurements` from the config is false, measurements with
           // no metric should not even be added to the buffer. However, they occasionally are due
           // to threading issues, so this check is needed to prevent them from being sent
-          if (sendMeasurementWithoutMetric || _metric != null) {
-            send(m, _metric != null ? _metric.id : null);
+          if (sendMeasurementWithoutMetric || metric != null) {
+            send(m, metric != null ? metric.id : null);
           }
 
           m.clear();
@@ -135,11 +136,11 @@ class Sender {
              * resend the same buffer range again later. So we restore the previously active metric
              * in case it was overwritten during the loop
              */
-      _metric = _savedMetric;
+      metric = savedMetric;
       throw sendFailed;
     } finally {
-      if (_sent > 0) {
-        _writer.end();
+      if (sent > 0) {
+        writer.end();
       }
     }
   }
@@ -149,16 +150,16 @@ class Sender {
       return;
     }
 
-    if (_debug != null) {
-      _debug.log("SEND_METRIC", metric);
+    if (debug != null) {
+      debug.log("SEND_METRIC", metric);
     }
 
-    if (_sent == 0) {
-      _writer.begin();
+    if (sent == 0) {
+      writer.begin();
     }
 
-    _writer.write(metric);
-    _sent++;
+    writer.write(metric);
+    sent++;
   }
 
   private void send(Measurement m, String metricId) throws IOException {
@@ -166,16 +167,16 @@ class Sender {
       return;
     }
 
-    if (_debug != null) {
-      _debug.log("SEND", m, metricId);
+    if (debug != null) {
+      debug.log("SEND", m, metricId);
     }
 
-    if (_sent == 0) {
-      _writer.begin();
+    if (sent == 0) {
+      writer.begin();
     }
 
-    _writer.write(m, metricId);
+    writer.write(m, metricId);
 
-    _sent++;
+    sent++;
   }
 }
