@@ -29,7 +29,7 @@ public class SenderSpec {
     MockitoAnnotations.initMocks(this);
     measurementBuffer = new MeasurementBuffer();
     current = new Current();
-    sender = new Sender(measurementBuffer, current, eventWriter, new Debug());
+    sender = new Sender(measurementBuffer, current, eventWriter, new Debug(), true);
   }
 
   @Test public void shouldSendMeasurements() throws IOException {
@@ -45,7 +45,7 @@ public class SenderSpec {
   }
 
   @Test public void shouldNotFailSendingMeasurementWhenDebugIsNull() throws IOException {
-    sender = new Sender(measurementBuffer, current, eventWriter, null);
+    sender = new Sender(measurementBuffer, current, eventWriter, null, true);
     setUpCustomMeasurements(measurementBuffer, 10);
     sender.send(0);
     verify(eventWriter, times(1)).begin();
@@ -66,7 +66,7 @@ public class SenderSpec {
   }
 
   @Test public void shouldNotFailSendingMetricWhenDebugIsNull() throws IOException {
-    sender = new Sender(measurementBuffer, current, eventWriter, null);
+    sender = new Sender(measurementBuffer, current, eventWriter, null, true);
     setUp10CustomMetric(measurementBuffer);
     sender.send(0);
     verify(eventWriter, times(1)).begin();
@@ -186,6 +186,25 @@ public class SenderSpec {
     for (int i = startIndex; i < measurementBuffer.nextTrackingId.get(); i++) {
       assertThat(measurementBuffer.at[i]).is(cleared()); // all previous measurement are cleared
     }
+  }
+
+  @Test public void shouldNotSendMeasurementsWithoutAMetricWhenNonMetricMeasurementsDisabled() throws IOException {
+    sender = new Sender(measurementBuffer, current, eventWriter, new Debug(), false);
+    setUpCustomMeasurements(measurementBuffer, 10);
+
+    sender.send(0);
+
+    verify(eventWriter, never()).begin();
+  }
+
+  @Test public void shouldSendMeasurementsWithAMetricWhenNonMetricMeasurementsDisabled() throws IOException {
+    sender = new Sender(measurementBuffer, current, eventWriter, new Debug(), false);
+    setUp10CustomMetric(measurementBuffer);
+    setUpCustomMeasurements(measurementBuffer, 10);
+
+    sender.send(0);
+
+    verify(eventWriter, times(10)).write((Measurement) any(), (String) any());
   }
 
     /* setup test fixtures */

@@ -136,7 +136,7 @@ public class SenderThreadSpec {
     @Before public void init() {
       MockitoAnnotations.initMocks(this);
       buffer = new MeasurementBuffer();
-      Sender sender = new Sender(buffer, new Current(), writer, null);
+      Sender sender = new Sender(buffer, new Current(), writer, null, true);
       senderThread = new SenderThread(sender, 10);
     }
 
@@ -208,7 +208,7 @@ public class SenderThreadSpec {
       writer = new EventWriter(config, envInfo, url);
 
       buffer = new MeasurementBuffer();
-      Sender sender = new Sender(buffer, new Current(), writer, null);
+      Sender sender = new Sender(buffer, new Current(), writer, null, true);
       senderThread = new SenderThread(sender, 10);
       populateBufferRunnable = new Runnable() {
         @Override
