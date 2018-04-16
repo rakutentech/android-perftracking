@@ -29,7 +29,7 @@ public class Tracker {
     _tracker = new TrackerImpl(buffer, current, debug, config.enableNonMetricMeasurement);
     EnvironmentInfo envInfo = new EnvironmentInfo(context, locationObservable, batteryInfoObservable);
     EventWriter writer = new EventWriter(config, envInfo);
-    Sender sender = new Sender(buffer, current, writer, debug);
+    Sender sender = new Sender(buffer, current, writer, debug, config.enableNonMetricMeasurement);
     _senderThread = new SenderThread(sender);
     _senderThread.start();
   }

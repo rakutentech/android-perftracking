@@ -13,12 +13,15 @@ class Sender {
   private final Debug _debug;
   private Metric _metric;
   private int _sent;
+  private boolean sendMeasurementWithoutMetric;
 
-  Sender(MeasurementBuffer buffer, Current current, EventWriter writer, Debug debug) {
+  Sender(MeasurementBuffer buffer, Current current, EventWriter writer,
+      Debug debug, boolean sendMeasurementWithoutMetric) {
     _buffer = buffer;
     _current = current;
     _writer = writer;
     _debug = debug;
+    this.sendMeasurementWithoutMetric = sendMeasurementWithoutMetric;
   }
 
   /**
@@ -114,7 +117,13 @@ class Sender {
             _metric.urls++;
           }
 
-          send(m, _metric != null ? _metric.id : null);
+          // When `enableNonMetricMeasurements` from the config is false, measurements with
+          // no metric should not even be added to the buffer. However, they occasionally are due
+          // to threading issues, so this check is needed to prevent them from being sent
+          if (sendMeasurementWithoutMetric || _metric != null) {
+            send(m, _metric != null ? _metric.id : null);
+          }
+
           m.clear();
         }
       }
