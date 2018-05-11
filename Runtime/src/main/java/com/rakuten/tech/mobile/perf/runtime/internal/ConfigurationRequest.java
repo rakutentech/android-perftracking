@@ -33,6 +33,8 @@ class ConfigurationRequest extends BaseRequest<ConfigurationResult> {
 
     setQueryParam("sdk", param.sdkVersion);
     setQueryParam("country", param.countryCode);
+    setQueryParam("osVersion", param.osVersion);
+    setQueryParam("device", param.device);
   }
 
   @Override

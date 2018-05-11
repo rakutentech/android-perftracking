@@ -12,6 +12,8 @@ class ConfigurationParam {
   final String appVersion;
   final String sdkVersion;
   final String countryCode;
+  final String osVersion;
+  final String device;
 
   private ConfigurationParam(Builder builder) {
     platform = builder.platform;
@@ -19,6 +21,8 @@ class ConfigurationParam {
     appVersion = builder.appVersion;
     sdkVersion = builder.sdkVersion;
     countryCode = builder.countryCode;
+    osVersion = builder.osVersion;
+    device = builder.device;
   }
 
   static class Builder {
@@ -28,6 +32,8 @@ class ConfigurationParam {
     private String appVersion;
     private String sdkVersion;
     private String countryCode;
+    private String osVersion;
+    private String device;
 
     Builder setPlatform(String platform) {
       this.platform = platform;
@@ -54,6 +60,16 @@ class ConfigurationParam {
       return this;
     }
 
+    Builder setOsVersion(String osVersion) {
+      this.osVersion = osVersion;
+      return this;
+    }
+
+    Builder setDevice(String device) {
+      this.device = device;
+      return this;
+    }
+
     ConfigurationParam build() {
       if (platform == null) {
         throw new IllegalStateException("Platform cannot be null");
@@ -69,6 +85,12 @@ class ConfigurationParam {
       }
       if (countryCode == null) {
         throw new IllegalStateException("Country Code cannot be null");
+      }
+      if (osVersion == null) {
+        throw new IllegalStateException("OS Version cannot be null");
+      }
+      if (device == null) {
+        throw new IllegalStateException("Device cannot be null");
       }
       return new ConfigurationParam(this);
     }
