@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -89,6 +90,8 @@ class ConfigStore extends Store<ConfigurationResult> {
           .setCountryCode(res.getConfiguration().locale.getCountry())
           .setPlatform("android")
           .setSdkVersion(res.getString(R.string.perftracking__version))
+          .setOsVersion(Build.VERSION.RELEASE)
+          .setDevice(Build.MODEL)
           .build();
     } catch (PackageManager.NameNotFoundException e) {
       Log.d(TAG, "Error building request to config API", e);

@@ -47,4 +47,16 @@ public class ConfigurationParamBuilderSpec extends RobolectricUnitSpec {
     builder.setSdkVersion(null);
     builder.build();
   }
+
+  @Test(expected = IllegalStateException.class)
+  public void shouldEnforceOSVersion() {
+    builder.setOsVersion(null);
+    builder.build();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void shouldEnforceDevice() {
+    builder.setDevice(null);
+    builder.build();
+  }
 }

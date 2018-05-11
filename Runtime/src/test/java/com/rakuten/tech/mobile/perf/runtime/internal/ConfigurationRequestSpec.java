@@ -10,11 +10,9 @@ import com.rakuten.tech.mobile.perf.runtime.TestData;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
 
 public class ConfigurationRequestSpec extends RobolectricUnitSpec {
 
-  @Mock ConfigurationRequest testMock;
   private ConfigurationParam.Builder builder;
 
   @Before public void initConfig() {
@@ -23,7 +21,9 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
         .setAppVersion("testVersion")
         .setSdkVersion("testSdkVersion")
         .setCountryCode("testCountryCode")
-        .setPlatform("testPlatform");
+        .setPlatform("testPlatform")
+        .setOsVersion("testOsVersion")
+        .setDevice("testDevice");
   }
 
   @Test public void shouldConstructWithNullableParameters() {
@@ -33,18 +33,17 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
   }
 
   @Test public void shouldBuildUrlWithDefaultUrlPrefix() {
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest(
+        null, "", builder.build(), null, null);
     assertThat(request.getUrl())
-        .isEqualTo(BuildConfig.DEFAULT_CONFIG_URL_PREFIX +
-            "/platform/testPlatform/app/testId/version/testVersion/?sdk=testSdkVersion&country=testCountryCode");
+        .startsWith(BuildConfig.DEFAULT_CONFIG_URL_PREFIX);
   }
 
   @Test public void shouldBuildUrlWithCustomDomain() {
     ConfigurationRequest request = new ConfigurationRequest("https://rakuten.co.jp", "", builder
         .build(), null, null);
     assertThat(request.getUrl())
-        .isEqualTo(
-            "https://rakuten.co.jp/platform/testPlatform/app/testId/version/testVersion/?sdk=testSdkVersion&country=testCountryCode");
+        .startsWith("https://rakuten.co.jp/");
   }
 
   @Test public void shouldBuildUrlWithCustomPrefix() {
@@ -52,8 +51,70 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
         new ConfigurationRequest("https://other.prefix.com/abc/xyz/v1",
             "", builder.build(), null, null);
     assertThat(request.getUrl())
-        .isEqualTo(
-            "https://other.prefix.com/abc/xyz/v1/platform/testPlatform/app/testId/version/testVersion/?sdk=testSdkVersion&country=testCountryCode");
+        .startsWith("https://other.prefix.com/abc/xyz/v1/");
+  }
+
+  @Test public void shouldBuildUrlWithPlatform() {
+    builder.setPlatform("testPlatform");
+
+    ConfigurationRequest request = new ConfigurationRequest(
+        null, "", builder.build(), null, null);
+    assertThat(request.getUrl())
+        .contains("/platform/testPlatform/");
+  }
+
+  @Test public void shouldBuildUrlWithAppId() {
+    builder.setAppId("testId");
+
+    ConfigurationRequest request =
+        new ConfigurationRequest(null, "", builder.build(), null, null);
+    assertThat(request.getUrl())
+        .contains("/app/testId/");
+  }
+
+  @Test public void shouldBuildUrlWithAppVersion() {
+    builder.setAppVersion("testVersion");
+
+    ConfigurationRequest request = new ConfigurationRequest(
+        null, "", builder.build(), null, null);
+    assertThat(request.getUrl())
+        .contains("/version/testVersion/");
+  }
+
+  @Test public void shouldBuildUrlWithSdkVersion() {
+    builder.setSdkVersion("testSdkVersion");
+
+    ConfigurationRequest request = new ConfigurationRequest(
+        null, "", builder.build(), null, null);
+    assertThat(request.getUrl())
+        .contains("sdk=testSdkVersion");
+  }
+
+  @Test public void shouldBuildUrlWithCountryCode() {
+    builder.setCountryCode("testCountryCode");
+
+    ConfigurationRequest request = new ConfigurationRequest(
+        null, "", builder.build(), null, null);
+    assertThat(request.getUrl())
+        .contains("country=testCountryCode");
+  }
+
+  @Test public void shouldBuildUrlWithOsVersion() {
+    builder.setOsVersion("testOsVersion");
+
+    ConfigurationRequest request = new ConfigurationRequest(
+        null, "", builder.build(), null, null);
+    assertThat(request.getUrl())
+        .contains("osVersion=testOsVersion");
+  }
+
+  @Test public void shouldBuildUrlWithDevice() {
+    builder.setDevice("test device name");
+
+    ConfigurationRequest request = new ConfigurationRequest(
+        null, "", builder.build(), null, null);
+    assertThat(request.getUrl())
+        .contains("device=test%20device%20name");
   }
 
   @Test public void shouldSetSubscriptionKeyHeader() {
