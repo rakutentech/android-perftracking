@@ -2,6 +2,7 @@ package com.rakuten.tech.mobile.perf.core;
 
 import android.content.Context;
 
+import java.util.concurrent.Callable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,15 +19,16 @@ import javax.net.ssl.HttpsURLConnection;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.fail;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -48,19 +50,16 @@ public class SenderThreadSpec {
       senderThread.interrupt();
     }
 
-    @Test public void shouldStopThreadOnTerminate() throws InterruptedException, IOException {
+    @Test public void shouldStopThreadOnTerminate() throws IOException {
       when(sender.send(anyInt())).thenReturn(0);
 
-      senderThread.start();
-      Thread.sleep(100);
+      startSenderThread(senderThread);
       senderThread.terminate();
 
-      loop(senderThread, 1);
-
-      assertThat(senderThread.isAlive()).isFalse();
+      await().until(senderThreadIsAlive(senderThread), equalTo(false));
     }
 
-    @Test public void shouldCatchUncaughtExceptions() throws InterruptedException, IOException {
+    @Test public void shouldCatchUncaughtExceptions() throws IOException {
       doThrow(IOException.class).when(sender).send(anyInt());
 
       final AtomicInteger count = new AtomicInteger(0);
@@ -71,60 +70,40 @@ public class SenderThreadSpec {
           fail("uncaught exception");
         }
       });
-      senderThread.start();
-      Thread.sleep(100);
-      senderThread.terminate();
-      loop(senderThread, 1);
+      startSenderThread(senderThread);
+
+      verify(sender, timeout(50).atLeast(1)).send(anyInt());
+
+      terminateSenderThread(senderThread);
 
       assertThat(count.get()).isEqualTo(0);
     }
 
-    @Test public void shouldBackOffAfterFailures() throws InterruptedException, IOException {
+    @Test public void shouldBackOffAfterFailures() throws IOException {
       doThrow(NullPointerException.class).when(sender).send(anyInt());
 
-      senderThread.start();
-      Thread.sleep(140);
-      senderThread.terminate();
-      loop(senderThread, 1); // give it some time to finish run()
+      startSenderThread(senderThread);
 
-      verify(sender, atMost(4)).send(anyInt());
+      verify(sender, timeout(100).times(4)).send(anyInt());
     }
 
-    @Test public void shouldResetBackOffAfterSuccess() throws InterruptedException,
-        IOException {
+    @Test public void shouldResetBackOffAfterSuccess() throws IOException {
       doThrow(NullPointerException.class).when(sender).send(anyInt());
 
-      senderThread.start();
-      Thread.sleep(140);
+      startSenderThread(senderThread);
 
+      // Failures to increase the back off timeout
+      verify(sender, timeout(100).atLeast(3)).send(anyInt());
       clearInvocations(sender);
-      doReturn(0).when(sender).send(anyInt());
-      loop(senderThread, 1); // give it some time to finish run()
-
-      Thread.sleep(50);
-
-      verify(sender, atLeast(4)).send(anyInt());
-    }
-
-
-    @Test public void shouldResetFailureCountAfterSuccess()
-        throws InterruptedException, IOException {
-      doThrow(NullPointerException.class).when(sender).send(anyInt());
-
-      senderThread.start();
-      // 15 failures
-      loop(senderThread, 15);
 
       doReturn(0).when(sender).send(anyInt());
-      // one success
-      loop(senderThread, 1);
 
-      // 15 failures
-      loop(senderThread, 15);
+      // One success to reset the back off timeout
+      verify(sender, timeout(100).atLeast(1)).send(anyInt());
+      clearInvocations(sender);
 
-      assertThat(senderThread.isAlive()).isTrue();
+      verify(sender, timeout(25).atLeast(1)).send(anyInt());
     }
-
   }
 
   public static class MockedWriter {
@@ -140,37 +119,31 @@ public class SenderThreadSpec {
       senderThread = new SenderThread(sender, 10);
     }
 
-    @Test public void shouldBackOffAfterFailure() throws InterruptedException,
-        IOException {
+    @Test public void shouldBackOffAfterFailure() throws IOException {
       populateBufferWithDummyData(buffer, 20);
-
       doThrow(IOException.class).when(writer).begin();
 
-      senderThread.start();
-      Thread.sleep(140);
+      startSenderThread(senderThread);
 
-      verify(writer, atMost(4)).begin();
+      verify(writer, timeout(100).times(4)).begin();
     }
 
-    @Test public void shouldResetBackOffAfterSuccess() throws InterruptedException,
-        IOException {
+    @Test public void shouldResetBackOffAfterSuccess() throws IOException {
       populateBufferWithDummyData(buffer, 20);
 
       doThrow(IOException.class).when(writer).begin(); // fake connection failure
       senderThread.start();
-      Thread.sleep(50); // 2 failures -> 2^2*sleeptime interval
 
+      // Failures to increase the back off timeout
+      verify(writer, timeout(100).atLeast(2)).begin();
       clearInvocations(writer);
+
       doNothing().when(writer).begin(); // no more failure
 
-      loop(senderThread, 1); // interrupt sleep
-
-      verify(writer).begin();
+      verify(writer, timeout(100)).begin();
+      verify(writer, timeout(100)).end();
       verify(writer, times(20)).write(any(Measurement.class), nullable(String.class));
-      verify(writer).end();
     }
-
-
   }
 
   public static class MockedUrlConnection {
@@ -185,7 +158,6 @@ public class SenderThreadSpec {
     private CachingObservable<Float> batteryinfo = new CachingObservable<Float>(null);
     private EventWriter writer;
     private MeasurementBuffer buffer;
-    private Runnable populateBufferRunnable;
     SenderThread senderThread;
 
     @Before public void initMocks() throws IOException {
@@ -210,59 +182,48 @@ public class SenderThreadSpec {
       buffer = new MeasurementBuffer();
       Sender sender = new Sender(buffer, new Current(), writer, null, true);
       senderThread = new SenderThread(sender, 10);
-      populateBufferRunnable = new Runnable() {
-        @Override
-        public void run() {
-          while (true) {
-            MeasurementBuffer b = buffer;
-            if (b != null) {
-              populateBufferWithDummyData(b, 10);
-            } else {
-              return;
-            }
-            try {
-              Thread.sleep(5);
-            } catch (InterruptedException ignored) {
-            }
-          }
-        }
-      };
     }
 
-    @Test public void shouldTerminateOn401Error() throws IOException, InterruptedException {
+    @Test public void shouldTerminateOn401Error() throws IOException {
       populateBufferWithDummyData(buffer, 20);
       when(conn.getResponseCode()).thenReturn(401);
 
       senderThread.start();
 
-      Thread.sleep(100); // give the thread some time to die
-
-      assertThat(senderThread.isAlive()).isFalse();
+      await().until(senderThreadIsAlive(senderThread), equalTo(false));
     }
 
-    @Test public void shouldBackOffOnOtherNon201() throws IOException, InterruptedException {
+    @Test public void shouldBackOffOnOtherNon201() throws IOException {
       when(conn.getResponseCode()).thenReturn(400);
 
       // constantly fill buffer, so the sender will continue writing
-      new Thread(populateBufferRunnable).start();
-      senderThread.start();
+      PopulateBufferThread populateThread = new PopulateBufferThread(buffer);
+      populateThread.start();
 
-      Thread.sleep(140);
+      startSenderThread(senderThread);
 
-      verify(conn, atMost(5)).getResponseCode();
+      verify(conn, timeout(150).times(4)).getResponseCode();
+
+      populateThread.terminate();
     }
-
   }
 
+  static void startSenderThread(SenderThread senderThread) {
+    senderThread.start();
+    await().until(senderThreadIsAlive(senderThread));
+  }
 
-  private static void loop(SenderThread senderThread, int i) throws InterruptedException {
-    if (i < 1) {
-      return;
-    }
-    for (; i > 0; i--) {
-      senderThread.interrupt();
-      Thread.sleep(5);
-    }
+  static void terminateSenderThread(SenderThread senderThread) {
+    senderThread.terminate();
+    await().until(senderThreadIsAlive(senderThread), equalTo(false));
+  }
+
+  static Callable<Boolean> senderThreadIsAlive(final SenderThread senderThread) {
+    return new Callable<Boolean>() {
+      public Boolean call() {
+        return senderThread.isAlive();
+      }
+    };
   }
 
   private static void populateBufferWithDummyData(MeasurementBuffer buffer, int count) {
@@ -274,5 +235,32 @@ public class SenderThreadSpec {
     }
   }
 
+  static class PopulateBufferThread extends Thread {
+    private volatile boolean run = true;
+    private MeasurementBuffer buffer;
 
+    PopulateBufferThread(MeasurementBuffer buffer) {
+      this.buffer = buffer;
+    }
+
+    @Override
+    public void run() {
+      while (run) {
+        MeasurementBuffer b = buffer;
+        if (b != null) {
+          populateBufferWithDummyData(b, 10);
+        } else {
+          return;
+        }
+        try {
+          Thread.sleep(5);
+        } catch (InterruptedException ignored) {
+        }
+      }
+    }
+
+    public void terminate() {
+      run = false;
+    }
+  }
 }
