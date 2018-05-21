@@ -1,6 +1,6 @@
 # files copied by gradle
 performance-tracking-plugin/src/test/resources/performance-tracking-core.jar
-performance-tracking-plugin/src/test/resources/Stubs.jar
+performance-tracking-plugin/src/test/resources/performance-tracking-stubs.jar
 # byte code written by failed tests
 performance-tracking-plugin/testOutput
 

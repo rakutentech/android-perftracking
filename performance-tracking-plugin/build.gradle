@@ -3,11 +3,11 @@ apply plugin: 'groovy'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-// Quick-and-dirty way of adding both Stubs and performance-tracking-core without dealing with jars…
+// Quick-and-dirty way of adding both performance-tracking-stubs and performance-tracking-core without dealing with jars…
 sourceSets {
   main {
     groovy {
-      srcDirs += "$rootProject.projectDir/Stubs/src/main/java"
+      srcDirs += "$rootProject.projectDir/performance-tracking-stubs/src/main/java"
       srcDirs += "$rootProject.projectDir/performance-tracking-core/src/main/java"
     }
   }
