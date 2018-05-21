@@ -2,7 +2,7 @@ package com.rakuten.tech.mobile.perf.core;
 
 /**
  * Link time injected mock to detect calls to package private methods of {@code TrackerImpl} in the
- * Core module.
+ * performance-tracking-core module.
  */
 public class MockTracker extends TrackerImpl {
 

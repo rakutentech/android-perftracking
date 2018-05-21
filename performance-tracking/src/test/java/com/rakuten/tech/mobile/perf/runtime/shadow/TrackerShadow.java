@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Robolectric injected mock to detect calls to static functions of {@code TrackerShadow} in the
- * Core module. It mirrors the public API of {@code TrackerShadow}
+ * performance-tracking-core module. It mirrors the public API of {@code TrackerShadow}
  */
 @Implements(Tracker.class)
 public class TrackerShadow {
