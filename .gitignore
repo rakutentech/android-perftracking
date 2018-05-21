@@ -74,5 +74,5 @@ node_modules
 thumbs.db
 
 ##################################
-# Othes
-/Runtime/libs
+# Others
+/performance-tracking/libs
