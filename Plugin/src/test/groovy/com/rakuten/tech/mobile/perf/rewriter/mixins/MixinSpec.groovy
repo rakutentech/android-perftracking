@@ -228,14 +228,14 @@ class MixinSpec {
   // utils
 
   /**
-   * Loads a mixin instance as defined in Core (from freshly copied Core.jar) from package
+   * Loads a mixin instance as defined in performance-tracking-core (from freshly copied performance-tracking-core.jar) from package
    * {@link com.rakuten.tech.mobile.perf.core.mixins}
    *
    * @param mixinClassName name of the mixin (relative to package)
    * @return loaded mixin
    */
   static Mixin loadMixinFromCore(String mixinClassName) {
-    ClassNode mixinClassNode = new ClassJar(resourceFile("Core.jar")).getClassNode(
+    ClassNode mixinClassNode = new ClassJar(resourceFile("performance-tracking-core.jar")).getClassNode(
         "com.rakuten.tech.mobile.perf.core.mixins.$mixinClassName")
     new MixinLoader(testLogger()).loadMixin(mixinClassNode)
   }

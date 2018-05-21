@@ -12,7 +12,7 @@ by a runtime component and sent to a backend periodically.
 
 The modules are:
 
-**Core** 
+**performance-tracking-core** 
 * Annotations & configuration for instrumentation, packages `core.annotations`, `core.base`, 
 `core.detours`, `core.mixins` and `core.wrappers`
 * Measurement collection & sending to backend, `core` package

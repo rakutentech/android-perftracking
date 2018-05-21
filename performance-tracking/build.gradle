@@ -38,8 +38,8 @@ android.libraryVariants.all {
 }
 
 dependencies {
-  copyJar project(':Core')
-  implementation files("libs/Core-${project.version}.jar")
+  copyJar project(':performance-tracking-core')
+  implementation files("libs/performance-tracking-core-${project.version}.jar")
 
   api "com.android.support:support-annotations:$CONFIG.versions.android.libraries.support"
   implementation "com.google.code.gson:gson:${CONFIG.versions.thirdParty.gson}"

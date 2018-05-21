@@ -3,12 +3,12 @@ apply plugin: 'groovy'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-// Quick-and-dirty way of adding both Stubs and Core without dealing with jars…
+// Quick-and-dirty way of adding both Stubs and performance-tracking-core without dealing with jars…
 sourceSets {
   main {
     groovy {
       srcDirs += "$rootProject.projectDir/Stubs/src/main/java"
-      srcDirs += "$rootProject.projectDir/Core/src/main/java"
+      srcDirs += "$rootProject.projectDir/performance-tracking-core/src/main/java"
     }
   }
 }
@@ -36,7 +36,7 @@ dependencies {
   testImplementation gradleTestKit()
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.mockito:mockito-core:2.8.9'
-  testResourceJars project(':Core')
+  testResourceJars project(':performance-tracking-core')
 }
 
 sourceSets {

@@ -21,7 +21,7 @@ class MixerSpec {
 
   @Before
   void setup() {
-    classProvider = new ClassProvider(resourceFile("Core.jar").absolutePath)
+    classProvider = new ClassProvider(resourceFile("performance-tracking-core.jar").absolutePath)
     classVisitor = new ClassWriter(classProvider, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
     ClassJar jar = new ClassJar(resourceFile("usertestui.jar"))
     ClassNode classNode = jar.getClassNode("${mixinPkg}.VolleyHurlStackMixin")
