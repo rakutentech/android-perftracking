@@ -14,14 +14,14 @@ jobs:
       - run: env
       - run: git submodule update --init
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "Runtime/build.gradle" }}-{{ checksum  "Plugin/build.gradle" }}-{{ checksum  "Core/build.gradle" }}-{{ checksum  "Stubs/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "performance-tracking/build.gradle" }}-{{ checksum  "Plugin/build.gradle" }}-{{ checksum  "Core/build.gradle" }}-{{ checksum  "Stubs/build.gradle" }}
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "Runtime/build.gradle" }}-{{ checksum  "Plugin/build.gradle" }}-{{ checksum  "Core/build.gradle" }}-{{ checksum  "Stubs/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "performance-tracking/build.gradle" }}-{{ checksum  "Plugin/build.gradle" }}-{{ checksum  "Core/build.gradle" }}-{{ checksum  "Stubs/build.gradle" }}
       - run:
           name: Run Tests
           command: ./gradlew check --info
@@ -29,7 +29,7 @@ jobs:
           path: ~/code/Plugin/build/reports
           destination: plugin-reports/
       - store_artifacts:
-          path: ~/code/Runtime/build/reports
+          path: ~/code/performance-tracking/build/reports
           destination: runtime-reports/
       - store_artifacts:
           path: ~/code/Core/build/reports
@@ -37,7 +37,7 @@ jobs:
       - store_test_results:
           path: ~/code/Plugin/build/test-results/test
       - store_test_results:
-          path: ~/code/Runtime/build/test-results/testReleaseUnitTest
+          path: ~/code/performance-tracking/build/test-results/testReleaseUnitTest
       - store_test_results:
           path: ~/code/Core/build/test-results/test
       - run: bash <(curl -s https://codecov.io/bash)

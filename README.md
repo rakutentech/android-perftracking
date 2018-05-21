@@ -23,7 +23,7 @@ The modules are:
 **Plugin**
 * Android Gradle Transformation that instruments the application code using [ASM](http://asm.ow2.org/)
 
-**Runtime**
+**performance-tracking**
 * Fetches configuration from backend & starts collection of measurements
 * Runtime API for applications to start and prolong measurements and metrics
 
@@ -32,7 +32,7 @@ The modules are:
 ```bash
 $ git submodule init
 $ git submodule update
-$ ./gradlew Runtime:assemble Plugin:assemble \
+$ ./gradlew performance-tracking:assemble Plugin:assemble \
     -PDEFAULT_CONFIG_URL_PREFIX="url to your configuration server" \
     -PDEFAULT_LOCATION_URL_PREFIX="url to your location server"
 ```

@@ -1,4 +1,4 @@
 include ':Stubs'
 include ':Core'
-include ':Runtime'
+include ':performance-tracking'
 include ':Plugin'
