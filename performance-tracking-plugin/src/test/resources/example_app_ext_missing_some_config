@@ -1,11 +1,10 @@
 buildscript {
     repositories {
         jcenter()
-
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath files('../../build/libs/Plugin-@version@.jar')
+        classpath files('../../build/libs/performance-tracking-plugin-@version@.jar')
     }
 }
 
@@ -16,9 +15,26 @@ repositories {
 apply plugin: 'com.android.application'
 apply plugin: 'com.rakuten.tech.mobile.perf'
 
+performanceTracking {
+    release {
+        enable = false
+    }
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.0'
+
+    buildTypes {
+            release {
+            }
+
+            debug {
+            }
+            
+            qa {
+            }
+    }
 
     defaultConfig {
         applicationId 'com.rakuten.tech.mobile.perf.example'

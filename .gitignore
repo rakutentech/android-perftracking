@@ -1,8 +1,8 @@
 # files copied by gradle
-Plugin/src/test/resources/performance-tracking-core.jar
-Plugin/src/test/resources/Stubs.jar
+performance-tracking-plugin/src/test/resources/performance-tracking-core.jar
+performance-tracking-plugin/src/test/resources/Stubs.jar
 # byte code written by failed tests
-Plugin/testOutput
+performance-tracking-plugin/testOutput
 
 
 ##################################
