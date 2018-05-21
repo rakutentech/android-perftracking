@@ -17,7 +17,7 @@ The modules are:
 `core.detours`, `core.mixins` and `core.wrappers`
 * Measurement collection & sending to backend, `core` package
 
-**Stubs**
+**performance-tracking-stubs**
 * Stubs of and instrumented APIs
 
 **performance-tracking-plugin**
