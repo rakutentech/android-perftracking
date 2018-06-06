@@ -16,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.rakuten.tech.mobile.perf.R;
+import com.rakuten.tech.mobile.perf.core.TelephonyUtil;
 import com.rakuten.tech.mobile.perf.core.Tracker;
 import java.util.Random;
 
@@ -54,9 +55,11 @@ class ConfigStore extends Store<ConfigurationResult> {
   @NonNull private final SharedPreferences prefs;
   @NonNull private final Resources res;
   @NonNull private final Handler handler;
+  @NonNull private final Context context;
 
   ConfigStore(@NonNull Context context, @NonNull RequestQueue requestQueue,
       @NonNull String relayAppId, @Nullable String subscriptionKey, @Nullable String urlPrefix) {
+    this.context = context;
     this.packageManager = context.getPackageManager();
     this.packageName = context.getPackageName();
     this.appId = relayAppId;
@@ -87,7 +90,7 @@ class ConfigStore extends Store<ConfigurationResult> {
       param = new ConfigurationParam.Builder()
           .setAppId(appId)
           .setAppVersion(packageManager.getPackageInfo(packageName, 0).versionName)
-          .setCountryCode(res.getConfiguration().locale.getCountry())
+          .setCountryCode(TelephonyUtil.getCountryCode(context))
           .setPlatform("android")
           .setSdkVersion(res.getString(R.string.perftracking__version))
           .setOsVersion(Build.VERSION.RELEASE)
