@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Build;
-import android.telephony.TelephonyManager;
-import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -16,7 +14,7 @@ class EnvironmentInfo implements Observer {
   String network;
   final String osName;
   String osVersion;
-  private String country = null;
+  private String country;
   private String region = null;
   private float batteryLevel;
   private final long deviceTotalMemory;
@@ -39,23 +37,8 @@ class EnvironmentInfo implements Observer {
       this.deviceTotalMemory = -1L;
     }
 
-    TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-    if (tm != null) {
-      this.country = tm.getSimCountryIso();
-      this.network = tm.getNetworkOperatorName();
-    }
-
-    if (this.country == null || "".equals(this.country)) {
-      this.country = Locale.getDefault().getCountry();
-    }
-
-    if (this.country != null) {
-      this.country = this.country.toUpperCase();
-    }
-
-    if (this.network == null || "".equals(this.network)) {
-      this.network = "wifi";
-    }
+    this.network = TelephonyUtil.getNetwork(context);
+    this.country = TelephonyUtil.getCountryCode(context);
 
     if (locationObservable.getCachedValue() != null) {
       this.update(locationObservable, locationObservable.getCachedValue());
