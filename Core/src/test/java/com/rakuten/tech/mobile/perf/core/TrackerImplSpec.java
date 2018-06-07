@@ -130,7 +130,7 @@ public class TrackerImplSpec {
       tracker.startMetric("some metric");
       Thread.sleep(100);
       tracker.prolongMetric();
-      assertThat(metric.get().endTime).isGreaterThan(beforeStart + 100);
+      assertThat(metric.get().endTime).isGreaterThanOrEqualTo(beforeStart + 100);
     }
 
     @Test public void shouldNotUpdateEndTimeOnEndMetric() throws InterruptedException {
