@@ -72,7 +72,7 @@ public class SenderThreadSpec {
       });
       startSenderThread(senderThread);
 
-      verify(sender, timeout(50).atLeast(1)).send(anyInt());
+      verify(sender, timeout(100).atLeast(1)).send(anyInt());
 
       terminateSenderThread(senderThread);
 
@@ -102,7 +102,7 @@ public class SenderThreadSpec {
       verify(sender, timeout(100).atLeast(1)).send(anyInt());
       clearInvocations(sender);
 
-      verify(sender, timeout(25).atLeast(1)).send(anyInt());
+      verify(sender, timeout(100).atLeast(1)).send(anyInt());
     }
   }
 
