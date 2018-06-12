@@ -1,3 +1,5 @@
+rootProject.name = 'performance-tracking-parent'
+
 include ':performance-tracking-stubs'
 include ':performance-tracking-core'
 include ':performance-tracking'
