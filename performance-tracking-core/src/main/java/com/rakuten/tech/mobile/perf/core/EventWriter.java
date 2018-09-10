@@ -54,51 +54,51 @@ class EventWriter {
       _conn.connect();
 
       _writer = new BufferedWriter(new OutputStreamWriter(_conn.getOutputStream()));
-      _writer.append("{\"app\":\"").append(_config.app)
-          .append("\",\"version\":\"").append(_config.version)
-          .append("\",\"relay_app_id\":\"").append(_config.relayAppId);
+      _writer.append("{\"app\":\"").append(_config.app).append("\"")
+          .append(",\"version\":\"").append(_config.version).append("\"")
+          .append(",\"relay_app_id\":\"").append(_config.relayAppId).append("\"");
 
       if (_envInfo.device != null) {
-        _writer.append("\",\"device\":\"").append(_envInfo.device);
+        _writer.append(",\"device\":\"").append(_envInfo.device).append("\"");
       }
 
       if (_envInfo.getAppUsedMemory() > 0) {
-        _writer.append("\",\"app_mem_used\":\"").append(Long.toString(_envInfo.getAppUsedMemory()));
+        _writer.append(",\"app_mem_used\":").append(Long.toString(_envInfo.getAppUsedMemory()));
       }
 
       if (_envInfo.getDeviceFreeMemory() > 0) {
-        _writer.append("\",\"device_mem_free\":\"").append(Long.toString(_envInfo.getDeviceFreeMemory()));
+        _writer.append(",\"device_mem_free\":").append(Long.toString(_envInfo.getDeviceFreeMemory()));
       }
 
       if (_envInfo.getDeviceTotalMemory() > 0) {
-        _writer.append("\",\"device_mem_total\":\"").append(Long.toString(_envInfo.getDeviceTotalMemory()));
+        _writer.append(",\"device_mem_total\":").append(Long.toString(_envInfo.getDeviceTotalMemory()));
       }
 
       if (_envInfo.getBatteryLevel() > 0) {
-        _writer.append("\",\"battery_level\":\"").append(Float.toString(_envInfo.getBatteryLevel()));
+        _writer.append(",\"battery_level\":").append(Float.toString(_envInfo.getBatteryLevel()));
       }
 
       if (_envInfo.getCountry() != null) {
-        _writer.append("\",\"country\":\"").append(_envInfo.getCountry());
+        _writer.append(",\"country\":\"").append(_envInfo.getCountry()).append("\"");
       }
 
       if (_envInfo.getRegion() != null) {
-        _writer.append("\",\"region\":\"").append(_envInfo.getRegion());
+        _writer.append(",\"region\":\"").append(_envInfo.getRegion()).append("\"");
       }
 
       if (_envInfo.network != null) {
-        _writer.append("\",\"network\":\"").append(_envInfo.network);
+        _writer.append(",\"network\":\"").append(_envInfo.network).append("\"");
       }
 
       if (_envInfo.osName != null) {
-        _writer.append("\",\"os\":\"").append(_envInfo.osName);
+        _writer.append(",\"os\":\"").append(_envInfo.osName).append("\"");
       }
 
       if (_envInfo.osVersion != null) {
-        _writer.append("\",\"os_version\":\"").append(_envInfo.osVersion);
+        _writer.append(",\"os_version\":\"").append(_envInfo.osVersion).append("\"");
       }
 
-      _writer.append("\",\"measurements\":[");
+      _writer.append(",\"measurements\":[");
       _measurements = 0;
 
     } catch (Exception e) {
@@ -119,8 +119,8 @@ class EventWriter {
           _writer.append(',');
         }
         _writer
-            .append("{\"metric\":\"").append(metric.id)
-            .append("\",\"urls\":").append(Long.toString(metric.urls))
+            .append("{\"metric\":\"").append(metric.id).append("\"")
+            .append(",\"urls\":").append(Long.toString(metric.urls))
             .append(",\"start\":").append(Long.toString(metric.startTime))
             .append(",\"time\":").append(Long.toString(metric.endTime - metric.startTime))
             .append('}');
