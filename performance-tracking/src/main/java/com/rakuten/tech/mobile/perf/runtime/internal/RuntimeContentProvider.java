@@ -87,6 +87,7 @@ public class RuntimeContentProvider extends ContentProvider {
 
     boolean appDebuggable = Util.isAppDebuggable(context);
     double enablePercent = lastConfig.getEnablePercent();
+    double randomNumber = new Random(System.currentTimeMillis()).nextDouble() * 100.0;
     boolean enableTracking = randomNumber < enablePercent;
     if (appDebuggable || enableTracking) {
       config = new Config();
