@@ -12,12 +12,12 @@ import org.mockito.Mock;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.util.Pair;
 
-
 public class MeasurementSpec extends RobolectricUnitSpec {
 
   @Mock TrackingManager trackingManager;
 
-  @Before public void init() {
+  @Before
+  public void init() {
     TrackingManager.INSTANCE = trackingManager;
   }
 
@@ -26,37 +26,40 @@ public class MeasurementSpec extends RobolectricUnitSpec {
   @RunWith(ParameterizedRobolectricTestRunner.class)
   public static class InvalidInputSpec extends RobolectricUnitSpec {
 
-    public enum Action {START, END, START_AGGREGATED, END_AGGREGATED}
-
-    ;
+    public enum Action {
+      START,
+      END,
+      START_AGGREGATED,
+      END_AGGREGATED
+    };
 
     @ParameterizedRobolectricTestRunner.Parameters(name = "Action = {0}, Input = {1}")
     public static Collection<Object[]> data() {
-      return Arrays.asList(new Object[][]{
-          {Action.START, null},
-          {Action.START, ""},
-          {Action.START, "appQ\\"},
-          {Action.START, "appQ\""},
-          {Action.END, null},
-          {Action.END, ""},
-          {Action.END, "appQ\\"},
-          {Action.END, "appQ\""},
-          {Action.START_AGGREGATED, Pair.create(null, null)},
-          {Action.START_AGGREGATED, Pair.create("", null)},
-          {Action.START_AGGREGATED, Pair.create("valid", null)},
-          {Action.START_AGGREGATED, Pair.create("appQ\\", null)},
-          {Action.START_AGGREGATED, Pair.create("appQ\"", null)},
-          {Action.START_AGGREGATED, Pair.create("appQ\\", "Object")},
-          {Action.START_AGGREGATED, Pair.create("appQ\"", "Object")},
-          {Action.END_AGGREGATED, Pair.create(null, null)},
-          {Action.END_AGGREGATED, Pair.create("", null)},
-          {Action.END_AGGREGATED, Pair.create("valid", null)},
-          {Action.END_AGGREGATED, Pair.create("appQ\\", null)},
-          {Action.END_AGGREGATED, Pair.create("appQ\"", null)},
-          {Action.END_AGGREGATED, Pair.create("appQ\\", "Object")},
-          {Action.END_AGGREGATED, Pair.create("appQ\"", "Object")}
-
-      });
+      return Arrays.asList(
+          new Object[][] {
+            {Action.START, null},
+            {Action.START, ""},
+            {Action.START, "appQ\\"},
+            {Action.START, "appQ\""},
+            {Action.END, null},
+            {Action.END, ""},
+            {Action.END, "appQ\\"},
+            {Action.END, "appQ\""},
+            {Action.START_AGGREGATED, Pair.create(null, null)},
+            {Action.START_AGGREGATED, Pair.create("", null)},
+            {Action.START_AGGREGATED, Pair.create("valid", null)},
+            {Action.START_AGGREGATED, Pair.create("appQ\\", null)},
+            {Action.START_AGGREGATED, Pair.create("appQ\"", null)},
+            {Action.START_AGGREGATED, Pair.create("appQ\\", "Object")},
+            {Action.START_AGGREGATED, Pair.create("appQ\"", "Object")},
+            {Action.END_AGGREGATED, Pair.create(null, null)},
+            {Action.END_AGGREGATED, Pair.create("", null)},
+            {Action.END_AGGREGATED, Pair.create("valid", null)},
+            {Action.END_AGGREGATED, Pair.create("appQ\\", null)},
+            {Action.END_AGGREGATED, Pair.create("appQ\"", null)},
+            {Action.END_AGGREGATED, Pair.create("appQ\\", "Object")},
+            {Action.END_AGGREGATED, Pair.create("appQ\"", "Object")}
+          });
     }
 
     private String input1;
@@ -93,45 +96,52 @@ public class MeasurementSpec extends RobolectricUnitSpec {
     }
   }
 
-  @Test public void shouldRelayStartToTrackingManager() {
+  @Test
+  public void shouldRelayStartToTrackingManager() {
     Measurement.start("validId");
     verify(trackingManager).startMeasurement("validId");
   }
 
   // valid input
 
-  @Test public void shouldRelayEndToTrackingManager() {
+  @Test
+  public void shouldRelayEndToTrackingManager() {
     Measurement.start("validId");
     Measurement.end("validId");
     verify(trackingManager).startMeasurement("validId");
     verify(trackingManager).endMeasurement("validId");
   }
 
-  @Test public void shouldRelayEndToTrackingManagerEvenIfNotStarted() {
+  @Test
+  public void shouldRelayEndToTrackingManagerEvenIfNotStarted() {
     Measurement.end("validId");
     verify(trackingManager).endMeasurement("validId");
   }
 
-  @Test public void shouldRelayStartAggregatedToTrackingManager() {
+  @Test
+  public void shouldRelayStartAggregatedToTrackingManager() {
     Measurement.startAggregated("validId", "validObject");
     verify(trackingManager).startAggregated("validId", "validObject");
   }
 
-  @Test public void shouldRelayEndAggregatedToTrackingManager() {
+  @Test
+  public void shouldRelayEndAggregatedToTrackingManager() {
     Measurement.startAggregated("validId", "validObject");
     Measurement.endAggregated("validId", "validObject");
     verify(trackingManager).startAggregated("validId", "validObject");
     verify(trackingManager).endAggregated("validId", "validObject");
   }
 
-  @Test public void shouldRelayEndAggregatedToTrackingManagerEvenIfNotStarted() {
+  @Test
+  public void shouldRelayEndAggregatedToTrackingManagerEvenIfNotStarted() {
     Measurement.endAggregated("validId", "validObject");
     verify(trackingManager).endAggregated("validId", "validObject");
   }
 
   // misbehavior of collaborators
 
-  @Test public void shouldNotFailOnNullTrackingManager() {
+  @Test
+  public void shouldNotFailOnNullTrackingManager() {
     TrackingManager.INSTANCE = null;
 
     Measurement.start("id1");

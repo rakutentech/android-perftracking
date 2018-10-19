@@ -28,9 +28,10 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-@Config(shadows = {
-    RequestQueueShadow.class, // prevent network requests from runtime side
-})
+@Config(
+    shadows = {
+      RequestQueueShadow.class, // prevent network requests from runtime side
+    })
 public class ConfigStoreSpec extends RobolectricUnitSpec {
 
   @Rule public TestData config = new TestData("configuration-api-response.json");
@@ -44,7 +45,8 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
   private String appId = "testAppId";
 
   @SuppressLint("ApplySharedPref")
-  @Before public void init() throws PackageManager.NameNotFoundException {
+  @Before
+  public void init() throws PackageManager.NameNotFoundException {
     RequestQueueShadow.queue = spy(new MockedQueue());
     queue = RequestQueueShadow.queue;
     context = spy(RuntimeEnvironment.application);
@@ -68,7 +70,8 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     configStore = new ConfigStore(context, queue, "", "", null);
   }
 
-  @Test public void shouldRequestConfigOnEmptyCache() throws JSONException {
+  @Test
+  public void shouldRequestConfigOnEmptyCache() throws JSONException {
     queue.rule().whenClass(ConfigurationRequest.class).returnNetworkResponse(200, config.content);
 
     configStore = new ConfigStore(context, queue, appId, "", null);
@@ -76,7 +79,8 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     queue.verify();
   }
 
-  @Test public void shouldCacheConfigOnEmptyCache() throws JSONException {
+  @Test
+  public void shouldCacheConfigOnEmptyCache() throws JSONException {
     queue.rule().whenClass(ConfigurationRequest.class).returnNetworkResponse(200, config.content);
 
     configStore = new ConfigStore(context, queue, appId, "", null);
@@ -85,7 +89,8 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     JSONAssert.assertEquals(config.content, new Gson().toJson(cachedResponse), true);
   }
 
-  @Test public void shouldUseCachedConfigForInstanceCreation() throws JSONException {
+  @Test
+  public void shouldUseCachedConfigForInstanceCreation() throws JSONException {
     prefs.edit().putString("config_key", config.content).apply();
 
     // Cached config available
@@ -95,7 +100,8 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     JSONAssert.assertEquals(config.content, new Gson().toJson(cachedResponse), true);
   }
 
-  @Test public void shouldUseNullConfigOnEmptyCacheOnInstanceCreation() throws JSONException {
+  @Test
+  public void shouldUseNullConfigOnEmptyCacheOnInstanceCreation() throws JSONException {
     // EmptyCache
     configStore = new ConfigStore(context, queue, appId, "", null);
 
@@ -103,8 +109,11 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     assertThat(storeValue).isEqualTo(null);
   }
 
-  @Test public void shouldNotFailOnFailedConfigRequest() {
-    queue.rule().whenClass(ConfigurationRequest.class)
+  @Test
+  public void shouldNotFailOnFailedConfigRequest() {
+    queue
+        .rule()
+        .whenClass(ConfigurationRequest.class)
         .returnError(new VolleyError(new Throwable()));
 
     configStore = new ConfigStore(context, queue, appId, "", null);
@@ -112,20 +121,22 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     queue.verify();
   }
 
-  @Test public void shouldDoWhatWhenSubscriptionKeyIsMissing() {
+  @Test
+  public void shouldDoWhatWhenSubscriptionKeyIsMissing() {
     configStore = new ConfigStore(context, queue, appId, null, null);
   }
 
-  @Test public void shouldCreateConfigEvenWhenPackageIsMissing()
+  @Test
+  public void shouldCreateConfigEvenWhenPackageIsMissing()
       throws PackageManager.NameNotFoundException, JSONException {
     prefs.edit().putString("config_key", config.content).apply();
     doThrow(new PackageManager.NameNotFoundException())
-        .when(packageManager).getPackageInfo(anyString(), anyInt());
+        .when(packageManager)
+        .getPackageInfo(anyString(), anyInt());
 
     configStore = new ConfigStore(context, queue, appId, null, null);
 
     ConfigurationResult cachedResponse = configStore.getObservable().getCachedValue();
     JSONAssert.assertEquals(config.content, new Gson().toJson(cachedResponse), true);
   }
-
 }

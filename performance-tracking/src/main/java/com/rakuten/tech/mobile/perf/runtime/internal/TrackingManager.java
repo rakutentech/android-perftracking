@@ -10,16 +10,12 @@ import com.rakuten.tech.mobile.perf.core.Tracker;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * TrackingManager
- */
+/** TrackingManager */
 public class TrackingManager {
 
   private static final String TAG = TrackingManager.class.getSimpleName();
   public static TrackingManager INSTANCE = null;
-  /**
-   * maps {@link TrackingData} to Measurement ids (from {@link Tracker}
-   */
+  /** maps {@link TrackingData} to Measurement ids (from {@link Tracker} */
   private Map<TrackingData, Integer> mTrackingData;
   /* Max number of objects for @TrackingManager#mTrackingData */
   private static final int TRACKING_DATA_LIMIT = 100;
@@ -28,7 +24,9 @@ public class TrackingManager {
     mTrackingData = new HashMap<>();
   }
 
-  synchronized static void initialize(Context context, Config config,
+  static synchronized void initialize(
+      Context context,
+      Config config,
       CachingObservable<LocationData> locationObservable,
       CachingObservable<Float> batteryInfoObservable,
       Analytics analytics) {
@@ -36,7 +34,7 @@ public class TrackingManager {
     INSTANCE = new TrackingManager();
   }
 
-  synchronized static void deinitialize() {
+  static synchronized void deinitialize() {
     Tracker.off();
     INSTANCE = null;
   }
@@ -62,7 +60,7 @@ public class TrackingManager {
   /**
    * Starts a new aggregated measurement.
    *
-   * @param id     Measurement identifier.
+   * @param id Measurement identifier.
    * @param object Object associated with the measurement.
    */
   public synchronized void startAggregated(String id, Comparable object) {
@@ -80,7 +78,7 @@ public class TrackingManager {
   /**
    * Ends a aggregated measurement.
    *
-   * @param id     Measurement identifier.
+   * @param id Measurement identifier.
    * @param object Object associated with the measurement.
    */
   public synchronized void endAggregated(String id, Comparable object) {
@@ -102,12 +100,8 @@ public class TrackingManager {
     Tracker.startMetric(metricId);
   }
 
-  /**
-   * Prolongs current metric.
-   *
-   */
+  /** Prolongs current metric. */
   public void prolongMetric() {
     Tracker.prolongMetric();
   }
-
 }

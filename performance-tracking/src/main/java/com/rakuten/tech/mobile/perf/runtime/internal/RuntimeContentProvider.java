@@ -19,12 +19,10 @@ import com.rakuten.tech.mobile.perf.core.Config;
 import com.rakuten.tech.mobile.perf.runtime.Metric;
 import java.util.Random;
 
-
 /**
  * RuntimeContentProvider - a custom high-priority ContentProvider, to start tracking early in the
  * process launch phase.
  */
-
 public class RuntimeContentProvider extends ContentProvider {
 
   private static final String TAG = RuntimeContentProvider.class.getSimpleName();
@@ -46,22 +44,26 @@ public class RuntimeContentProvider extends ContentProvider {
 
     String subscriptionKey = Util.getSubscriptionKey(context);
 
-    String configUrlPrefix = Util
-        .getMeta(context, "com.rakuten.tech.mobile.perf.ConfigurationUrlPrefix");
+    String configUrlPrefix =
+        Util.getMeta(context, "com.rakuten.tech.mobile.perf.ConfigurationUrlPrefix");
     String relayAppId = Util.getRelayAppId(context);
-    ConfigStore configStore = new ConfigStore(context, queue, relayAppId, subscriptionKey,
-        configUrlPrefix);
+    ConfigStore configStore =
+        new ConfigStore(context, queue, relayAppId, subscriptionKey, configUrlPrefix);
 
     // Read last config from cache
     Config config = createConfig(context, configStore.getObservable().getCachedValue(), relayAppId);
     if (config != null) {
-      String locationUrlPrefix = Util
-          .getMeta(context, "com.rakuten.tech.mobile.perf.LocationUrlPrefix");
-      LocationStore locationStore = new LocationStore(context, queue, subscriptionKey,
-          locationUrlPrefix);
+      String locationUrlPrefix =
+          Util.getMeta(context, "com.rakuten.tech.mobile.perf.LocationUrlPrefix");
+      LocationStore locationStore =
+          new LocationStore(context, queue, subscriptionKey, locationUrlPrefix);
       // Initialise Tracking Manager
-      TrackingManager.initialize(context, config, locationStore.getObservable(),
-          batteryInfoStore.getObservable(), new AnalyticsBroadcaster(context));
+      TrackingManager.initialize(
+          context,
+          config,
+          locationStore.getObservable(),
+          batteryInfoStore.getObservable(),
+          new AnalyticsBroadcaster(context));
       Metric.start("_launch");
     }
     return false;
@@ -75,7 +77,8 @@ public class RuntimeContentProvider extends ContentProvider {
    * @return Configuration for {@link TrackingManager}, may be null
    */
   @Nullable
-  private Config createConfig(@NonNull final Context context,
+  private Config createConfig(
+      @NonNull final Context context,
       @Nullable final ConfigurationResult lastConfig,
       @Nullable final String appId) {
     if (lastConfig == null) {
@@ -94,14 +97,13 @@ public class RuntimeContentProvider extends ContentProvider {
       config.app = packageName;
       config.relayAppId = appId;
       try {
-        config.version = packageManager
-            .getPackageInfo(packageName, 0).versionName;
+        config.version = packageManager.getPackageInfo(packageName, 0).versionName;
       } catch (PackageManager.NameNotFoundException e) {
         Log.d(TAG, e.getMessage());
       }
       try {
-        ApplicationInfo ai = packageManager
-            .getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+        ApplicationInfo ai =
+            packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
         Bundle bundle = ai.metaData;
         config.debug = bundle.getBoolean("com.rakuten.tech.mobile.perf.debug");
       } catch (PackageManager.NameNotFoundException | NullPointerException e) {
@@ -117,8 +119,12 @@ public class RuntimeContentProvider extends ContentProvider {
 
   @Nullable
   @Override
-  public Cursor query(@NonNull final Uri uri, final String[] projection, final String selection,
-      final String[] selectionArgs, final String sortOrder) {
+  public Cursor query(
+      @NonNull final Uri uri,
+      final String[] projection,
+      final String selection,
+      final String[] selectionArgs,
+      final String sortOrder) {
     return null;
   }
 
@@ -140,7 +146,10 @@ public class RuntimeContentProvider extends ContentProvider {
   }
 
   @Override
-  public int update(@NonNull final Uri uri, final ContentValues values, final String selection,
+  public int update(
+      @NonNull final Uri uri,
+      final ContentValues values,
+      final String selection,
       final String[] selectionArgs) {
     return 0;
   }

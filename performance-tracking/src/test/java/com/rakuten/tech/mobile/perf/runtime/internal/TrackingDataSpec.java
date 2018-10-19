@@ -8,7 +8,8 @@ import org.junit.Test;
 
 public class TrackingDataSpec extends RobolectricUnitSpec {
 
-  @Test public void shouldOnlyEqualForEqualIdAndEqualObject() {
+  @Test
+  public void shouldOnlyEqualForEqualIdAndEqualObject() {
     TrackingData original = data("id", "obj");
 
     assertThat(original).isEqualTo(original);
@@ -20,7 +21,8 @@ public class TrackingDataSpec extends RobolectricUnitSpec {
     assertThat(data("id", null)).isEqualTo(data("id", null));
   }
 
-  @Test public void shouldCompareIdAndThenObject() {
+  @Test
+  public void shouldCompareIdAndThenObject() {
     assertThat(data("1", 1)).isEqualByComparingTo(data("1", 1));
     assertThat(data("1", 1)).isLessThan(data("1", 2));
     assertThat(data("1", 1)).isLessThan(data("2", 1));

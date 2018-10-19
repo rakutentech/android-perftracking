@@ -16,9 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-/**
- * Shared functions for Relay SDKs.
- */
+/** Shared functions for Relay SDKs. */
 @RestrictTo(LIBRARY)
 @VisibleForTesting(otherwise = PACKAGE_PRIVATE)
 public final class Util {
@@ -27,21 +25,15 @@ public final class Util {
       "com.rakuten.tech.mobile.relay.SubscriptionKey";
   private static final String RELAY_APP_ID = "com.rakuten.tech.mobile.relay.AppId";
 
-  private Util() {
-  }
+  private Util() {}
 
   /**
    * Extract the (shared) relay subscription key from the app's manifest. The key is expected as
    * shown below:
    *
-   * ```xml
-   * <manifest>
-   *   <application>
-   *     <meta-data android:name="com.rakuten.tech.mobile.relay.SubscriptionKey"
-   *     android:value="subscriptionKey" />
-   *   </application>
-   * </manifest>
-   * ```
+   * <p>```xml <manifest> <application> <meta-data
+   * android:name="com.rakuten.tech.mobile.relay.SubscriptionKey" android:value="subscriptionKey" />
+   * </application> </manifest> ```
    *
    * @param context application context
    * @return subscription key if present, null otherwise
@@ -51,17 +43,11 @@ public final class Util {
   }
 
   /**
-   * Extract the relay app id from the app's manifest. The appId is expected as
-   * shown below:
+   * Extract the relay app id from the app's manifest. The appId is expected as shown below:
    *
-   * ```xml
-   * <manifest>
-   *   <application>
-   *     <meta-data android:name="com.rakuten.tech.mobile.relay.AppId"
-   *     android:value="appId" />
-   *   </application>
-   * </manifest>
-   * ```
+   * <p>```xml <manifest> <application> <meta-data
+   * android:name="com.rakuten.tech.mobile.relay.AppId" android:value="appId" /> </application>
+   * </manifest> ```
    *
    * @param context application context
    * @return relay app id if present, null otherwise
@@ -70,11 +56,14 @@ public final class Util {
     return getMeta(context, RELAY_APP_ID);
   }
 
-  /* default */ static @Nullable String getMeta(@NonNull final Context context,
-      @NonNull final String key) {
+  /* default */ static @Nullable String getMeta(
+      @NonNull final Context context, @NonNull final String key) {
     try {
-      Bundle metaData = context.getPackageManager().getApplicationInfo(context.getPackageName(),
-          PackageManager.GET_META_DATA).metaData;
+      Bundle metaData =
+          context
+              .getPackageManager()
+              .getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA)
+              .metaData;
       return metaData != null ? metaData.getString(key) : null;
     } catch (PackageManager.NameNotFoundException e) {
       return null;
@@ -95,8 +84,8 @@ public final class Util {
   static boolean isAppDebuggable(@NonNull final Context context) {
     try {
       PackageManager packageManager = context.getPackageManager();
-      PackageInfo packageInfo = packageManager
-          .getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+      PackageInfo packageInfo =
+          packageManager.getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
       Signature[] signatures = packageInfo.signatures;
 
       CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
@@ -105,7 +94,9 @@ public final class Util {
         ByteArrayInputStream stream = new ByteArrayInputStream(signature.toByteArray());
         X509Certificate cert = (X509Certificate) certificateFactory.generateCertificate(stream);
         String principal = cert.getSubjectX500Principal().toString().toUpperCase();
-        return principal.contains("C=US") && principal.contains("O=ANDROID") && principal.contains("CN=ANDROID DEBUG");
+        return principal.contains("C=US")
+            && principal.contains("O=ANDROID")
+            && principal.contains("CN=ANDROID DEBUG");
       }
     } catch (Exception e) {
       // Things went south, anyway the app is not debuggable.

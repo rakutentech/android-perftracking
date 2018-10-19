@@ -4,18 +4,19 @@ import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class ConfigurationParamBuilderSpec extends RobolectricUnitSpec {
 
   private ConfigurationParam.Builder builder;
 
-  @Before public void initValidBuilder() {
-    builder = new ConfigurationParam.Builder()
-        .setAppId("testAppId")
-        .setAppVersion("testAppVersion")
-        .setCountryCode("testCountryCode")
-        .setPlatform("testPlatform")
-        .setSdkVersion("testSdkVersion");
+  @Before
+  public void initValidBuilder() {
+    builder =
+        new ConfigurationParam.Builder()
+            .setAppId("testAppId")
+            .setAppVersion("testAppVersion")
+            .setCountryCode("testCountryCode")
+            .setPlatform("testPlatform")
+            .setSdkVersion("testSdkVersion");
   }
 
   @Test(expected = IllegalStateException.class)

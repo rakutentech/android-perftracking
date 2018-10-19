@@ -14,5 +14,4 @@ public class UtilShadow {
   public static boolean isAppDebuggable(Context context) {
     return mockDebugBuild;
   }
-
 }

@@ -6,30 +6,27 @@ package com.rakuten.tech.mobile.perf.core;
  */
 public class MockTracker extends TrackerImpl {
 
-  private MockTracker(MeasurementBuffer measurementBuffer, Current current, Debug debug, boolean shouldEnableNonMetricMeasurement) {
+  private MockTracker(
+      MeasurementBuffer measurementBuffer,
+      Current current,
+      Debug debug,
+      boolean shouldEnableNonMetricMeasurement) {
     super(measurementBuffer, current, debug, shouldEnableNonMetricMeasurement);
   }
 
-  public void startMetric(String metricId) {
-  }
+  public void startMetric(String metricId) {}
 
-  public void prolongMetric() {
-  }
+  public void prolongMetric() {}
 
-  public void endMetric() {
-  }
+  public void endMetric() {}
 
-  public void endMethod(int trackingId) {
-  }
+  public void endMethod(int trackingId) {}
 
-  public void endUrl(int trackingId) {
-  }
+  public void endUrl(int trackingId) {}
 
-  public void endCustom(int trackingId) {
-  }
+  public void endCustom(int trackingId) {}
 
-  public void endMeasurement(int trackingId) {
-  }
+  public void endMeasurement(int trackingId) {}
 
   private int count = 0;
 
@@ -45,4 +42,3 @@ public class MockTracker extends TrackerImpl {
     return count++;
   }
 }
-

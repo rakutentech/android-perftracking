@@ -4,9 +4,7 @@ import android.util.Log;
 import com.rakuten.tech.mobile.perf.runtime.internal.TrackingManager;
 import com.rakuten.tech.mobile.perf.runtime.internal.Validation;
 
-/**
- * Measurement
- */
+/** Measurement */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public final class Measurement {
 
@@ -15,7 +13,8 @@ public final class Measurement {
   /**
    * Starts a new measurement.
    *
-   * @param measurementId Measurement identifier. Valid Arguments are AlphaNumeric, -, _, . and <i>Space</i>.
+   * @param measurementId Measurement identifier. Valid Arguments are AlphaNumeric, -, _, . and
+   *     <i>Space</i>.
    * @see #end(String)
    */
   public static void start(String measurementId) {
@@ -32,7 +31,8 @@ public final class Measurement {
   /**
    * Ends a measurement.
    *
-   * @param measurementId Measurement identifier. Valid Arguments are AlphaNumeric, -, _, . and <i>Space</i>.
+   * @param measurementId Measurement identifier. Valid Arguments are AlphaNumeric, -, _, . and
+   *     <i>Space</i>.
    * @see #start(String)
    */
   public static void end(String measurementId) {
@@ -49,7 +49,7 @@ public final class Measurement {
   /**
    * Starts a new aggregated measurement.
    *
-   * @param id     Identifier. Valid Arguments are AlphaNumeric, -, _, . and <i>Space</i>.
+   * @param id Identifier. Valid Arguments are AlphaNumeric, -, _, . and <i>Space</i>.
    * @param object Object associated with the measurement.
    * @see #endAggregated(String, Comparable)
    */
@@ -67,9 +67,9 @@ public final class Measurement {
   /**
    * Ends a aggregated measurement.
    *
-   * @param id     Identifier. Valid Arguments are AlphaNumeric, -, _, . and <i>Space</i>.
-   * @param object Object associated with the measurement. This must be the same
-   *               object that got passed to startAggregated().
+   * @param id Identifier. Valid Arguments are AlphaNumeric, -, _, . and <i>Space</i>.
+   * @param object Object associated with the measurement. This must be the same object that got
+   *     passed to startAggregated().
    * @see #startAggregated(String, Comparable)
    */
   public static void endAggregated(String id, Comparable object) {
@@ -82,5 +82,4 @@ public final class Measurement {
       Log.d(TAG, "Tracking manager not initialized");
     }
   }
-
 }

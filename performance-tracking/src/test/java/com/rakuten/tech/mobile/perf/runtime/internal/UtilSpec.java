@@ -21,12 +21,9 @@ import org.robolectric.RuntimeEnvironment;
 
 public class UtilSpec extends RobolectricUnitSpec {
 
-  @Mock
-  PackageManager packageManager;
-  @Rule
-  public TestRawData releaseSignRaw = new TestRawData("signature-release.bin");
-  @Rule
-  public TestRawData debugSignRaw = new TestRawData("signature-debug.bin");
+  @Mock PackageManager packageManager;
+  @Rule public TestRawData releaseSignRaw = new TestRawData("signature-release.bin");
+  @Rule public TestRawData debugSignRaw = new TestRawData("signature-debug.bin");
   Context context;
   PackageInfo packageInfo = new PackageInfo();
 
@@ -56,16 +53,15 @@ public class UtilSpec extends RobolectricUnitSpec {
   }
 
   @Test
-  public void shouldReturnFalseIfSignatureIsMissing()
-      throws PackageManager.NameNotFoundException {
+  public void shouldReturnFalseIfSignatureIsMissing() throws PackageManager.NameNotFoundException {
 
     assertThat(Util.isAppDebuggable(context)).isFalse();
   }
 
   @Test
-  public void shouldReturnFalseIfExceptionOccurs()
-      throws PackageManager.NameNotFoundException {
-    when(packageManager.getPackageInfo(anyString(), anyInt())).thenThrow(new NameNotFoundException());
+  public void shouldReturnFalseIfExceptionOccurs() throws PackageManager.NameNotFoundException {
+    when(packageManager.getPackageInfo(anyString(), anyInt()))
+        .thenThrow(new NameNotFoundException());
 
     assertThat(Util.isAppDebuggable(context)).isFalse();
   }

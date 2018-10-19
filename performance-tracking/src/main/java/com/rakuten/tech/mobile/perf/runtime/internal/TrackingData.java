@@ -52,7 +52,6 @@ class TrackingData implements Comparable<TrackingData> {
     return -1;
   }
 
-
   @SuppressWarnings("unchecked")
   private int nullSafeCompareObjects(Comparable one, Comparable two) {
     if (one == null && two == null) {

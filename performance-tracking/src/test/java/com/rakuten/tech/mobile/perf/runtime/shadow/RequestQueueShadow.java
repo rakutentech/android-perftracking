@@ -11,10 +11,11 @@ public class RequestQueueShadow {
 
   public static MockedQueue queue = new MockedQueue();
 
-  @Implementation public void start() {
-  }
+  @Implementation
+  public void start() {}
 
-  @Implementation public <T> Request<T> add(Request<T> request) {
+  @Implementation
+  public <T> Request<T> add(Request<T> request) {
     return queue.add(request);
   }
 }
