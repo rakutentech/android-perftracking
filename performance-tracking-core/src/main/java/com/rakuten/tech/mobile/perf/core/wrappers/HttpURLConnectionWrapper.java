@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.perf.core.wrappers;
 
+import com.rakuten.tech.mobile.perf.core.Analytics;
 import com.rakuten.tech.mobile.perf.core.Tracker;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +35,7 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
     _conn.disconnect();
 
     if (_state == STARTED) {
-      Tracker.endUrl(_id, 0);
+      Tracker.endUrl(_id, 0, null);
       _state = ENDED;
     }
   }
@@ -64,7 +65,7 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
     int result = _conn.getResponseCode();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id, result);
+      Tracker.endUrl(_id, result, null);
       _state = ENDED;
     }
 
@@ -81,7 +82,7 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
     String result = _conn.getResponseMessage();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id, _conn.getResponseCode());
+      Tracker.endUrl(_id, _conn.getResponseCode(), null);
       _state = ENDED;
     }
 
@@ -243,7 +244,7 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
 
       if (stream == null) {
         if (_state == STARTED) {
-          Tracker.endUrl(_id, statusCode);
+          Tracker.endUrl(_id, statusCode, null);
           _state = ENDED;
         }
         return null;
@@ -253,10 +254,10 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
         _state = INPUT;
       }
 
-      return new HttpInputStreamWrapper(stream, _id, statusCode);
+      return new HttpInputStreamWrapper(stream, _id, statusCode, _conn.getHeaderField(Analytics.CDN_HEADER));
     } catch (IOException e) {
       if (_state == STARTED) {
-        Tracker.endUrl(_id, statusCode);
+        Tracker.endUrl(_id, statusCode, null);
         _state = ENDED;
       }
       throw e;

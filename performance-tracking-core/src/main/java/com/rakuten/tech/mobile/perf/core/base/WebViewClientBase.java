@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.perf.core.base;
 
 import android.graphics.Bitmap;
-import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -23,7 +22,7 @@ public class WebViewClientBase extends WebViewClient {
   public void onPageFinished(WebView view, String url) {
     Tracker.prolongMetric();
     if (com_rakuten_tech_mobile_perf_page_trackingId != 0) {
-      Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, 200);
+      Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, 200, null);
       com_rakuten_tech_mobile_perf_page_trackingId = 0;
     }
     super.onPageFinished(view, url);
@@ -33,7 +32,8 @@ public class WebViewClientBase extends WebViewClient {
       WebResourceResponse errorResponse) {
     Tracker.prolongMetric();
     if (com_rakuten_tech_mobile_perf_page_trackingId != 0) {
-      Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, errorResponse.getStatusCode());
+      Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, errorResponse.getStatusCode(),
+          null);
       com_rakuten_tech_mobile_perf_page_trackingId = 0;
     }
     super.onReceivedHttpError(view, request, errorResponse);

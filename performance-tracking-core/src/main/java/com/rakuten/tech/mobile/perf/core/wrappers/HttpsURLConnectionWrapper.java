@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.perf.core.wrappers;
 
+import com.rakuten.tech.mobile.perf.core.Analytics;
 import com.rakuten.tech.mobile.perf.core.Tracker;
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,7 +87,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     _conn.disconnect();
 
     if (_state == STARTED) {
-      Tracker.endUrl(_id, 0);
+      Tracker.endUrl(_id, 0, null);
       _state = ENDED;
     }
   }
@@ -116,7 +117,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     int result = _conn.getResponseCode();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id, result);
+      Tracker.endUrl(_id, result, _conn.getHeaderField(Analytics.CDN_HEADER));
       _state = ENDED;
     }
 
@@ -133,7 +134,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     String result = _conn.getResponseMessage();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id, _conn.getResponseCode());
+      Tracker.endUrl(_id, _conn.getResponseCode(), _conn.getHeaderField(Analytics.CDN_HEADER));
       _state = ENDED;
     }
 
@@ -290,12 +291,13 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     }
 
     int statusCode = _conn.getResponseCode();
+    String cdnHeadr = _conn.getHeaderField(Analytics.CDN_HEADER);
     try {
       InputStream stream = _conn.getInputStream();
 
       if (stream == null) {
         if (_state == STARTED) {
-          Tracker.endUrl(_id, statusCode);
+          Tracker.endUrl(_id, statusCode, cdnHeadr);
           _state = ENDED;
         }
         return null;
@@ -305,10 +307,10 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
         _state = INPUT;
       }
 
-      return new HttpInputStreamWrapper(stream, _id, statusCode);
+      return new HttpInputStreamWrapper(stream, _id, statusCode, cdnHeadr);
     } catch (IOException e) {
       if (_state == STARTED) {
-        Tracker.endUrl(_id, statusCode);
+        Tracker.endUrl(_id, statusCode, cdnHeadr);
         _state = ENDED;
       }
       throw e;

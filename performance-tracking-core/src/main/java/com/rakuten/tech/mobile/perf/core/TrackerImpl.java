@@ -1,17 +1,25 @@
 package com.rakuten.tech.mobile.perf.core;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 class TrackerImpl {
 
   private String activityName = null;
   private final MeasurementBuffer measurementBuffer;
   private final Current current;
   private final Debug debug;
+  private final Analytics analytics;
   private final boolean trackMeasurementWithoutMetric;
 
-  TrackerImpl(MeasurementBuffer measurementBuffer, Current current, Debug debug, boolean trackMeasurementWithoutMetric) {
+  TrackerImpl(MeasurementBuffer measurementBuffer, Current current, Debug debug,
+      Analytics analytics,
+      boolean trackMeasurementWithoutMetric) {
     this.measurementBuffer = measurementBuffer;
     this.current = current;
     this.debug = debug;
+    this.analytics = analytics;
     this.trackMeasurementWithoutMetric = trackMeasurementWithoutMetric;
   }
 
@@ -112,19 +120,38 @@ class TrackerImpl {
     return 0;
   }
 
-  void endUrl(int trackingId, int statusCode) {
+  void endUrl(int trackingId, int statusCode, String cdnHeader) {
     if (statusCode != 0) {
       endMeasurement(trackingId, statusCode);
     } else {
       endMeasurement(trackingId);
     }
 
+    Measurement m = measurementBuffer.getByTrackingId(trackingId);
+    sendAnalyticsEvent(m, cdnHeader);
+
     if (debug != null) {
-      Measurement m = measurementBuffer.getByTrackingId(trackingId);
       if (m != null) {
         debug.log("URL_END", m, null);
       }
     }
+  }
+
+  void sendAnalyticsEvent(Measurement m, String cdnHeader) {
+    // broadcast performance measurements to peer analytics SDK
+    Map<String, Object> event =  new HashMap<>();
+    event.put("cdn", cdnHeader);
+//    event.put("url", m.a); // TODO: spec not clear yet
+    Map<String, Object> data =  new HashMap<>();
+    data.put("name", m.a);
+    data.put("startTime", m.startTime);
+    data.put("endTime", m.endTime);
+    data.put("duration", m.endTime - m.startTime);
+    data.put("cdn", cdnHeader);
+    ArrayList<Map> dataArray = new ArrayList<>(1);
+    dataArray.add(data);
+    event.put("perfdata", dataArray);
+    analytics.sendEvent("perf", event);
   }
 
   int startCustom(String measurementId) {

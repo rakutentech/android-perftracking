@@ -61,7 +61,7 @@ public class RuntimeContentProvider extends ContentProvider {
           locationUrlPrefix);
       // Initialise Tracking Manager
       TrackingManager.initialize(context, config, locationStore.getObservable(),
-          batteryInfoStore.getObservable());
+          batteryInfoStore.getObservable(), new AnalyticsBroadcaster(context));
       Metric.start("_launch");
     }
     return false;
