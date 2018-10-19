@@ -22,11 +22,13 @@ public class Tracker {
    * @param config Performance tracking configuration.
    */
   public static synchronized void on(Context context, Config config,
-      CachingObservable<LocationData> locationObservable, CachingObservable<Float> batteryInfoObservable) {
+      CachingObservable<LocationData> locationObservable,
+      CachingObservable<Float> batteryInfoObservable,
+      Analytics analytics) {
     Debug debug = config.debug ? new Debug() : null;
     MeasurementBuffer buffer = new MeasurementBuffer();
     Current current = new Current();
-    _tracker = new TrackerImpl(buffer, current, debug, config.enableNonMetricMeasurement);
+    _tracker = new TrackerImpl(buffer, current, debug, analytics, config.enableNonMetricMeasurement);
     EnvironmentInfo envInfo = new EnvironmentInfo(context, locationObservable, batteryInfoObservable);
     EventWriter writer = new EventWriter(config, envInfo);
     Sender sender = new Sender(buffer, current, writer, debug, config.enableNonMetricMeasurement);
@@ -163,12 +165,13 @@ public class Tracker {
    * Ends URL measurement.
    * @param trackingId Tracking ID returned from startUrl
    * @param statusCode Response status code
+   * @param cdnHeader nullable value of the X-CDN-Served-From header
    */
-  public static void endUrl(int trackingId, int statusCode) {
+  public static void endUrl(int trackingId, int statusCode, String cdnHeader) {
     try {
       TrackerImpl t = _tracker;
       if (t != null) {
-        t.endUrl(trackingId, statusCode);
+        t.endUrl(trackingId, statusCode, cdnHeader);
       }
     } catch (Throwable t) {
       Tracker.off();
