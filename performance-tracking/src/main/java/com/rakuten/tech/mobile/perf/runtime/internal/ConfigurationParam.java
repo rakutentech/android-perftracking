@@ -2,9 +2,7 @@ package com.rakuten.tech.mobile.perf.runtime.internal;
 
 import android.text.TextUtils;
 
-/**
- * Configuration Parameters
- */
+/** Configuration Parameters */
 class ConfigurationParam {
 
   final String platform;
@@ -75,7 +73,8 @@ class ConfigurationParam {
         throw new IllegalStateException("Platform cannot be null");
       }
       if (TextUtils.isEmpty(appId)) {
-        throw new IllegalStateException("App Id cannot be null or empty, Please set proper metadata `com.rakuten.tech.mobile.relay.AppId` in manifest");
+        throw new IllegalStateException(
+            "App Id cannot be null or empty, Please set proper metadata `com.rakuten.tech.mobile.relay.AppId` in manifest");
       }
       if (appVersion == null) {
         throw new IllegalStateException("App Version cannot be null");

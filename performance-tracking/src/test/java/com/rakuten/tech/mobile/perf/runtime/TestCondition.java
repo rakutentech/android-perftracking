@@ -9,9 +9,9 @@ public class TestCondition {
     return new Condition<Map<String, String>>() {
       @Override
       public boolean matches(Map<String, String> map) {
-        return map.keySet().contains(key) &&
-            (value == null && map.get(key) == null ||
-                value != null && value.equals(map.get(key)));
+        return map.keySet().contains(key)
+            && (value == null && map.get(key) == null
+                || value != null && value.equals(map.get(key)));
       }
     };
   }

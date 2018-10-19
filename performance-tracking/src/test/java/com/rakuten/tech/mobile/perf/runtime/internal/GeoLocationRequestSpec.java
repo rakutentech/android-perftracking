@@ -23,17 +23,14 @@ public class GeoLocationRequestSpec extends RobolectricUnitSpec {
   @Test
   public void shouldBuildUrlWithDefaultUrlPrefix() {
     GeoLocationRequest request = new GeoLocationRequest(null, "", null, null);
-    assertThat(request.getUrl())
-        .isEqualTo(BuildConfig.DEFAULT_LOCATION_URL_PREFIX);
+    assertThat(request.getUrl()).isEqualTo(BuildConfig.DEFAULT_LOCATION_URL_PREFIX);
   }
 
   @Test
   public void shouldBuildUrlWithCustomPrefix() {
     GeoLocationRequest request =
-        new GeoLocationRequest("https://other.prefix.com/abc/xyz/v1",
-            "", null, null);
-    assertThat(request.getUrl())
-        .isEqualTo("https://other.prefix.com/abc/xyz/v1");
+        new GeoLocationRequest("https://other.prefix.com/abc/xyz/v1", "", null, null);
+    assertThat(request.getUrl()).isEqualTo("https://other.prefix.com/abc/xyz/v1");
   }
 
   @Test
@@ -43,8 +40,7 @@ public class GeoLocationRequestSpec extends RobolectricUnitSpec {
     assertThat(request.getHeaders()).has(keyValue("Ocp-Apim-Subscription-Key", testKey));
   }
 
-  @Rule
-  public TestData data = new TestData("geolocation-api-response.json");
+  @Rule public TestData data = new TestData("geolocation-api-response.json");
 
   @Test
   public void shouldParseResponse() throws VolleyError {
@@ -52,7 +48,6 @@ public class GeoLocationRequestSpec extends RobolectricUnitSpec {
     GeoLocationResult response = request.parseResponse(data.content);
     assertThat(response).isNotNull();
     assertThat(response.getRegionName().equals("Tokyo"));
-
   }
 
   @Test(expected = VolleyError.class)

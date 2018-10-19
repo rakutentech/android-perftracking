@@ -26,31 +26,30 @@ import org.json.JSONException;
 
 /**
  * Base Request that only supports GET Requests
+ *
  * @param <T> Response Type
  */
 abstract class BaseRequest<T> extends Request<T> {
 
-  /** tag for logging **/
+  /** tag for logging * */
   private final String TAG = getClass().getSimpleName();
-  /** listener for successful responses **/
+  /** listener for successful responses * */
   private final @Nullable Response.Listener<T> listener;
-  /** http method **/
+  /** http method * */
   private int method;
-  /** url (without query parameters) **/
+  /** url (without query parameters) * */
   private Uri url = Uri.EMPTY;
-  /** map of http header parameters **/
+  /** map of http header parameters * */
   private Map<String, String> headers = new HashMap<>();
-  /** list of url query parameters **/
+  /** list of url query parameters * */
   private List<Param> queryParams = new ArrayList<>();
 
-  /**
-   * Key-Value Parameter
-   */
+  /** Key-Value Parameter */
   private static class Param {
 
-    /** Key **/
+    /** Key * */
     private final String key;
-    /** Value **/
+    /** Value * */
     private final String value;
 
     private Param(String key, String value) {
@@ -59,30 +58,37 @@ abstract class BaseRequest<T> extends Request<T> {
     }
   }
 
-  /** Creates new request object for GET with empty URL
+  /**
+   * Creates new request object for GET with empty URL
+   *
    * @param listener listener for successful responses
    * @param errorListener error listener in case an error happened
    */
-  BaseRequest(@Nullable Response.Listener<T> listener,
-      @Nullable Response.ErrorListener errorListener) {
+  BaseRequest(
+      @Nullable Response.Listener<T> listener, @Nullable Response.ErrorListener errorListener) {
     this(Method.GET, "", listener, errorListener);
   }
 
-  /** Creates new request object
+  /**
+   * Creates new request object
+   *
    * @param method http method
    * @param url http url
    * @param listener listener for successful responses
    * @param errorListener error listener in case an error happened
    */
-  private BaseRequest(int method, String url, @Nullable Response.Listener<T> listener,
+  private BaseRequest(
+      int method,
+      String url,
+      @Nullable Response.Listener<T> listener,
       @Nullable Response.ErrorListener errorListener) {
     super(method, url, errorListener);
     this.listener = listener;
   }
 
-
   /**
-   * Set the method for this request.  Can be one of the values in {@link Method}.
+   * Set the method for this request. Can be one of the values in {@link Method}.
+   *
    * @param method one of the values in {@link Method}.
    */
   void setMethod(int method) {
@@ -96,13 +102,14 @@ abstract class BaseRequest<T> extends Request<T> {
 
   /**
    * Set URL endpoint. This overrides both domain and path
+   *
    * @param url url endpoint. Example: https://api.some.domain.com/v2/some/path/
    */
   void setUrl(String url) {
     this.url = Uri.parse(url);
   }
 
-  /** returns full URL (including query parameters) **/
+  /** returns full URL (including query parameters) * */
   @Override
   public String getUrl() {
     return getOriginUrl();
@@ -119,6 +126,7 @@ abstract class BaseRequest<T> extends Request<T> {
 
   /**
    * Set URL query parameter. This will remove all existing parameters with the same name
+   *
    * @param name parameter name
    * @param value parameter value. If value is null, no parameter will be set
    */
@@ -131,6 +139,7 @@ abstract class BaseRequest<T> extends Request<T> {
 
   /**
    * Append new URL query parameter. This will not replace existing parameters with the same name.
+   *
    * @param name parameter name
    * @param value parameter value
    */
@@ -146,6 +155,7 @@ abstract class BaseRequest<T> extends Request<T> {
 
   /**
    * Remove URL query parameter. This will remove all parameters with the given name
+   *
    * @param name parameter name
    */
   void removeQueryParam(String name) {
@@ -163,6 +173,7 @@ abstract class BaseRequest<T> extends Request<T> {
 
   /**
    * Set http header parameter
+   *
    * @param name header parameter name
    * @param value header parameter value or null to remove header parameter
    */
@@ -176,6 +187,7 @@ abstract class BaseRequest<T> extends Request<T> {
 
   /**
    * Remove http header parameter
+   *
    * @param name name of parameter
    */
   void removeHeader(@NonNull String name) {
@@ -184,9 +196,11 @@ abstract class BaseRequest<T> extends Request<T> {
 
   /**
    * get map of http header values
+   *
    * @return map with header values
    */
-  @Override public Map<String, String> getHeaders() {
+  @Override
+  public Map<String, String> getHeaders() {
     return Collections.unmodifiableMap(headers);
   }
 
@@ -196,7 +210,8 @@ abstract class BaseRequest<T> extends Request<T> {
    * @param response the raw network response
    * @return Response object with the parsed POJO
    */
-  @Override protected final Response<T> parseNetworkResponse(NetworkResponse response) {
+  @Override
+  protected final Response<T> parseNetworkResponse(NetworkResponse response) {
     try {
       T data = parseResponse(response);
       return Response.success(data, parseCache(response));
@@ -222,9 +237,10 @@ abstract class BaseRequest<T> extends Request<T> {
   }
 
   /**
-   * Parse the response into a data model or throw an exception in case of an error.
-   * Returning a value will trigger {@link #deliverResponse(Object)} while throwing an exception
-   * will trigger {@link #deliverError(VolleyError)}.
+   * Parse the response into a data model or throw an exception in case of an error. Returning a
+   * value will trigger {@link #deliverResponse(Object)} while throwing an exception will trigger
+   * {@link #deliverError(VolleyError)}.
+   *
    * @param response network response
    * @return parsed data response
    * @throws Exception any kind of error occurred, e.g. invalid data, data format, etc.
@@ -235,10 +251,10 @@ abstract class BaseRequest<T> extends Request<T> {
   }
 
   /**
-   * Parse the response into a data model or throw an exception in case of an error.
-   * Returning a value will trigger {@link #deliverResponse(Object)} while throwing an exception
-   * will trigger {@link #deliverError(VolleyError)}.
-   * This method is being called from {@link #parseResponse(NetworkResponse)}.
+   * Parse the response into a data model or throw an exception in case of an error. Returning a
+   * value will trigger {@link #deliverResponse(Object)} while throwing an exception will trigger
+   * {@link #deliverError(VolleyError)}. This method is being called from {@link
+   * #parseResponse(NetworkResponse)}.
    *
    * @param response network response
    * @return parsed data response
@@ -247,8 +263,9 @@ abstract class BaseRequest<T> extends Request<T> {
   protected abstract T parseResponse(String response) throws Exception;
 
   /**
-   * Returns the charset specified in the Content-Type of this header, or falls back to
-   * UTF-8 if none can be found.
+   * Returns the charset specified in the Content-Type of this header, or falls back to UTF-8 if
+   * none can be found.
+   *
    * @param response network response
    * @return charset from header
    */
@@ -263,6 +280,7 @@ abstract class BaseRequest<T> extends Request<T> {
 
   /**
    * Returns caching instruction based on HTTP header or manual configuration
+   *
    * @param response the raw network response
    * @return caching instruction or null to ignore cache
    */
@@ -278,6 +296,7 @@ abstract class BaseRequest<T> extends Request<T> {
 
   /**
    * Convenience function to add this request to the queue
+   *
    * @param queue queue to add request to
    * @return this
    */
@@ -286,7 +305,8 @@ abstract class BaseRequest<T> extends Request<T> {
     return this;
   }
 
-  @Override public void deliverResponse(T response) {
+  @Override
+  public void deliverResponse(T response) {
     // notify observer object, thereby notifying front-end UI
     if (listener != null) {
       listener.onResponse(response);

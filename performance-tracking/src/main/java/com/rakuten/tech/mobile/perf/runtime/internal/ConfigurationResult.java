@@ -7,18 +7,18 @@ import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Configuration Result
- */
-
+/** Configuration Result */
 class ConfigurationResult implements Parcelable {
 
   @SerializedName("enablePercent")
   private double enablePercent;
+
   @SerializedName("enableNonMetricMeasurement")
   private boolean enableNonMetricMeasurement;
+
   @SerializedName("sendUrl")
   private String sendUrl;
+
   @SerializedName("sendHeaders")
   private Map<String, String> header;
 
@@ -50,17 +50,18 @@ class ConfigurationResult implements Parcelable {
     return 0;
   }
 
-  public static final Creator<ConfigurationResult> CREATOR = new Creator<ConfigurationResult>() {
-    @Override
-    public ConfigurationResult createFromParcel(Parcel in) {
-      return new ConfigurationResult(in);
-    }
+  public static final Creator<ConfigurationResult> CREATOR =
+      new Creator<ConfigurationResult>() {
+        @Override
+        public ConfigurationResult createFromParcel(Parcel in) {
+          return new ConfigurationResult(in);
+        }
 
-    @Override
-    public ConfigurationResult[] newArray(int size) {
-      return new ConfigurationResult[size];
-    }
-  };
+        @Override
+        public ConfigurationResult[] newArray(int size) {
+          return new ConfigurationResult[size];
+        }
+      };
 
   double getEnablePercent() {
     return enablePercent;
@@ -77,5 +78,4 @@ class ConfigurationResult implements Parcelable {
   Map<String, String> getHeader() {
     return header;
   }
-
 }

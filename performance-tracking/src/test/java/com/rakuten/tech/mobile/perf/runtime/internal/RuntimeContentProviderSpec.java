@@ -31,24 +31,27 @@ import org.mockito.Mock;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-@Config(shadows = {
-    RequestQueueShadow.class, // prevent network requests from runtime side
-    TrackerShadow.class, // prevent network requests from core side
-    StoreShadow.class, // fake cache
-    UtilShadow.class   // fake debug build
-})
+@Config(
+    shadows = {
+      RequestQueueShadow.class, // prevent network requests from runtime side
+      TrackerShadow.class, // prevent network requests from core side
+      StoreShadow.class, // fake cache
+      UtilShadow.class // fake debug build
+    })
 public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
 
   @Rule public TestData config = new TestData("configuration-api-response.json");
-  @Rule public TestData configZeroPercent = new TestData(
-      "configuration-api-response-zero-percent.json");
+
+  @Rule
+  public TestData configZeroPercent = new TestData("configuration-api-response-zero-percent.json");
 
   @Mock PackageManager packageManager;
   /* Spy */ private MockedQueue queue;
 
   private RuntimeContentProvider provider;
 
-  @Before public void init() throws PackageManager.NameNotFoundException {
+  @Before
+  public void init() throws PackageManager.NameNotFoundException {
     RequestQueueShadow.queue = spy(new MockedQueue());
     queue = RequestQueueShadow.queue;
     provider = spy(new RuntimeContentProvider());
@@ -60,7 +63,7 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
     when(packageManager.getPackageInfo(anyString(), anyInt())).thenReturn(pkgInfo);
     ApplicationInfo appInfo = new ApplicationInfo();
     appInfo.metaData = new Bundle();
-    appInfo.metaData.putCharSequence("com.rakuten.tech.mobile.relay.AppId","testAppId");
+    appInfo.metaData.putCharSequence("com.rakuten.tech.mobile.relay.AppId", "testAppId");
     when(packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA))
         .thenReturn(appInfo);
     TrackingManager.INSTANCE = null;
@@ -68,7 +71,8 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
     UtilShadow.mockDebugBuild = false;
   }
 
-  @Test public void shouldNotStartTrackingOnEmptyCache() {
+  @Test
+  public void shouldNotStartTrackingOnEmptyCache() {
     StoreShadow.cachedContent = null;
 
     provider.onCreate();
@@ -77,7 +81,8 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
     verify(TrackerShadow.mockTracker, never()).startMetric(anyString());
   }
 
-  @Test public void shouldStartTrackingAndLaunchMetricOnCachedConfig() {
+  @Test
+  public void shouldStartTrackingAndLaunchMetricOnCachedConfig() {
     StoreShadow.cachedContent = new Gson().fromJson(config.content, ConfigurationResult.class);
 
     provider.onCreate();
@@ -86,9 +91,10 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
     verify(TrackerShadow.mockTracker).startMetric("_launch");
   }
 
-  @Test public void shouldStartTrackingForDebugBuildEvenifEnablePercentIsZero() {
-    StoreShadow.cachedContent = new Gson()
-        .fromJson(configZeroPercent.content, ConfigurationResult.class);
+  @Test
+  public void shouldStartTrackingForDebugBuildEvenifEnablePercentIsZero() {
+    StoreShadow.cachedContent =
+        new Gson().fromJson(configZeroPercent.content, ConfigurationResult.class);
     UtilShadow.mockDebugBuild = true;
 
     provider.onCreate();
@@ -97,23 +103,27 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
     verify(TrackerShadow.mockTracker).startMetric("_launch");
   }
 
-  @Test public void shouldNotFailOnMissingPackageInfo()
-      throws PackageManager.NameNotFoundException {
+  @Test
+  public void shouldNotFailOnMissingPackageInfo() throws PackageManager.NameNotFoundException {
     doThrow(new PackageManager.NameNotFoundException())
-        .when(packageManager).getPackageInfo(anyString(), anyInt());
+        .when(packageManager)
+        .getPackageInfo(anyString(), anyInt());
 
     provider.onCreate();
 
     verify(queue).add(any(Request.class));
   }
 
-  @Test public void shouldStartTrackingEvenWhenPackageAndAppInfoIsMissing()
+  @Test
+  public void shouldStartTrackingEvenWhenPackageAndAppInfoIsMissing()
       throws PackageManager.NameNotFoundException {
     StoreShadow.cachedContent = new Gson().fromJson(config.content, ConfigurationResult.class);
     doThrow(new PackageManager.NameNotFoundException())
-        .when(packageManager).getPackageInfo(anyString(), anyInt());
+        .when(packageManager)
+        .getPackageInfo(anyString(), anyInt());
     doThrow(new PackageManager.NameNotFoundException())
-        .when(packageManager).getApplicationInfo(anyString(), anyInt());
+        .when(packageManager)
+        .getApplicationInfo(anyString(), anyInt());
 
     provider.onCreate();
 
@@ -121,7 +131,8 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
     verify(TrackerShadow.mockTracker).startMetric("_launch");
   }
 
-  @Test public void shouldNotImplementAnyContentProviderMethods() {
+  @Test
+  public void shouldNotImplementAnyContentProviderMethods() {
     assertThat(provider.query(null, null, null, null, null)).isNull();
     assertThat(provider.getType(null)).isNull();
     assertThat(provider.insert(null, null)).isNull();

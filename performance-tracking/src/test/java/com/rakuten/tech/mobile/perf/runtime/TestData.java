@@ -15,7 +15,8 @@ public class TestData extends ExternalResource {
     this.fileName = resourceFileName;
   }
 
-  @Override protected void before() throws IOException {
+  @Override
+  protected void before() throws IOException {
     ClassLoader classLoader = this.getClass().getClassLoader();
     InputStream stream = classLoader.getResourceAsStream(fileName);
     if (stream == null) {

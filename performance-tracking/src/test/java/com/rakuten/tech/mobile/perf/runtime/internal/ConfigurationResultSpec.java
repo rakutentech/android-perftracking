@@ -13,7 +13,8 @@ public class ConfigurationResultSpec extends RobolectricUnitSpec {
 
   @Rule public TestData data = new TestData("configuration-api-response.json");
 
-  @Test public void shouldParcelWithoutError() {
+  @Test
+  public void shouldParcelWithoutError() {
     ConfigurationResult response = new Gson().fromJson(data.content, ConfigurationResult.class);
     Parcel parcel = Parcel.obtain();
 
@@ -30,7 +31,8 @@ public class ConfigurationResultSpec extends RobolectricUnitSpec {
     assertThat(response.describeContents()).isEqualTo(fromParcel.describeContents());
   }
 
-  @Test public void shouldImplementParcelableMiscMethods() {
+  @Test
+  public void shouldImplementParcelableMiscMethods() {
     ConfigurationResult[] array = ConfigurationResult.CREATOR.newArray(0);
     assertThat(array).isNotNull();
   }

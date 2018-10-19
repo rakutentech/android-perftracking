@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.perf.runtime.internal;
 
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,8 +7,9 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 
 /**
- * BatteryInfoStore - Handles registering for battery info updates and publishing to observers.
- * Can be subscribed to battery changes like below,
+ * BatteryInfoStore - Handles registering for battery info updates and publishing to observers. Can
+ * be subscribed to battery changes like below,
+ *
  * <pre>
  *     <code>
  *         BatteryInfoStore store = //...
@@ -21,24 +21,22 @@ import android.os.BatteryManager;
  *         });
  *     </code>
  * </pre>
- *
  */
 class BatteryInfoStore extends Store<Float> {
 
   BatteryInfoStore(Context context) {
 
-    context.registerReceiver(new BroadcastReceiver() {
-      public void onReceive(Context c, Intent i) {
+    context.registerReceiver(
+        new BroadcastReceiver() {
+          public void onReceive(Context c, Intent i) {
 
-        int level = i.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = i.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            int level = i.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = i.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
-        float batteryPct = level / (float) scale;
-        getObservable().publish(batteryPct);
-
-      }
-    }, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-
+            float batteryPct = level / (float) scale;
+            getObservable().publish(batteryPct);
+          }
+        },
+        new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
   }
-
 }

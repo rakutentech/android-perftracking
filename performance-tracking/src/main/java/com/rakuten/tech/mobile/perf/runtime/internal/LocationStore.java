@@ -1,6 +1,5 @@
 package com.rakuten.tech.mobile.perf.runtime.internal;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -16,8 +15,9 @@ import com.rakuten.tech.mobile.perf.core.LocationData;
 import com.rakuten.tech.mobile.perf.core.Tracker;
 
 /**
- * LocationStore - Handles requesting location, response caching and publishing to observers.
- * Can be subscribed to location changes like below,
+ * LocationStore - Handles requesting location, response caching and publishing to observers. Can be
+ * subscribed to location changes like below,
+ *
  * <pre>
  *     <code>
  *         LocationStore store = //...
@@ -31,12 +31,14 @@ import com.rakuten.tech.mobile.perf.core.Tracker;
  *         });
  *     </code>
  * </pre>
- * Location is requested on every launch of the app i.e on starting at construction time and then hourly.
- * If location is already cached, while creating LocationStore instance store will emit cached location else no location will be emitted via its observable.
+ *
+ * Location is requested on every launch of the app i.e on starting at construction time and then
+ * hourly. If location is already cached, while creating LocationStore instance store will emit
+ * cached location else no location will be emitted via its observable.
  */
 class LocationStore extends Store<LocationData> {
 
-  private final static String TAG = LocationStore.class.getSimpleName();
+  private static final String TAG = LocationStore.class.getSimpleName();
   private static final String PREFS = "app_performance";
   private static final String LOCATION_KEY = "location_key";
   private static final int TIME_INTERVAL = 60 * 60 * 1000; // 1 HOUR in milli seconds
@@ -47,8 +49,11 @@ class LocationStore extends Store<LocationData> {
   @NonNull private final SharedPreferences prefs;
   @NonNull private final Handler handler;
 
-  LocationStore(@NonNull Context context, @NonNull RequestQueue requestQueue,
-      @Nullable String subscriptionKey, @Nullable String urlPrefix) {
+  LocationStore(
+      @NonNull Context context,
+      @NonNull RequestQueue requestQueue,
+      @Nullable String subscriptionKey,
+      @Nullable String urlPrefix) {
     this.prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     this.requestQueue = requestQueue;
     this.subscriptionKey = subscriptionKey;
@@ -61,36 +66,42 @@ class LocationStore extends Store<LocationData> {
   }
 
   @SuppressWarnings("FieldCanBeLocal")
-  private final Runnable periodicLocationCheck = new Runnable() {
-    public void run() {
-      if (Tracker.isTrackerRunning()) {
-        handler.postDelayed(this, TIME_INTERVAL);
-        loadLocationFromApi();
-      }
-    }
-  };
+  private final Runnable periodicLocationCheck =
+      new Runnable() {
+        public void run() {
+          if (Tracker.isTrackerRunning()) {
+            handler.postDelayed(this, TIME_INTERVAL);
+            loadLocationFromApi();
+          }
+        }
+      };
 
   private void loadLocationFromApi() {
     if (subscriptionKey == null) {
-      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from "
-          + "manifest automated performance tracking will not work.");
+      Log.d(
+          TAG,
+          "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from "
+              + "manifest automated performance tracking will not work.");
     }
-    new GeoLocationRequest(urlPrefix,
-        subscriptionKey,
-        new Response.Listener<GeoLocationResult>() {
-          @Override
-          public void onResponse(GeoLocationResult newLocation) {
-            LocationData locationData = new LocationData(newLocation.getCountryName(),
-                newLocation.getRegionName());
-            writeLocationToCache(locationData);
-            getObservable().publish(locationData);
-          }
-        }, new Response.ErrorListener() {
-      @Override
-      public void onErrorResponse(VolleyError error) {
-        Log.d(TAG, "Error loading location", error);
-      }
-    }).queue(requestQueue);
+    new GeoLocationRequest(
+            urlPrefix,
+            subscriptionKey,
+            new Response.Listener<GeoLocationResult>() {
+              @Override
+              public void onResponse(GeoLocationResult newLocation) {
+                LocationData locationData =
+                    new LocationData(newLocation.getCountryName(), newLocation.getRegionName());
+                writeLocationToCache(locationData);
+                getObservable().publish(locationData);
+              }
+            },
+            new Response.ErrorListener() {
+              @Override
+              public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Error loading location", error);
+              }
+            })
+        .queue(requestQueue);
   }
 
   private void writeLocationToCache(LocationData result) {
@@ -102,5 +113,4 @@ class LocationStore extends Store<LocationData> {
     String result = prefs.getString(LOCATION_KEY, null);
     return result != null ? new Gson().fromJson(result, LocationData.class) : null;
   }
-
 }
