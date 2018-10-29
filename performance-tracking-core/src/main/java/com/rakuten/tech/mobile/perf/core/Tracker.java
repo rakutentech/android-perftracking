@@ -167,11 +167,11 @@ public class Tracker {
    * @param statusCode Response status code
    * @param cdnHeader nullable value of the X-CDN-Served-From header
    */
-  public static void endUrl(int trackingId, int statusCode, String cdnHeader) {
+  public static void endUrl(int trackingId, int statusCode, String cdnHeader, long contentLength) {
     try {
       TrackerImpl t = _tracker;
       if (t != null) {
-        t.endUrl(trackingId, statusCode, cdnHeader);
+        t.endUrl(trackingId, statusCode, cdnHeader, contentLength);
       }
     } catch (Throwable t) {
       Tracker.off();

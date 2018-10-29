@@ -87,7 +87,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     _conn.disconnect();
 
     if (_state == STARTED) {
-      Tracker.endUrl(_id, 0, null);
+      Tracker.endUrl(_id, 0, null, 0);
       _state = ENDED;
     }
   }
@@ -117,7 +117,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     int result = _conn.getResponseCode();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id, result, _conn.getHeaderField(Analytics.CDN_HEADER));
+      Tracker.endUrl(_id, result, _conn.getHeaderField(Analytics.CDN_HEADER), _conn.getContentLengthLong());
       _state = ENDED;
     }
 
@@ -134,7 +134,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     String result = _conn.getResponseMessage();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id, _conn.getResponseCode(), _conn.getHeaderField(Analytics.CDN_HEADER));
+      Tracker.endUrl(_id, _conn.getResponseCode(), _conn.getHeaderField(Analytics.CDN_HEADER), _conn.getContentLengthLong());
       _state = ENDED;
     }
 
@@ -291,13 +291,14 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     }
 
     int statusCode = _conn.getResponseCode();
-    String cdnHeadr = _conn.getHeaderField(Analytics.CDN_HEADER);
+    String cdnHeader = _conn.getHeaderField(Analytics.CDN_HEADER);
+    long contentLength = _conn.getContentLengthLong();
     try {
       InputStream stream = _conn.getInputStream();
 
       if (stream == null) {
         if (_state == STARTED) {
-          Tracker.endUrl(_id, statusCode, cdnHeadr);
+          Tracker.endUrl(_id, statusCode, cdnHeader, contentLength);
           _state = ENDED;
         }
         return null;
@@ -307,10 +308,10 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
         _state = INPUT;
       }
 
-      return new HttpInputStreamWrapper(stream, _id, statusCode, cdnHeadr);
+      return new HttpInputStreamWrapper(stream, _id, statusCode, cdnHeader, contentLength);
     } catch (IOException e) {
       if (_state == STARTED) {
-        Tracker.endUrl(_id, statusCode, cdnHeadr);
+        Tracker.endUrl(_id, statusCode, cdnHeader, contentLength);
         _state = ENDED;
       }
       throw e;

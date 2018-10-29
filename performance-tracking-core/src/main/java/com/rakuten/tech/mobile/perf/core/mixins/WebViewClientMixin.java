@@ -24,7 +24,7 @@ public class WebViewClientMixin extends WebViewClientBase {
   public void onPageFinished(WebView view, String url) {
     Tracker.prolongMetric();
     Tracker.endMetric();
-    Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, 200, null);
+    Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, 200, null, 0);
     com_rakuten_tech_mobile_perf_page_trackingId = 0;
     onPageFinished(view, url);
   }
@@ -35,7 +35,7 @@ public class WebViewClientMixin extends WebViewClientBase {
     Tracker.prolongMetric();
     Tracker.endMetric();
     Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, errorResponse.getStatusCode(),
-        null);
+        null, 0);
     com_rakuten_tech_mobile_perf_page_trackingId = 0;
     onReceivedHttpError(view, request, errorResponse);
   }

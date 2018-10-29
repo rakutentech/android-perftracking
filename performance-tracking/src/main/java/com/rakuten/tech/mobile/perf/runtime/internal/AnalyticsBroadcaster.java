@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import com.rakuten.tech.mobile.perf.core.Analytics;
@@ -12,8 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Broadcaster that sends events via local broadcast to peer analytics sdk. */
-class AnalyticsBroadcaster implements Analytics {
-  private static final String ACTION = "TBD"; // TODO: spec not clear yet
+class AnalyticsBroadcaster extends Analytics {
+  @VisibleForTesting
+  static final String ACTION = "jp.co.rakuten.sdtd.analytics.ExternalEvent";
 
   /**
    * Send event data to peer analytics module. If the app does not bundle a compatible analytics
@@ -38,7 +40,7 @@ class AnalyticsBroadcaster implements Analytics {
     }
 
     Intent intent = new Intent(ACTION);
-    intent.putExtra("event-name", name);
+    intent.putExtra("event-name", "rat." + name);
     intent.putExtra("event-data", serializableData);
 
     LocalBroadcastManager.getInstance(ctx).sendBroadcast(intent);
