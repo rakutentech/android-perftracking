@@ -120,7 +120,7 @@ class TrackerImpl {
     return 0;
   }
 
-  void endUrl(int trackingId, int statusCode, String cdnHeader) {
+  void endUrl(int trackingId, int statusCode, String cdnHeader, long contentLength) {
     if (statusCode != 0) {
       endMeasurement(trackingId, statusCode);
     } else {
@@ -128,30 +128,13 @@ class TrackerImpl {
     }
 
     Measurement m = measurementBuffer.getByTrackingId(trackingId);
-    sendAnalyticsEvent(m, cdnHeader);
+    analytics.sendUrlMeasurement(m, cdnHeader, contentLength);
 
     if (debug != null) {
       if (m != null) {
         debug.log("URL_END", m, null);
       }
     }
-  }
-
-  void sendAnalyticsEvent(Measurement m, String cdnHeader) {
-    // broadcast performance measurements to peer analytics SDK
-    Map<String, Object> event =  new HashMap<>();
-    event.put("cdn", cdnHeader);
-//    event.put("url", m.a); // TODO: spec not clear yet
-    Map<String, Object> data =  new HashMap<>();
-    data.put("name", m.a);
-    data.put("startTime", m.startTime);
-    data.put("endTime", m.endTime);
-    data.put("duration", m.endTime - m.startTime);
-    data.put("cdn", cdnHeader);
-    ArrayList<Map> dataArray = new ArrayList<>(1);
-    dataArray.add(data);
-    event.put("perfdata", dataArray);
-    analytics.sendEvent("perf", event);
   }
 
   int startCustom(String measurementId) {

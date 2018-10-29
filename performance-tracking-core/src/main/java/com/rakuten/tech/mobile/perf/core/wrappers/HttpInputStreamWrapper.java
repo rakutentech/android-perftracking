@@ -10,12 +10,14 @@ public class HttpInputStreamWrapper extends InputStream {
   private final int _id;
   private final int _statusCode;
   private final String _cdnHeader;
+  private final long _contentLength;
 
-  public HttpInputStreamWrapper(InputStream stream, int id, int statusCode, String cdnHeader) {
+  public HttpInputStreamWrapper(InputStream stream, int id, int statusCode, String cdnHeader, long contentLength) {
     _stream = stream;
     _id = id;
     _statusCode = statusCode;
     _cdnHeader = cdnHeader;
+    _contentLength = contentLength;
   }
 
   @Override
@@ -25,7 +27,7 @@ public class HttpInputStreamWrapper extends InputStream {
 
   @Override
   public void close() throws IOException {
-    Tracker.endUrl(_id, _statusCode, _cdnHeader);
+    Tracker.endUrl(_id, _statusCode, _cdnHeader, _contentLength);
     _stream.close();
   }
 

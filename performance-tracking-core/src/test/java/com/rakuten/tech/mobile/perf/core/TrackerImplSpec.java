@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 public class TrackerImplSpec {
 
   @Mock Debug debug;
+  @Mock Analytics analytics;
   /* Spy */ protected MockBuffer buffer;
   /* Spy */ protected AtomicReference<Metric> metric;
   protected Current current;
@@ -59,7 +60,7 @@ public class TrackerImplSpec {
 
   public static class FullTrackingBehaviorSpec extends TrackerImplSpec {
     @Before public void initTracker() {
-      tracker = new TrackerImpl(buffer, current, debug, true);
+      tracker = new TrackerImpl(buffer, current, debug, analytics, true);
     }
 
     // metrics
@@ -198,7 +199,7 @@ public class TrackerImplSpec {
       int id = tracker.startUrl(new URL("https://rakuten.co.jp"), "GET");
       Thread.sleep(10);
       long beforeEnd = System.currentTimeMillis();
-      tracker.endUrl(id, 200);
+      tracker.endUrl(id, 200, null, 0);
 
       verify(buffer, times(1)).next();
       assertThat(buffer.measurements).isNotEmpty();
@@ -224,6 +225,22 @@ public class TrackerImplSpec {
       assertThat(m.type).isEqualTo(Measurement.URL);
       assertThat(m.a).isEqualTo(url);
       assertThat(m.b).isEqualTo(null);
+    }
+
+    @Test public void shouldSendUrlMeasurementToAnalytics() throws MalformedURLException {
+      int id = tracker.startUrl(new URL("https://rakuten.co.jp"), "GET");
+
+      tracker.endUrl(id, 200, "cdn", 123L);
+
+      ArgumentCaptor<Measurement> measurement = ArgumentCaptor.forClass(Measurement.class);
+      ArgumentCaptor<String> cdn = ArgumentCaptor.forClass(String.class);
+      ArgumentCaptor<Long> contentLength = ArgumentCaptor.forClass(Long.class);
+
+      verify(analytics, times(1)).sendUrlMeasurement(measurement.capture(), cdn.capture(), contentLength.capture());
+      assertThat(measurement.getValue()).isEqualTo(buffer.measurements.get(0));
+      assertThat(cdn.getValue()).isEqualTo("cdn");
+      assertThat(contentLength.getValue()).isEqualTo(123L);
+
     }
 
     // custom measurements
@@ -260,7 +277,7 @@ public class TrackerImplSpec {
 
   public static class DisabledTrackingMeasurementsWithoutMetricBehaviorSpec extends TrackerImplSpec {
     @Before public void initTracker() {
-      tracker = new TrackerImpl(buffer, current, debug, false);
+      tracker = new TrackerImpl(buffer, current, debug, analytics, false);
     }
 
     // metrics
@@ -329,7 +346,7 @@ public class TrackerImplSpec {
 
   public static class ShouldNeverCrashBehaviorSpec extends TrackerImplSpec {
     @Before public void initTracker() {
-      tracker = new TrackerImpl(buffer, current, debug, true);
+      tracker = new TrackerImpl(buffer, current, debug, analytics, true);
     }
 
     // unexpected collaborator behavior
@@ -355,21 +372,21 @@ public class TrackerImplSpec {
       id = tracker.startMethod(new Object(), "methodName");
       tracker.endMethod(id);
       id = tracker.startUrl(new URL("https://rakuten.co.jp"), "GET");
-      tracker.endUrl(id, 200);
+      tracker.endUrl(id, 200, null, 0);
 
       verify(buffer, times(4)).next();
       // no exception
     }
 
     @Test public void shouldNotFailWithNullDebug() throws MalformedURLException {
-      tracker = new TrackerImpl(buffer, new Current(), null, true);
+      tracker = new TrackerImpl(buffer, new Current(), null, analytics,true);
       tracker.startMetric("m");
       tracker.prolongMetric();
       tracker.endMetric();
       int id = tracker.startMethod(new Object(), "method");
       tracker.endMethod(id);
       id = tracker.startUrl(new URL("https://rakuten.co.jp"), "GET");
-      tracker.endUrl(id, 200);
+      tracker.endUrl(id, 200, null, 0);
       id = tracker.startCustom("custom");
       tracker.endCustom(id);
 
@@ -383,7 +400,7 @@ public class TrackerImplSpec {
       tracker.endMetric();
       tracker.endCustom(0);
       tracker.endMethod(1);
-      tracker.endUrl(2, 200);
+      tracker.endUrl(2, 200, null, 0);
 
       // no exception
     }

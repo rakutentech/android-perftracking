@@ -10,8 +10,9 @@ public class MockTracker extends TrackerImpl {
       MeasurementBuffer measurementBuffer,
       Current current,
       Debug debug,
+      Analytics analytics,
       boolean shouldEnableNonMetricMeasurement) {
-    super(measurementBuffer, current, debug, shouldEnableNonMetricMeasurement);
+    super(measurementBuffer, current, debug, analytics, shouldEnableNonMetricMeasurement);
   }
 
   public void startMetric(String metricId) {}

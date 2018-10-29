@@ -18,7 +18,7 @@ public class ChildOfWebViewClientPost extends WebViewClientBase {
   public void onPageFinished(WebView view, String url) {
     Tracker.prolongMetric();
     Tracker.endMetric();
-    Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, 200, url);
+    Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, 200, null, 0);
     com_rakuten_tech_mobile_perf_page_trackingId = 0;
     this.com_rakuten_tech_mobile_perf_onPageFinished(view, url);
   }
@@ -28,7 +28,7 @@ public class ChildOfWebViewClientPost extends WebViewClientBase {
     Tracker.prolongMetric();
     Tracker.endMetric();
     Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, errorResponse.getStatusCode(),
-        null);
+        null, 0);
     com_rakuten_tech_mobile_perf_page_trackingId = 0;
     this.com_rakuten_tech_mobile_perf_onReceivedHttpError(view, request, errorResponse);
   }

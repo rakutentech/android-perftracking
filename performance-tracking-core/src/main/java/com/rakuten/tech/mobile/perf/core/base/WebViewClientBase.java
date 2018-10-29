@@ -22,7 +22,7 @@ public class WebViewClientBase extends WebViewClient {
   public void onPageFinished(WebView view, String url) {
     Tracker.prolongMetric();
     if (com_rakuten_tech_mobile_perf_page_trackingId != 0) {
-      Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, 200, null);
+      Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, 200, null, 0);
       com_rakuten_tech_mobile_perf_page_trackingId = 0;
     }
     super.onPageFinished(view, url);
@@ -33,7 +33,7 @@ public class WebViewClientBase extends WebViewClient {
     Tracker.prolongMetric();
     if (com_rakuten_tech_mobile_perf_page_trackingId != 0) {
       Tracker.endUrl(com_rakuten_tech_mobile_perf_page_trackingId, errorResponse.getStatusCode(),
-          null);
+          null, 0);
       com_rakuten_tech_mobile_perf_page_trackingId = 0;
     }
     super.onReceivedHttpError(view, request, errorResponse);

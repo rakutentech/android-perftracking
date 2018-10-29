@@ -35,7 +35,7 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
     _conn.disconnect();
 
     if (_state == STARTED) {
-      Tracker.endUrl(_id, 0, null);
+      Tracker.endUrl(_id, 0, null, 0);
       _state = ENDED;
     }
   }
@@ -64,8 +64,9 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
 
     int result = _conn.getResponseCode();
 
+
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id, result, null);
+      Tracker.endUrl(_id, result, _conn.getHeaderField(Analytics.CDN_HEADER), _conn.getContentLengthLong());
       _state = ENDED;
     }
 
@@ -82,7 +83,7 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
     String result = _conn.getResponseMessage();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id, _conn.getResponseCode(), null);
+      Tracker.endUrl(_id, _conn.getResponseCode(), _conn.getHeaderField(Analytics.CDN_HEADER), _conn.getContentLengthLong());
       _state = ENDED;
     }
 
@@ -216,11 +217,6 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
     return _conn.getHeaderFieldKey(n);
   }
 
-  //@Override
-  //public long getHeaderFieldLong (String name, long Default) {
-  //    return _conn.getHeaderFieldLong(name, Default);
-  //}
-
   @Override
   public Map<String, List<String>> getHeaderFields() {
     return _conn.getHeaderFields();
@@ -239,12 +235,14 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
     }
 
     int statusCode = _conn.getResponseCode();
+    String cdnHeader = _conn.getHeaderField(Analytics.CDN_HEADER);
+    long contentLength = _conn.getContentLengthLong();
     try {
       InputStream stream = _conn.getInputStream();
 
       if (stream == null) {
         if (_state == STARTED) {
-          Tracker.endUrl(_id, statusCode, null);
+          Tracker.endUrl(_id, statusCode, cdnHeader, contentLength);
           _state = ENDED;
         }
         return null;
@@ -254,10 +252,10 @@ public class HttpURLConnectionWrapper extends HttpURLConnection {
         _state = INPUT;
       }
 
-      return new HttpInputStreamWrapper(stream, _id, statusCode, _conn.getHeaderField(Analytics.CDN_HEADER));
+      return new HttpInputStreamWrapper(stream, _id, statusCode, cdnHeader, contentLength);
     } catch (IOException e) {
       if (_state == STARTED) {
-        Tracker.endUrl(_id, statusCode, null);
+        Tracker.endUrl(_id, statusCode, cdnHeader, contentLength);
         _state = ENDED;
       }
       throw e;
