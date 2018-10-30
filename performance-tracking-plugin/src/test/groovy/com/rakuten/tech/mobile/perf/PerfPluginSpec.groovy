@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.perf
 import groovy.mock.interceptor.StubFor
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.plugins.ExtensionContainer
@@ -22,11 +23,24 @@ class PerfPluginSpec {
     project = stubs.create()
   }
 
-  @Test void "should add runtime dependency to project"() {
+  @Test void "should add compile dependency to agp 2.x project"() {
+    project = stubs.create('2.3.3')
+
     plugin.apply(project)
 
     assert !stubs.compileDependencies.isEmpty()
     assert stubs.compileDependencies.find {
+      it.startsWith("com.rakuten.tech.mobile.perf:performance-tracking")
+    }
+  }
+
+  @Test void "should add implementation dependency to agp 3.x project"() {
+    project = stubs.create('3.2.1')
+
+    plugin.apply(project)
+
+    assert !stubs.implementationDependcies.isEmpty()
+    assert stubs.implementationDependcies.find {
       it.startsWith("com.rakuten.tech.mobile.perf:performance-tracking")
     }
   }
@@ -129,13 +143,37 @@ class TestDelegate {
 
 class Stubs {
   def compileDependencies = []
+  def implementationDependcies = []
   def extensions = []
   def transforms = []
   def taskName = ""
   TestDelegate testDelegate;
   def testExtension
 
-  Project create() {
+  Project create(String agpVersion = '3.2.1' ) {
+    StubFor.metaClass.ignoreCallChain { String... calls ->
+      for( call in calls) {
+        println "ignoring call to $call"
+        delegate.ignore(call) { delegate.proxyInstance() }
+      }
+    }
+
+    def root = [
+        buildscript: [
+            configurations: [
+                classpath: [
+                    dependencies: [
+                        [
+                          getVersion: { agpVersion },
+                          getGroup: { 'com.android.tools.build' },
+                          getName: { 'gradle' }
+                        ] as Dependency
+                    ]
+                ]
+            ]
+        ]
+    ]
+
     def android = [registerTransform: { transforms << it }]
 
     testExtension = new EmptyExtension()
@@ -154,11 +192,17 @@ class Stubs {
     testDelegate = new TestDelegate()
 
     def project = new StubFor(Project)
-    project.ignore('getDependencies') { [compile: { compileDependencies << it }] }
+    project.ignore('getDependencies') { [
+        compile: { compileDependencies << it },
+        implementation: { implementationDependcies << it }
+    ] }
     project.ignore('getExtensions') { extensionStub.proxyDelegateInstance() }
     project.ignore('getGradle') { gradle.proxyInstance() }
-    project.ignore('container') { new Object() }
     project.ignore('configure') { p, Closure c -> testDelegate.delegate c }
+    project.ignore('container') { new Object() }
+    project.ignore('getBuildscript') { root.buildscript }
+    project.ignore('getRootProject') { root }
+
     project.proxyInstance()
   }
 }

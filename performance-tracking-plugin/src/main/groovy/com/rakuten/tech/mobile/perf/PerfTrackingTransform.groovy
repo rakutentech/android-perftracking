@@ -43,7 +43,7 @@ class PerfTrackingTransform extends Transform {
       it.group == 'com.android.tools.build' && it.name == 'gradle'
     }
 
-    def majorVersion = (agp ? agp.version : '3').tokenize('.')*.toInteger().head();
+    def majorVersion = (agp ? agp.version : '3').tokenize('.')*.toInteger().head()
 
     log.info("Detected android gradle plugin version ${agp ? agp.version : '[unknown]'}, " +
         "adjusting transformations scopes.")

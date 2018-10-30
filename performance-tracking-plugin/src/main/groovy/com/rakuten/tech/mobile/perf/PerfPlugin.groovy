@@ -4,6 +4,7 @@ import com.android.build.gradle.AppExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.artifacts.Dependency
 
 /**
  * Gradle plugin
@@ -51,6 +52,23 @@ class PerfPlugin implements Plugin<Project> {
       }
     }
 
-    project.dependencies.compile runtime
+    Dependency agp = androidGradlePluginDependency(project)
+
+    def majorVersion = (agp ? agp.version : '3').tokenize('.')*.toInteger().head()
+
+    if (majorVersion < 3) {
+      project.dependencies.compile runtime
+    } else {
+      project.dependencies.implementation runtime
+    }
+  }
+
+  static Dependency androidGradlePluginDependency(Project project) {
+    def allClasspathDeps = project.buildscript.configurations.classpath.dependencies +
+        project.rootProject.buildscript.configurations.classpath.dependencies
+
+    return allClasspathDeps.find {
+      it.group == 'com.android.tools.build' && it.name == 'gradle'
+    }
   }
 }
