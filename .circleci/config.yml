@@ -11,14 +11,14 @@ jobs:
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false"
     steps:
       - checkout
-      - run: env
+      - restore_cache:
+          key: v1-{{ checksum "build.gradle" }}-{{ checksum  "performance-tracking/build.gradle" }}-{{ checksum  "performance-tracking-plugin/build.gradle" }}-{{ checksum  "performance-tracking-core/build.gradle" }}-{{ checksum  "performance-tracking-stubs/build.gradle" }}
       - run: git submodule update --init
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
-      - run:
-          name: Run Tests
-          command: ./gradlew check --info
+      - run: ./gradlew check --info -s
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-{{ checksum "build.gradle" }}-{{ checksum  "performance-tracking/build.gradle" }}-{{ checksum  "performance-tracking-plugin/build.gradle" }}-{{ checksum  "performance-tracking-core/build.gradle" }}-{{ checksum  "performance-tracking-stubs/build.gradle" }}
       - store_artifacts:
           path: ~/code/performance-tracking-plugin/build/reports
           destination: plugin-reports/
