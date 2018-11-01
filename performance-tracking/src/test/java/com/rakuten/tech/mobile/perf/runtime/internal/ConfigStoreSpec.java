@@ -37,7 +37,7 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
   @Rule public TestData config = new TestData("configuration-api-response.json");
 
   @Mock PackageManager packageManager;
-  /* Spy */ private SharedPreferences prefs;
+  private SharedPreferences prefs;
   /* Spy */ private Context context;
   /* Spy */ private MockedQueue queue;
 
@@ -51,9 +51,8 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     queue = RequestQueueShadow.queue;
     context = spy(RuntimeEnvironment.application);
     when(context.getPackageManager()).thenReturn(packageManager);
-    prefs = spy(context.getSharedPreferences("app_performance", Context.MODE_PRIVATE));
+    prefs = context.getSharedPreferences("app_performance", Context.MODE_PRIVATE);
     prefs.edit().clear().apply();
-    clearInvocations(prefs);
     when(context.getSharedPreferences(anyString(), anyInt())).thenReturn(prefs);
     PackageInfo pkgInfo = new PackageInfo();
     pkgInfo.versionName = "testVersion";

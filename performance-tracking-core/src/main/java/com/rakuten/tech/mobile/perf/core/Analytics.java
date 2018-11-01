@@ -16,7 +16,7 @@ public abstract class Analytics {
     Map<String, Object> entry =  new HashMap<>();
     entry.put("name", m.a);
     entry.put("startTime", m.startTime);
-    entry.put("endTime", m.endTime);
+    entry.put("responseEnd", m.endTime);
     entry.put("duration", m.endTime - m.startTime);
     if(cdnHeader != null && cdnHeader.length() > 0) {
       entry.put("cdn", cdnHeader);

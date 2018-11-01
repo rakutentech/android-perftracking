@@ -3,6 +3,7 @@ package com.rakuten.tech.mobile.perf.runtime.shadow;
 import static org.mockito.Mockito.mock;
 
 import android.content.Context;
+import com.rakuten.tech.mobile.perf.core.Analytics;
 import com.rakuten.tech.mobile.perf.core.CachingObservable;
 import com.rakuten.tech.mobile.perf.core.Config;
 import com.rakuten.tech.mobile.perf.core.LocationData;
@@ -31,7 +32,8 @@ public class TrackerShadow {
       Context context,
       Config config,
       CachingObservable<LocationData> observableLocation,
-      CachingObservable<Float> observableBattery) {
+      CachingObservable<Float> observableBattery,
+      Analytics analytics) {
     /* noop */
   }
 

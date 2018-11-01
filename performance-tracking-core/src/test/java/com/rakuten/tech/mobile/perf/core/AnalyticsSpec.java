@@ -64,7 +64,7 @@ public class AnalyticsSpec {
     assertThat(capture.name).isEqualTo("perf");
     assertThat(capture.data).containsKeys("perfdata");
     assertThat(capture.perfdata).containsKeys("type", "entries");
-    assertThat(capture.perfdata.get("type")).isEqualTo("resources");
+    assertThat(capture.perfdata.get("type")).isEqualTo("resource");
   }
 
   // mandatory fields
@@ -74,7 +74,7 @@ public class AnalyticsSpec {
     analytics.sendUrlMeasurement(measurement, null, 0);
 
     assertThat(capture.entry).containsKeys("name", "startTime", "responseEnd", "duration");
-    assertThat(capture.entry.get("name")).isEqualTo("resource");
+    assertThat(capture.entry.get("name")).isEqualTo(measurement.a);
     assertThat(capture.entry.get("startTime")).isEqualTo(measurement.startTime);
     assertThat(capture.entry.get("responseEnd")).isEqualTo(measurement.endTime);
     assertThat(capture.entry.get("duration")).isEqualTo(measurement.endTime - measurement.startTime);

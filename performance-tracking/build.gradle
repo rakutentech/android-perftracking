@@ -47,15 +47,10 @@ dependencies {
   implementation "com.android.volley:volley:${CONFIG.versions.android.libraries.volley}"
 
   testImplementation 'junit:junit:4.12'
-  testImplementation 'org.assertj:assertj-core:2.6.0'
-  testImplementation 'org.skyscreamer:jsonassert:1.2.3'
-  testImplementation "org.mockito:mockito-core:2.7.22"
-  testImplementation "org.robolectric:shadows-support-v4:3.3.2"
-  testImplementation 'org.robolectric:shadows-httpclient:3.3.2'
-  testImplementation('org.robolectric:robolectric:3.3.2') {
-    exclude group: 'commons-logging', module: 'commons-logging'
-  }
-  testImplementation 'org.robolectric:shadow-api:3.3.2'
+  testImplementation 'org.assertj:assertj-core:3.11.1'
+  testImplementation 'org.skyscreamer:jsonassert:1.5.0'
+  testImplementation "org.mockito:mockito-core:2.23.0"
+  testImplementation 'org.robolectric:robolectric:3.8'
   testImplementation 'com.squareup.okio:okio:1.14.0'
 }
 

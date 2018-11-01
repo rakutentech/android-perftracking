@@ -12,12 +12,12 @@ check.dependsOn 'jacocoTestReport'
 
 dependencies {
   testImplementation 'junit:junit:4.12'
-  testImplementation 'org.assertj:assertj-core:3.6.2'
+  testImplementation 'org.assertj:assertj-core:3.11.1'
   testImplementation 'org.skyscreamer:jsonassert:1.5.0'
   // use mockito-inline instead of mockito-core to allow mocking final classes
   // see http://static.javadoc.io/org.mockito/mockito-core/2.7.22/org/mockito/Mockito.html#39
-  testImplementation "org.mockito:mockito-inline:2.7.22"
-  testImplementation 'org.awaitility:awaitility:3.1.0'
+  testImplementation "org.mockito:mockito-inline:2.23.0"
+  testImplementation 'org.awaitility:awaitility:3.1.2'
 }
 
 // copy resources to classes dir so they are available on the test classpath
