@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.perf.core.wrappers;
 
+import android.os.Build;
 import com.rakuten.tech.mobile.perf.core.Analytics;
 import com.rakuten.tech.mobile.perf.core.Tracker;
 import java.io.IOException;
@@ -117,7 +118,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     int result = _conn.getResponseCode();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id, result, _conn.getHeaderField(Analytics.CDN_HEADER), _conn.getContentLengthLong());
+      Tracker.endUrl(_id, result, _conn.getHeaderField(Analytics.CDN_HEADER), getContentLengthLongCompat(_conn));
       _state = ENDED;
     }
 
@@ -134,7 +135,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     String result = _conn.getResponseMessage();
 
     if ((_state == STARTED) && (!getDoInput())) {
-      Tracker.endUrl(_id, _conn.getResponseCode(), _conn.getHeaderField(Analytics.CDN_HEADER), _conn.getContentLengthLong());
+      Tracker.endUrl(_id, _conn.getResponseCode(), _conn.getHeaderField(Analytics.CDN_HEADER), getContentLengthLongCompat(_conn));
       _state = ENDED;
     }
 
@@ -268,11 +269,6 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
     return _conn.getHeaderFieldKey(n);
   }
 
-  //@Override
-  //public long getHeaderFieldLong (String name, long Default) {
-  //    return _conn.getHeaderFieldLong(name, Default);
-  //}
-
   @Override
   public Map<String, List<String>> getHeaderFields() {
     return _conn.getHeaderFields();
@@ -292,7 +288,7 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
 
     int statusCode = _conn.getResponseCode();
     String cdnHeader = _conn.getHeaderField(Analytics.CDN_HEADER);
-    long contentLength = _conn.getContentLengthLong();
+    long contentLength = getContentLengthLongCompat(_conn);
     try {
       InputStream stream = _conn.getInputStream();
 
@@ -406,5 +402,11 @@ public class HttpsURLConnectionWrapper extends HttpsURLConnection {
   @Override
   public String toString() {
     return _conn.toString();
+  }
+
+  private static long getContentLengthLongCompat(HttpsURLConnection conn) {
+    return Build.VERSION.SDK_INT < 24
+        ? (long) conn.getContentLength()
+        : conn.getContentLengthLong();
   }
 }
