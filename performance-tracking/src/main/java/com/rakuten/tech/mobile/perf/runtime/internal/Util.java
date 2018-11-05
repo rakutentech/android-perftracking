@@ -7,9 +7,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import java.io.ByteArrayInputStream;
@@ -21,54 +19,7 @@ import java.security.cert.X509Certificate;
 @VisibleForTesting(otherwise = PACKAGE_PRIVATE)
 public final class Util {
 
-  private static final String SUBSCRIPTION_META_KEY =
-      "com.rakuten.tech.mobile.relay.SubscriptionKey";
-  private static final String RELAY_APP_ID = "com.rakuten.tech.mobile.relay.AppId";
-
   private Util() {}
-
-  /**
-   * Extract the (shared) relay subscription key from the app's manifest. The key is expected as
-   * shown below:
-   *
-   * <p>```xml <manifest> <application> <meta-data
-   * android:name="com.rakuten.tech.mobile.relay.SubscriptionKey" android:value="subscriptionKey" />
-   * </application> </manifest> ```
-   *
-   * @param context application context
-   * @return subscription key if present, null otherwise
-   */
-  /* default */ static @Nullable String getSubscriptionKey(@NonNull final Context context) {
-    return getMeta(context, SUBSCRIPTION_META_KEY);
-  }
-
-  /**
-   * Extract the relay app id from the app's manifest. The appId is expected as shown below:
-   *
-   * <p>```xml <manifest> <application> <meta-data
-   * android:name="com.rakuten.tech.mobile.relay.AppId" android:value="appId" /> </application>
-   * </manifest> ```
-   *
-   * @param context application context
-   * @return relay app id if present, null otherwise
-   */
-  /* default */ static @Nullable String getRelayAppId(@NonNull final Context context) {
-    return getMeta(context, RELAY_APP_ID);
-  }
-
-  /* default */ static @Nullable String getMeta(
-      @NonNull final Context context, @NonNull final String key) {
-    try {
-      Bundle metaData =
-          context
-              .getPackageManager()
-              .getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA)
-              .metaData;
-      return metaData != null ? metaData.getString(key) : null;
-    } catch (PackageManager.NameNotFoundException e) {
-      return null;
-    }
-  }
 
   /**
    * Check if the application is debuggable.

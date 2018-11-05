@@ -61,19 +61,19 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
 
   @Test(expected = IllegalStateException.class)
   public void shouldFailToCreateConfigStoreOnNullAppId() {
-    configStore = new ConfigStore(context, queue, null, "", null);
+    configStore = new ConfigStore(context, queue, null, "", "");
   }
 
   @Test(expected = IllegalStateException.class)
   public void shouldFailToCreateConfigStoreOnEmptyAppId() {
-    configStore = new ConfigStore(context, queue, "", "", null);
+    configStore = new ConfigStore(context, queue, "", "", "");
   }
 
   @Test
   public void shouldRequestConfigOnEmptyCache() throws JSONException {
     queue.rule().whenClass(ConfigurationRequest.class).returnNetworkResponse(200, config.content);
 
-    configStore = new ConfigStore(context, queue, appId, "", null);
+    configStore = new ConfigStore(context, queue, appId, "", "");
 
     queue.verify();
   }
@@ -82,7 +82,7 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
   public void shouldCacheConfigOnEmptyCache() throws JSONException {
     queue.rule().whenClass(ConfigurationRequest.class).returnNetworkResponse(200, config.content);
 
-    configStore = new ConfigStore(context, queue, appId, "", null);
+    configStore = new ConfigStore(context, queue, appId, "", "");
 
     ConfigurationResult cachedResponse = configStore.getObservable().getCachedValue();
     JSONAssert.assertEquals(config.content, new Gson().toJson(cachedResponse), true);
@@ -93,7 +93,7 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     prefs.edit().putString("config_key", config.content).apply();
 
     // Cached config available
-    configStore = new ConfigStore(context, queue, appId, "", null);
+    configStore = new ConfigStore(context, queue, appId, "", "");
 
     ConfigurationResult cachedResponse = configStore.getObservable().getCachedValue();
     JSONAssert.assertEquals(config.content, new Gson().toJson(cachedResponse), true);
@@ -102,7 +102,7 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
   @Test
   public void shouldUseNullConfigOnEmptyCacheOnInstanceCreation() throws JSONException {
     // EmptyCache
-    configStore = new ConfigStore(context, queue, appId, "", null);
+    configStore = new ConfigStore(context, queue, appId, "", "");
 
     ConfigurationResult storeValue = configStore.getObservable().getCachedValue();
     assertThat(storeValue).isEqualTo(null);
@@ -115,14 +115,14 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
         .whenClass(ConfigurationRequest.class)
         .returnError(new VolleyError(new Throwable()));
 
-    configStore = new ConfigStore(context, queue, appId, "", null);
+    configStore = new ConfigStore(context, queue, appId, "", "");
 
     queue.verify();
   }
 
   @Test
   public void shouldDoWhatWhenSubscriptionKeyIsMissing() {
-    configStore = new ConfigStore(context, queue, appId, null, null);
+    configStore = new ConfigStore(context, queue, appId, null, "");
   }
 
   @Test
@@ -133,7 +133,7 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
         .when(packageManager)
         .getPackageInfo(anyString(), anyInt());
 
-    configStore = new ConfigStore(context, queue, appId, null, null);
+    configStore = new ConfigStore(context, queue, appId, null, "");
 
     ConfigurationResult cachedResponse = configStore.getObservable().getCachedValue();
     JSONAssert.assertEquals(config.content, new Gson().toJson(cachedResponse), true);

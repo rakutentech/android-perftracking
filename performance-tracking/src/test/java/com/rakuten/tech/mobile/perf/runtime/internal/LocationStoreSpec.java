@@ -57,7 +57,7 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
   public void shouldRequestLocationOnEmptyCache() throws JSONException {
     queue.rule().whenClass(GeoLocationRequest.class).returnNetworkResponse(200, location.content);
 
-    locationStore = new LocationStore(context, queue, "", null);
+    locationStore = new LocationStore(context, queue, "", "");
 
     queue.verify();
   }
@@ -67,7 +67,7 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
     LocationData expectedValue = new LocationData("JP", "Tokyo");
     queue.rule().whenClass(GeoLocationRequest.class).returnNetworkResponse(200, location.content);
 
-    locationStore = new LocationStore(context, queue, "", null);
+    locationStore = new LocationStore(context, queue, "", "");
 
     LocationData storeValue = locationStore.getObservable().getCachedValue();
     assertThat(storeValue.country).isEqualTo(expectedValue.country);
@@ -79,7 +79,7 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
     LocationData prefsValue = new LocationData("JP", "Tokyo");
     prefs.edit().putString("location_key", new Gson().toJson(prefsValue)).apply();
 
-    locationStore = new LocationStore(context, queue, "", null);
+    locationStore = new LocationStore(context, queue, "", "");
 
     LocationData storeValue = locationStore.getObservable().getCachedValue();
     assertThat(storeValue.country).isEqualTo(prefsValue.country);
@@ -88,7 +88,7 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldUseNullLocationOnEmptyCacheForInstanceCreation() throws JSONException {
-    locationStore = new LocationStore(context, queue, "", null);
+    locationStore = new LocationStore(context, queue, "", "");
 
     LocationData storeValue = locationStore.getObservable().getCachedValue();
     assertThat(storeValue).isEqualTo(null);
@@ -98,13 +98,13 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
   public void shouldNotFailOnFailedLocationRequest() {
     queue.rule().whenClass(GeoLocationRequest.class).returnError(new VolleyError(new Throwable()));
 
-    locationStore = new LocationStore(context, queue, "", null);
+    locationStore = new LocationStore(context, queue, "", "");
 
     queue.verify();
   }
 
   @Test
   public void shouldDoWhatWhenSubscriptionKeyIsMissing() {
-    locationStore = new LocationStore(context, queue, null, null);
+    locationStore = new LocationStore(context, queue, null, "");
   }
 }

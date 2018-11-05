@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.BasicNetwork;
@@ -42,28 +43,34 @@ public class RuntimeContentProvider extends ContentProvider {
 
     BatteryInfoStore batteryInfoStore = new BatteryInfoStore(context);
 
-    String subscriptionKey = Util.getSubscriptionKey(context);
+    App manifest = new AppManifestConfig(context);
 
-    String configUrlPrefix =
-        Util.getMeta(context, "com.rakuten.tech.mobile.perf.ConfigurationUrlPrefix");
-    String relayAppId = Util.getRelayAppId(context);
-    ConfigStore configStore =
-        new ConfigStore(context, queue, relayAppId, subscriptionKey, configUrlPrefix);
+    if (TextUtils.isEmpty(manifest.appKey())) {
+      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from"
+          + "manifest, automated performance tracking will not work.");
+    }
+
+    if (TextUtils.isEmpty(manifest.appId())) {
+      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.relay.AppId` from"
+          + "manifest, automated performance tracking will not work.");
+    }
+
+    ConfigStore configStore = new ConfigStore(context, queue, manifest.appId(), manifest.appKey(),
+            manifest.configUrlPrefix());
 
     // Read last config from cache
-    Config config = createConfig(context, configStore.getObservable().getCachedValue(), relayAppId);
+    Config config = createConfig(context, configStore.getObservable().getCachedValue(),
+        manifest.appId());
     if (config != null) {
-      String locationUrlPrefix =
-          Util.getMeta(context, "com.rakuten.tech.mobile.perf.LocationUrlPrefix");
       LocationStore locationStore =
-          new LocationStore(context, queue, subscriptionKey, locationUrlPrefix);
+          new LocationStore(context, queue, manifest.appKey(), manifest.locationUrlPrefix());
       // Initialise Tracking Manager
       TrackingManager.initialize(
           context,
           config,
           locationStore.getObservable(),
           batteryInfoStore.getObservable(),
-          new AnalyticsBroadcaster(context));
+          new AnalyticsBroadcaster(context, manifest.ratEndPoint()));
       Metric.start("_launch");
     }
     return false;

@@ -30,15 +30,9 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldConstructWithNullableParameters() {
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     assertThat(request).isNotNull();
     assertThat(request.getMethod()).isEqualTo(Request.Method.GET);
-  }
-
-  @Test
-  public void shouldBuildUrlWithDefaultUrlPrefix() {
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
-    assertThat(request.getUrl()).startsWith(BuildConfig.DEFAULT_CONFIG_URL_PREFIX);
   }
 
   @Test
@@ -60,7 +54,7 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
   public void shouldBuildUrlWithPlatform() {
     builder.setPlatform("testPlatform");
 
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     assertThat(request.getUrl()).contains("/platform/testPlatform/");
   }
 
@@ -68,7 +62,7 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
   public void shouldBuildUrlWithAppId() {
     builder.setAppId("testId");
 
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     assertThat(request.getUrl()).contains("/app/testId/");
   }
 
@@ -76,7 +70,7 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
   public void shouldBuildUrlWithAppVersion() {
     builder.setAppVersion("testVersion");
 
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     assertThat(request.getUrl()).contains("/version/testVersion/");
   }
 
@@ -84,7 +78,7 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
   public void shouldBuildUrlWithSdkVersion() {
     builder.setSdkVersion("testSdkVersion");
 
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     assertThat(request.getUrl()).contains("sdk=testSdkVersion");
   }
 
@@ -92,7 +86,7 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
   public void shouldBuildUrlWithCountryCode() {
     builder.setCountryCode("testCountryCode");
 
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     assertThat(request.getUrl()).contains("country=testCountryCode");
   }
 
@@ -100,7 +94,7 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
   public void shouldBuildUrlWithOsVersion() {
     builder.setOsVersion("testOsVersion");
 
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     assertThat(request.getUrl()).contains("osVersion=testOsVersion");
   }
 
@@ -108,7 +102,7 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
   public void shouldBuildUrlWithDevice() {
     builder.setDevice("test device name");
 
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     assertThat(request.getUrl()).contains("device=test%20device%20name");
   }
 
@@ -116,7 +110,7 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
   public void shouldSetSubscriptionKeyHeader() {
     String testKey = "testKey";
     ConfigurationRequest request =
-        new ConfigurationRequest(null, testKey, builder.build(), null, null);
+        new ConfigurationRequest("", testKey, builder.build(), null, null);
     assertThat(request.getHeaders()).has(keyValue("Ocp-Apim-Subscription-Key", testKey));
   }
 
@@ -124,7 +118,7 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldParseResponse() {
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     ConfigurationResult response = request.parseResponse(data.content);
     assertThat(response).isNotNull();
     assertThat(response.getSendUrl())
@@ -148,7 +142,7 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldNotFailOnInvalidResponseString() {
-    ConfigurationRequest request = new ConfigurationRequest(null, "", builder.build(), null, null);
+    ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     ConfigurationResult result = request.parseResponse("some invalid json [[[[}}}");
     assertThat(result).isNull();
     // no exception

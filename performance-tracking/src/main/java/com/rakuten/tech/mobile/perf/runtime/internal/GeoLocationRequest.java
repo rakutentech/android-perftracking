@@ -1,5 +1,6 @@
 package com.rakuten.tech.mobile.perf.runtime.internal;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -10,17 +11,15 @@ import com.rakuten.tech.mobile.perf.BuildConfig;
 /** GeoLocationRequest */
 class GeoLocationRequest extends BaseRequest<GeoLocationResult> {
 
-  private static final String DEFAULT_URL_PREFIX = BuildConfig.DEFAULT_LOCATION_URL_PREFIX;
-
   GeoLocationRequest(
-      @Nullable String urlPrefix,
-      String subscriptionKey,
+      @NonNull String urlPrefix,
+      @Nullable String subscriptionKey,
       @Nullable Response.Listener<GeoLocationResult> listener,
       @Nullable Response.ErrorListener errorListener) {
     super(listener, errorListener);
     setMethod(Method.GET);
     setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
-    setUrl(urlPrefix != null ? urlPrefix : DEFAULT_URL_PREFIX);
+    setUrl(urlPrefix);
   }
 
   @Override
