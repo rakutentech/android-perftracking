@@ -8,14 +8,20 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import com.rakuten.tech.mobile.perf.core.Analytics;
+import com.rakuten.tech.mobile.perf.core.Measurement;
 import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Broadcaster that sends events via local broadcast to peer analytics sdk. */
 class AnalyticsBroadcaster extends Analytics {
   @VisibleForTesting
   static final String ACTION = "jp.co.rakuten.sdtd.analytics.ExternalEvent";
+  private final List<URL> blacklist;
 
   /**
    * Send event data to peer analytics module. If the app does not bundle a compatible analytics
@@ -52,9 +58,17 @@ class AnalyticsBroadcaster extends Analytics {
    * Construct instance of AnalyticsBroadcaster that holds a {@link WeakReference} to the context.
    *
    * @param context Context that will be used for broadcasting
+   * @param blacklist variable list of URL strings that will be used to blacklist broadcasts.
    */
-  AnalyticsBroadcaster(@NonNull Context context) {
+  AnalyticsBroadcaster(@NonNull Context context, String... blacklist) {
     this.context = new WeakReference<>(context);
+    this.blacklist = new ArrayList<>(blacklist.length);
+    for (String url : blacklist) {
+      try {
+        this.blacklist.add(new URL(url));
+      } catch (MalformedURLException ignored) {
+      }
+    }
   }
 
   /**
@@ -68,5 +82,25 @@ class AnalyticsBroadcaster extends Analytics {
   public void sendEvent(@NonNull String name, @Nullable Map<String, ?> data) {
     Context ctx = this.context.get();
     if (ctx != null) AnalyticsBroadcaster.sendEvent(ctx, name, data);
+  }
+
+  /**
+   * Checks if an event is recording an HTTP request to a blacklisted domain.
+   *
+   * @param url String url of the recorded HTTP request.
+   * @return true if event records an HTTP request to a blacklisted domain, false otherwise.
+   */
+  @Override
+  protected boolean isUrlBlacklisted(String url) {
+    try {
+      URL candidate = new URL(url);
+      for (URL blacklisted : blacklist) {
+        if (blacklisted.getHost().equals(candidate.getHost())) {
+          return true;
+        }
+      }
+    } catch (MalformedURLException ignored) {
+    }
+    return super.isUrlBlacklisted(url);
   }
 }

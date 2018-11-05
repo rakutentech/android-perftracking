@@ -15,15 +15,9 @@ public class GeoLocationRequestSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldConstructWithNullableParameters() {
-    GeoLocationRequest request = new GeoLocationRequest(null, "", null, null);
+    GeoLocationRequest request = new GeoLocationRequest("", "", null, null);
     assertThat(request).isNotNull();
     assertThat(request.getMethod()).isEqualTo(Request.Method.GET);
-  }
-
-  @Test
-  public void shouldBuildUrlWithDefaultUrlPrefix() {
-    GeoLocationRequest request = new GeoLocationRequest(null, "", null, null);
-    assertThat(request.getUrl()).isEqualTo(BuildConfig.DEFAULT_LOCATION_URL_PREFIX);
   }
 
   @Test
@@ -36,7 +30,7 @@ public class GeoLocationRequestSpec extends RobolectricUnitSpec {
   @Test
   public void shouldSetSubscriptionKeyHeader() {
     String testKey = "testKey";
-    GeoLocationRequest request = new GeoLocationRequest(null, testKey, null, null);
+    GeoLocationRequest request = new GeoLocationRequest("", testKey, null, null);
     assertThat(request.getHeaders()).has(keyValue("Ocp-Apim-Subscription-Key", testKey));
   }
 
@@ -44,7 +38,7 @@ public class GeoLocationRequestSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldParseResponse() throws VolleyError {
-    GeoLocationRequest request = new GeoLocationRequest(null, "", null, null);
+    GeoLocationRequest request = new GeoLocationRequest("", "", null, null);
     GeoLocationResult response = request.parseResponse(data.content);
     assertThat(response).isNotNull();
     assertThat(response.getRegionName().equals("Tokyo"));
@@ -52,7 +46,7 @@ public class GeoLocationRequestSpec extends RobolectricUnitSpec {
 
   @Test(expected = VolleyError.class)
   public void shouldNotFailOnInvalidResponseString() throws VolleyError {
-    GeoLocationRequest request = new GeoLocationRequest(null, "", null, null);
+    GeoLocationRequest request = new GeoLocationRequest("", "", null, null);
     GeoLocationResult result = request.parseResponse("some invalid json [[[[}}}");
     assertThat(result).isNull();
   }

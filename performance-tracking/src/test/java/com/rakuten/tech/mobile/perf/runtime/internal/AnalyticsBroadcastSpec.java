@@ -86,6 +86,18 @@ public class AnalyticsBroadcastSpec extends RobolectricUnitSpec {
     assertThat((Map<String, Object>) intent.getSerializableExtra("event-data")).containsAllEntriesOf(map);
   }
 
+  @Test public void shouldBlacklistEventsByDomain() {
+    AnalyticsBroadcaster analytics = new AnalyticsBroadcaster(ctx, "https://rat.rakuten.co.jp/");
+
+    assertThat(analytics.isUrlBlacklisted("http://rat.rakuten.co.jp")).isTrue(); // same schema & host
+    assertThat(analytics.isUrlBlacklisted("https://rat.rakuten.co.jp")).isTrue(); // different schema & same host
+    assertThat(analytics.isUrlBlacklisted("http://rat.rakuten.co.jp/some/path")).isTrue(); // with url path
+    assertThat(analytics.isUrlBlacklisted("")).isFalse(); // invalid url
+    assertThat(analytics.isUrlBlacklisted("http://rakuten.co.jp")).isFalse(); // different domain
+    assertThat(analytics.isUrlBlacklisted("http://sub.rat.rakuten.co.jp")).isFalse(); // subdomain
+    assertThat(analytics.isUrlBlacklisted("rat.rakuten.co.jp")).isFalse(); // missing schema
+  }
+
   private Intent captureIntent() {
     ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
     verify(receiver, atLeastOnce()).onReceive(any(Context.class), captor.capture());

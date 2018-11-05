@@ -44,7 +44,7 @@ class LocationStore extends Store<LocationData> {
   private static final int TIME_INTERVAL = 60 * 60 * 1000; // 1 HOUR in milli seconds
 
   @Nullable private final String subscriptionKey;
-  @Nullable private final String urlPrefix;
+  @NonNull private final String urlPrefix;
   @NonNull private final RequestQueue requestQueue;
   @NonNull private final SharedPreferences prefs;
   @NonNull private final Handler handler;
@@ -53,7 +53,7 @@ class LocationStore extends Store<LocationData> {
       @NonNull Context context,
       @NonNull RequestQueue requestQueue,
       @Nullable String subscriptionKey,
-      @Nullable String urlPrefix) {
+      @NonNull String urlPrefix) {
     this.prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     this.requestQueue = requestQueue;
     this.subscriptionKey = subscriptionKey;

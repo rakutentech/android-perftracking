@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -49,7 +50,7 @@ class ConfigStore extends Store<ConfigurationResult> {
   private static final int TIME_INTERVAL = 60 * 60 * 1000; // 1 HOUR in milli seconds
 
   @Nullable private final String subscriptionKey;
-  @Nullable private final String urlPrefix;
+  @NonNull private final String urlPrefix;
   @NonNull private final String appId;
   @NonNull private final RequestQueue requestQueue;
   @NonNull private final String packageName;
@@ -64,7 +65,7 @@ class ConfigStore extends Store<ConfigurationResult> {
       @NonNull RequestQueue requestQueue,
       @NonNull String relayAppId,
       @Nullable String subscriptionKey,
-      @Nullable String urlPrefix) {
+      @NonNull String urlPrefix) {
     this.context = context;
     this.packageManager = context.getPackageManager();
     this.packageName = context.getPackageName();
@@ -108,12 +109,6 @@ class ConfigStore extends Store<ConfigurationResult> {
       Log.d(TAG, "Error building request to config API", e);
     }
 
-    if (subscriptionKey == null) {
-      Log.d(
-          TAG,
-          "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from"
-              + "manifest, automated performance tracking will not work.");
-    }
     if (param != null) {
       new ConfigurationRequest(
               urlPrefix,
