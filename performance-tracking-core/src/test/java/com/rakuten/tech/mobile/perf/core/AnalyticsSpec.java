@@ -2,6 +2,8 @@ package com.rakuten.tech.mobile.perf.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
@@ -46,11 +48,11 @@ public class AnalyticsSpec {
   private Measurement measurement;
 
   @Before
-  public void setup() {
+  public void setup() throws MalformedURLException {
     measurement = new Measurement();
     measurement.startTime = 1000;
     measurement.endTime = 2000;
-    measurement.a = "http://example.com";
+    measurement.a = new URL("http://example.com");
     measurement.b = "GET";
     measurement.c = 201;
   }
