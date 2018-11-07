@@ -1,9 +1,5 @@
 package com.rakuten.tech.mobile.perf.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 class TrackerImpl {
 
   private String activityName = null;

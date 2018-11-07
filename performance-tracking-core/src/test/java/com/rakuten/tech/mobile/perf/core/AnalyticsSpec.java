@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -120,5 +121,22 @@ public class AnalyticsSpec {
     analytics.sendUrlMeasurement(measurement, "", 0);
 
     assertThat(capture.entry).doesNotContainKeys("cdn");
+  }
+
+  @Test
+  public void shouldCatchExceptions() {
+    Analytics exceptionAnalytics = new Analytics() {
+      @SuppressWarnings("unchecked")
+      @Override
+      public void sendEvent(String name, Map<String, ?> data) {
+        throw new RuntimeException("Error message");
+      }
+    };
+
+    try {
+      exceptionAnalytics.sendUrlMeasurement(measurement, null, 0);
+    } catch (Exception e) {
+      TestCase.fail();
+    }
   }
 }
