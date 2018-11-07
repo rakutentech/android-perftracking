@@ -21,7 +21,7 @@ public abstract class Analytics {
   };
 
   void sendUrlMeasurement(Measurement m, String cdnHeader, long contentLength) {
-    if(isUrlBlacklisted((String) m.a)) {
+    if(isUrlBlacklisted(String.valueOf(m.a))) {
       return;
     }
     Map<String, Object> event =  new HashMap<>();
