@@ -91,13 +91,10 @@ class TrackerImpl {
   }
 
   public void endMethod(int trackingId) {
-    endMeasurement(trackingId);
+    Measurement m = endMeasurement(trackingId);
 
-    if (debug != null) {
-      Measurement m = measurementBuffer.getByTrackingId(trackingId);
-      if (m != null) {
-        debug.log("METHOD_END", m, null);
-      }
+    if (debug != null && m != null) {
+      debug.log("METHOD_END", m, null);
     }
   }
 
@@ -117,14 +114,16 @@ class TrackerImpl {
   }
 
   void endUrl(int trackingId, int statusCode, String cdnHeader, long contentLength) {
+    Measurement m = null;
     if (statusCode != 0) {
-      endMeasurement(trackingId, statusCode);
+      m = endMeasurement(trackingId, statusCode);
     } else {
-      endMeasurement(trackingId);
+      m = endMeasurement(trackingId);
     }
 
-    Measurement m = measurementBuffer.getByTrackingId(trackingId);
-    analytics.sendUrlMeasurement(m, cdnHeader, contentLength);
+    if(m != null) {
+      analytics.sendUrlMeasurement(m, cdnHeader, contentLength);
+    }
 
     if (debug != null) {
       if (m != null) {
@@ -149,13 +148,10 @@ class TrackerImpl {
   }
 
   void endCustom(int trackingId) {
-    endMeasurement(trackingId);
+    Measurement m = endMeasurement(trackingId);
 
-    if (debug != null) {
-      Measurement m = measurementBuffer.getByTrackingId(trackingId);
-      if (m != null) {
-        debug.log("CUSTOM_END", m, null);
-      }
+    if (debug != null && m != null) {
+      debug.log("CUSTOM_END", m, null);
     }
   }
 
@@ -178,17 +174,19 @@ class TrackerImpl {
     return m;
   }
 
-  private void endMeasurement(int trackingId) {
-    endMeasurement(trackingId, null);
+  private Measurement endMeasurement(int trackingId) {
+    return endMeasurement(trackingId, null);
   }
 
-  private void endMeasurement(int trackingId, Object c) {
+  private Measurement endMeasurement(int trackingId, Object c) {
     if (trackingId != 0) {
       Measurement m = measurementBuffer.getByTrackingId(trackingId);
       if (m != null) {
         m.endTime = System.currentTimeMillis();
         m.c = c;
       }
+      return m;
     }
+    return null;
   }
 }
