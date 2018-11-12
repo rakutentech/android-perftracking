@@ -31,14 +31,14 @@ public abstract class Analytics {
 
       Map<String, Object> entry =  new HashMap<>();
       entry.put("name", m.a);
-      entry.put("startTime", m.startTime);
-      entry.put("responseEnd", m.endTime);
+      entry.put("start_time", m.startTime);
+      entry.put("response_end", m.endTime);
       entry.put("duration", m.endTime - m.startTime);
       if(cdnHeader != null && cdnHeader.length() > 0) {
         entry.put("cdn", cdnHeader);
       }
       if (contentLength > 0) {
-        entry.put("transferSize", contentLength);
+        entry.put("transfer_size", contentLength);
       }
 
       ArrayList<Map> entries = new ArrayList<>(1);

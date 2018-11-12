@@ -76,10 +76,10 @@ public class AnalyticsSpec {
   public void shouldEncodeUrlMeasurement() {
     analytics.sendUrlMeasurement(measurement, null, 0);
 
-    assertThat(capture.entry).containsKeys("name", "startTime", "responseEnd", "duration");
+    assertThat(capture.entry).containsKeys("name", "start_time", "response_end", "duration");
     assertThat(capture.entry.get("name")).isEqualTo(measurement.a);
-    assertThat(capture.entry.get("startTime")).isEqualTo(measurement.startTime);
-    assertThat(capture.entry.get("responseEnd")).isEqualTo(measurement.endTime);
+    assertThat(capture.entry.get("start_time")).isEqualTo(measurement.startTime);
+    assertThat(capture.entry.get("response_end")).isEqualTo(measurement.endTime);
     assertThat(capture.entry.get("duration")).isEqualTo(measurement.endTime - measurement.startTime);
   }
 
@@ -89,19 +89,19 @@ public class AnalyticsSpec {
   public void shouldSendPositiveContentLength() {
     analytics.sendUrlMeasurement(measurement, "akamai", 123);
 
-    assertThat(capture.entry).containsKey("transferSize");
-    assertThat(capture.entry.get("transferSize")).isEqualTo(123L);
+    assertThat(capture.entry).containsKey("transfer_size");
+    assertThat(capture.entry.get("transfer_size")).isEqualTo(123L);
   }
 
   @Test
   public void shouldIgnoreNonPositiveContentLength() {
     analytics.sendUrlMeasurement(measurement, "akamai", 0);
 
-    assertThat(capture.entry).doesNotContainKeys("transferSize");
+    assertThat(capture.entry).doesNotContainKeys("transfer_size");
 
     analytics.sendUrlMeasurement(measurement, "akamai", -123);
 
-    assertThat(capture.entry).doesNotContainKeys("transferSize");
+    assertThat(capture.entry).doesNotContainKeys("transfer_size");
   }
 
   @Test
