@@ -13,8 +13,8 @@ import java.net.URL;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Tracker {
 
-  private static TrackerImpl _tracker;
-  private static SenderThread _senderThread;
+  private static TrackerImpl tracker;
+  private static SenderThread senderThread;
 
   /**
    * Turns performance tracking on.
@@ -28,31 +28,31 @@ public class Tracker {
     Debug debug = config.debug ? new Debug() : null;
     MeasurementBuffer buffer = new MeasurementBuffer();
     Current current = new Current();
-    _tracker = new TrackerImpl(buffer, current, debug, analytics, config.enableNonMetricMeasurement);
+    tracker = new TrackerImpl(buffer, current, debug, analytics, config.enableNonMetricMeasurement);
     EnvironmentInfo envInfo = new EnvironmentInfo(context, locationObservable, batteryInfoObservable);
     EventWriter writer = new EventWriter(config, envInfo);
     Sender sender = new Sender(buffer, current, writer, debug, config.enableNonMetricMeasurement);
-    _senderThread = new SenderThread(sender);
-    _senderThread.start();
+    senderThread = new SenderThread(sender);
+    senderThread.start();
   }
 
   /**
    * Turns performance tracking off.
    */
   public static synchronized void off() {
-    _tracker = null;
-    SenderThread s = _senderThread;
+    tracker = null;
+    SenderThread s = senderThread;
     if (s != null) {
       s.terminate();
     }
-    _senderThread = null;
+    senderThread = null;
   }
 
   /**
    * Returns performance tracking status.
    */
   public static boolean isTrackerRunning() {
-    return _tracker != null;
+    return tracker != null;
   }
 
   /**
@@ -61,7 +61,7 @@ public class Tracker {
    */
   public static void startMetric(String metricId) {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       if (t != null) {
         t.startMetric(metricId);
       }
@@ -75,7 +75,7 @@ public class Tracker {
    */
   public static void prolongMetric() {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       if (t != null) {
         t.prolongMetric();
       }
@@ -89,7 +89,7 @@ public class Tracker {
    */
   public static void endMetric() {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       if (t != null) {
         t.endMetric();
       }
@@ -106,7 +106,7 @@ public class Tracker {
    */
   public static int startMethod(Object object, String method) {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       return t != null ? t.startMethod(object, method) : 0;
     } catch (Throwable t) {
       Tracker.off();
@@ -120,7 +120,7 @@ public class Tracker {
    */
   public static void endMethod(int trackingId) {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       if (t != null) {
         t.endMethod(trackingId);
       }
@@ -137,7 +137,7 @@ public class Tracker {
    */
   public static int startUrl(URL url, String verb) {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       return t != null ? t.startUrl(url, verb) : 0;
     } catch (Throwable t) {
       Tracker.off();
@@ -153,7 +153,7 @@ public class Tracker {
    */
   public static int startUrl(String url, String verb) {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       return t != null ? t.startUrl(url, verb) : 0;
     } catch (Throwable t) {
       Tracker.off();
@@ -169,7 +169,7 @@ public class Tracker {
    */
   public static void endUrl(int trackingId, int statusCode, String cdnHeader, long contentLength) {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       if (t != null) {
         t.endUrl(trackingId, statusCode, cdnHeader, contentLength);
       }
@@ -185,7 +185,7 @@ public class Tracker {
    */
   public static int startCustom(String measurementId) {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       return t != null ? t.startCustom(measurementId) : 0;
     } catch (Throwable t) {
       Tracker.off();
@@ -199,7 +199,7 @@ public class Tracker {
    */
   public static void endCustom(int trackingId) {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       if (t != null) {
         t.endCustom(trackingId);
       }
@@ -214,7 +214,7 @@ public class Tracker {
    */
   public static void updateActivityName(String name) {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       if (t != null) {
         t.updateActivityName(name);
       }
@@ -229,7 +229,7 @@ public class Tracker {
    */
   public static void clearActivityName(String name) {
     try {
-      TrackerImpl t = _tracker;
+      TrackerImpl t = tracker;
       if (t != null) {
         t.clearActivityName(name);
       }
