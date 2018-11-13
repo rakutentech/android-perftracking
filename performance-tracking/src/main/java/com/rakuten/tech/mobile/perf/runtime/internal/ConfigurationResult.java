@@ -22,14 +22,27 @@ class ConfigurationResult implements Parcelable {
   @SerializedName("sendHeaders")
   private Map<String, String> header;
 
+  @SerializedName("modules")
+  private Map<String, String> modules;
+
+  private static final String ENABLE_PERFORMANCE_TRACKING_KEY = "enablePerformanceTracking";
+  private static final String ENABLE_RAT_KEY = "enableRat";
+
   private ConfigurationResult(Parcel in) {
     enablePercent = in.readDouble();
     enableNonMetricMeasurement = in.readByte() == 1;
     sendUrl = in.readString();
-    Bundle bundle = in.readBundle();
+
+    Bundle headerBundle = in.readBundle();
     header = new HashMap<>();
-    for (String key : bundle.keySet()) {
-      header.put(key, bundle.getString(key));
+    for (String key : headerBundle.keySet()) {
+      header.put(key, headerBundle.getString(key));
+    }
+
+    Bundle modulesBundle = in.readBundle();
+    modules = new HashMap<>();
+    for (String key : modulesBundle.keySet()) {
+      modules.put(key, modulesBundle.getString(key));
     }
   }
 
@@ -38,11 +51,18 @@ class ConfigurationResult implements Parcelable {
     dest.writeDouble(enablePercent);
     dest.writeByte((byte) (enableNonMetricMeasurement ? 1 : 0));
     dest.writeString(sendUrl);
-    Bundle bundle = new Bundle();
+
+    Bundle headerBundle = new Bundle();
     for (String key : header.keySet()) {
-      bundle.putString(key, header.get(key));
+      headerBundle.putString(key, header.get(key));
     }
-    dest.writeBundle(bundle);
+    dest.writeBundle(headerBundle);
+
+    Bundle moduleBundle = new Bundle();
+    for (String key : modules.keySet()) {
+      moduleBundle.putString(key, modules.get(key));
+    }
+    dest.writeBundle(moduleBundle);
   }
 
   @Override
@@ -69,6 +89,18 @@ class ConfigurationResult implements Parcelable {
 
   boolean shouldEnableNonMetricMeasurement() {
     return enableNonMetricMeasurement;
+  }
+
+  boolean shouldSendToPerfTracking() {
+    return (modules != null && modules.containsKey(ENABLE_PERFORMANCE_TRACKING_KEY))
+        ? Boolean.valueOf(modules.get(ENABLE_PERFORMANCE_TRACKING_KEY))
+        : true;
+  }
+
+  boolean shouldSendToAnalytics() {
+    return (modules != null && modules.containsKey(ENABLE_RAT_KEY))
+        ? Boolean.valueOf(modules.get(ENABLE_RAT_KEY))
+        : false;
   }
 
   String getSendUrl() {

@@ -22,6 +22,7 @@ class AnalyticsBroadcaster extends Analytics {
   @VisibleForTesting
   static final String ACTION = "jp.co.rakuten.sdtd.analytics.ExternalEvent";
   private final List<URL> blacklist;
+  private final boolean enabled;
 
   /**
    * Send event data to peer analytics module. If the app does not bundle a compatible analytics
@@ -60,8 +61,9 @@ class AnalyticsBroadcaster extends Analytics {
    * @param context Context that will be used for broadcasting
    * @param blacklist variable list of URL strings that will be used to blacklist broadcasts.
    */
-  AnalyticsBroadcaster(@NonNull Context context, String... blacklist) {
+  AnalyticsBroadcaster(@NonNull Context context, boolean enabled, String... blacklist) {
     this.context = new WeakReference<>(context);
+    this.enabled = enabled;
     this.blacklist = new ArrayList<>(blacklist.length);
     for (String url : blacklist) {
       try {
@@ -80,6 +82,10 @@ class AnalyticsBroadcaster extends Analytics {
    */
   @Override
   public void sendEvent(@NonNull String name, @Nullable Map<String, ?> data) {
+    if (!enabled) {
+      return;
+    }
+
     Context ctx = this.context.get();
     if (ctx != null) AnalyticsBroadcaster.sendEvent(ctx, name, data);
   }

@@ -42,6 +42,10 @@ class EventWriter {
   }
 
   void begin() throws IOException {
+    if (!_config.enablePerfTrackingEvents) {
+      return;
+    }
+
     try {
       _conn = (HttpsURLConnection) _url.openConnection();
       _conn.setRequestMethod("POST");
@@ -113,100 +117,108 @@ class EventWriter {
   }
 
   void write(Metric metric) throws IOException {
-    if (_writer != null) {
-      try {
-        if (_measurements > 0) {
-          _writer.append(',');
-        }
-        _writer
-            .append("{\"metric\":\"").append(metric.id).append("\"")
-            .append(",\"urls\":").append(Long.toString(metric.urls))
-            .append(",\"start\":").append(Long.toString(metric.startTime))
-            .append(",\"time\":").append(Long.toString(metric.endTime - metric.startTime))
-            .append('}');
-        _measurements++;
-      } catch (Exception e) {
-        if (_config.debug) {
-          Log.d(TAG, e.getMessage());
-        }
-        disconnect();
-        if (e instanceof IOException) {
-          throw e;
-        }
+    if (!_config.enablePerfTrackingEvents || _writer == null) {
+      return;
+    }
+
+    try {
+      if (_measurements > 0) {
+        _writer.append(',');
+      }
+      _writer
+          .append("{\"metric\":\"").append(metric.id).append("\"")
+          .append(",\"urls\":").append(Long.toString(metric.urls))
+          .append(",\"start\":").append(Long.toString(metric.startTime))
+          .append(",\"time\":").append(Long.toString(metric.endTime - metric.startTime))
+          .append('}');
+      _measurements++;
+    } catch (Exception e) {
+      if (_config.debug) {
+        Log.d(TAG, e.getMessage());
+      }
+      disconnect();
+      if (e instanceof IOException) {
+        throw e;
       }
     }
   }
 
   void write(Measurement m, String metricId) throws IOException {
-    if (_writer != null) {
-      try {
-        if (_measurements > 0) {
-          _writer.append(',');
-        }
+    if (!_config.enablePerfTrackingEvents || _writer == null) {
+      return;
+    }
 
-        switch (m.type) {
-          case Measurement.METHOD:
-            _writer.append("{\"method\":\"").append((String) m.a).append('.').append((String) m.b)
-                .append('"');
-            break;
+    try {
+      if (_measurements > 0) {
+        _writer.append(',');
+      }
 
-          case Measurement.URL:
-            _writer.append("{\"url\":\"");
+      switch (m.type) {
+        case Measurement.METHOD:
+          _writer.append("{\"method\":\"").append((String) m.a).append('.').append((String) m.b)
+              .append('"');
+          break;
 
-            if (m.a instanceof URL) {
-              URL url = (URL) m.a;
-              _writer.append(url.getProtocol()).append("://").append(url.getAuthority())
-                  .append(escapeValue(url.getPath()));
-            } else {
-              String url = (String) m.a;
-              int q = url.indexOf('?');
-              if (q > 0) {
-                url = url.substring(0, q);
-              }
-              _writer.append(escapeValue(url));
+        case Measurement.URL:
+          _writer.append("{\"url\":\"");
+
+          if (m.a instanceof URL) {
+            URL url = (URL) m.a;
+            _writer.append(url.getProtocol()).append("://").append(url.getAuthority())
+                .append(escapeValue(url.getPath()));
+          } else {
+            String url = (String) m.a;
+            int q = url.indexOf('?');
+            if (q > 0) {
+              url = url.substring(0, q);
             }
+            _writer.append(escapeValue(url));
+          }
 
-            _writer.append('"');
+          _writer.append('"');
 
-            if (m.b != null) {
-              _writer.append(",\"verb\":\"").append((String) m.b).append('"');
-            }
-            if (m.c != null) {
-              _writer.append(",\"status_code\":").append(m.c.toString());
-            }
-            break;
+          if (m.b != null) {
+            _writer.append(",\"verb\":\"").append((String) m.b).append('"');
+          }
+          if (m.c != null) {
+            _writer.append(",\"status_code\":").append(m.c.toString());
+          }
+          break;
 
-          case Measurement.CUSTOM:
-            _writer.append("{\"custom\":\"").append((String) m.a).append('"');
-            break;
+        case Measurement.CUSTOM:
+          _writer.append("{\"custom\":\"").append((String) m.a).append('"');
+          break;
 
-          default:
-            return;
-        }
+        default:
+          return;
+      }
 
-        if (m.activityName != null && m.activityName.length() > 0) {
-          _writer.append(",\"screen\":\"").append(m.activityName).append('"');
-        }
+      if (m.activityName != null && m.activityName.length() > 0) {
+        _writer.append(",\"screen\":\"").append(m.activityName).append('"');
+      }
 
-        if (metricId != null) {
-          _writer.append(",\"metric\":\"").append(metricId).append('"');
-        }
-        _writer.append(",\"start\":").append(Long.toString(m.startTime));
-        _writer.append(",\"time\":").append(Long.toString(m.endTime - m.startTime)).append('}');
-        _measurements++;
-      } catch (Exception e) {
-        if (_config.debug) {
-          Log.d(TAG, e.getMessage());
-        }
-        disconnect();
-        if (e instanceof IOException) {
-          throw e;
-        }
+      if (metricId != null) {
+        _writer.append(",\"metric\":\"").append(metricId).append('"');
+      }
+      _writer.append(",\"start\":").append(Long.toString(m.startTime));
+      _writer.append(",\"time\":").append(Long.toString(m.endTime - m.startTime)).append('}');
+      _measurements++;
+    } catch (Exception e) {
+      if (_config.debug) {
+        Log.d(TAG, e.getMessage());
+      }
+      disconnect();
+      if (e instanceof IOException) {
+        throw e;
       }
     }
   }
 
   void end() throws IOException {
+    if (!_config.enablePerfTrackingEvents) {
+      return;
+    }
+
     try {
       if (_writer != null) {
         _writer.append("]}");

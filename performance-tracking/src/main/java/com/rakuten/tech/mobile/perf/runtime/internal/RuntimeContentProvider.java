@@ -70,7 +70,7 @@ public class RuntimeContentProvider extends ContentProvider {
           config,
           locationStore.getObservable(),
           batteryInfoStore.getObservable(),
-          new AnalyticsBroadcaster(context, manifest.ratEndPoint()));
+          new AnalyticsBroadcaster(context, config.enableAnalyticsEvents, manifest.ratEndPoint()));
       Metric.start("_launch");
     }
     return false;
@@ -119,6 +119,8 @@ public class RuntimeContentProvider extends ContentProvider {
       config.enableNonMetricMeasurement = lastConfig.shouldEnableNonMetricMeasurement();
       config.eventHubUrl = lastConfig.getSendUrl();
       config.header = lastConfig.getHeader();
+      config.enablePerfTrackingEvents = lastConfig.shouldSendToPerfTracking();
+      config.enableAnalyticsEvents = lastConfig.shouldSendToAnalytics();
     }
 
     return config;

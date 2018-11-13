@@ -15,4 +15,6 @@ public class Config {
   public boolean debug;
   public String relayAppId;
   public boolean enableNonMetricMeasurement;
+  public boolean enablePerfTrackingEvents;
+  public boolean enableAnalyticsEvents;
 }

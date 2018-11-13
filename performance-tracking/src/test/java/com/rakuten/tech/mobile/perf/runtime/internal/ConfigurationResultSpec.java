@@ -28,6 +28,8 @@ public class ConfigurationResultSpec extends RobolectricUnitSpec {
     assertThat(response.shouldEnableNonMetricMeasurement())
         .isEqualTo(fromParcel.shouldEnableNonMetricMeasurement());
     assertThat(response.getSendUrl()).isEqualTo(fromParcel.getSendUrl());
+    assertThat(response.shouldSendToPerfTracking()).isEqualTo(fromParcel.shouldSendToPerfTracking());
+    assertThat(response.shouldSendToAnalytics()).isEqualTo(fromParcel.shouldSendToAnalytics());
     assertThat(response.describeContents()).isEqualTo(fromParcel.describeContents());
   }
 
