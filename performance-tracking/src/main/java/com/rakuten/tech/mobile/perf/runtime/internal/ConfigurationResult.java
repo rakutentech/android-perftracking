@@ -3,30 +3,64 @@ package com.rakuten.tech.mobile.perf.runtime.internal;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.google.gson.annotations.SerializedName;
+import android.support.annotation.NonNull;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-/** Configuration Result */
+/**
+ * Configuration Result
+ */
 class ConfigurationResult implements Parcelable {
 
-  @SerializedName("enablePercent")
   private double enablePercent;
-
-  @SerializedName("enableNonMetricMeasurement")
   private boolean enableNonMetricMeasurement;
-
-  @SerializedName("sendUrl")
   private String sendUrl;
-
-  @SerializedName("sendHeaders")
   private Map<String, String> header;
-
-  @SerializedName("modules")
   private Map<String, String> modules;
 
   private static final String ENABLE_PERFORMANCE_TRACKING_KEY = "enablePerformanceTracking";
   private static final String ENABLE_RAT_KEY = "enableRat";
+
+  ConfigurationResult(@NonNull String json) {
+    try {
+      JSONObject obj = new JSONObject(json);
+      enablePercent = obj.getDouble("enablePercent");
+      enableNonMetricMeasurement = obj.getBoolean("enableNonMetricMeasurement");
+      sendUrl = obj.getString("sendUrl");
+      header = toStringMap(obj.getJSONObject("sendHeaders"));
+      modules = toStringMap(obj.getJSONObject("modules"));
+    } catch (JSONException ignored) {
+    }
+  }
+
+  private static Map<String, String> toStringMap(@NonNull JSONObject json) throws JSONException {
+    HashMap<String, String> map = new HashMap<>();
+    Iterator<String> it = json.keys();
+    while (it.hasNext()) {
+      String key = it.next();
+      map.put(key, json.getString(key));
+    }
+    return map;
+  }
+
+  @NonNull
+  @Override
+  public String toString() {
+    try {
+      return new JSONObject()
+          .put("enablePercent", enablePercent)
+          .put("enableNonMetricMeasurement", enableNonMetricMeasurement)
+          .put("sendUrl", sendUrl)
+          .put("sendHeaders", new JSONObject(header))
+          .put("modules", new JSONObject(modules))
+          .toString();
+    } catch (JSONException | NullPointerException e ) {
+      return "{}";
+    }
+  }
 
   private ConfigurationResult(Parcel in) {
     enablePercent = in.readDouble();

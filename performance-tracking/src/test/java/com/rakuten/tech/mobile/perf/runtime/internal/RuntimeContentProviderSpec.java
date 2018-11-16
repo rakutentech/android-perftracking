@@ -17,7 +17,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import com.android.volley.Request;
-import com.google.gson.Gson;
 import com.rakuten.tech.mobile.perf.runtime.MockedQueue;
 import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import com.rakuten.tech.mobile.perf.runtime.TestData;
@@ -83,7 +82,7 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldStartTrackingAndLaunchMetricOnCachedConfig() {
-    StoreShadow.cachedContent = new Gson().fromJson(config.content, ConfigurationResult.class);
+    StoreShadow.cachedContent = new ConfigurationResult(config.content);
 
     provider.onCreate();
 
@@ -93,8 +92,7 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldStartTrackingForDebugBuildEvenifEnablePercentIsZero() {
-    StoreShadow.cachedContent =
-        new Gson().fromJson(configZeroPercent.content, ConfigurationResult.class);
+    StoreShadow.cachedContent = new ConfigurationResult(configZeroPercent.content);
     UtilShadow.mockDebugBuild = true;
 
     provider.onCreate();
@@ -117,7 +115,7 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
   @Test
   public void shouldStartTrackingEvenWhenPackageAndAppInfoIsMissing()
       throws PackageManager.NameNotFoundException {
-    StoreShadow.cachedContent = new Gson().fromJson(config.content, ConfigurationResult.class);
+    StoreShadow.cachedContent = new ConfigurationResult(config.content);
     doThrow(new PackageManager.NameNotFoundException())
         .when(packageManager)
         .getPackageInfo(anyString(), anyInt());

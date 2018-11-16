@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.perf.runtime.internal;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.os.Parcel;
-import com.google.gson.Gson;
 import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import com.rakuten.tech.mobile.perf.runtime.TestData;
 import org.junit.Rule;
@@ -15,7 +14,8 @@ public class ConfigurationResultSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldParcelWithoutError() {
-    ConfigurationResult response = new Gson().fromJson(data.content, ConfigurationResult.class);
+
+    ConfigurationResult response = new ConfigurationResult(data.content);
     Parcel parcel = Parcel.obtain();
 
     response.writeToParcel(parcel, 0);

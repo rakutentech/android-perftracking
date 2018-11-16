@@ -3,10 +3,7 @@ package com.rakuten.tech.mobile.perf.runtime.internal;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import com.android.volley.Response;
-import com.google.gson.Gson;
-import com.rakuten.tech.mobile.perf.BuildConfig;
 
 /** ConfigurationRequest */
 class ConfigurationRequest extends BaseRequest<ConfigurationResult> {
@@ -42,12 +39,6 @@ class ConfigurationRequest extends BaseRequest<ConfigurationResult> {
   @Override
   @Nullable
   protected ConfigurationResult parseResponse(String response) {
-    ConfigurationResult result = null;
-    try {
-      result = new Gson().fromJson(response, ConfigurationResult.class);
-    } catch (Exception e) {
-      Log.e(ConfigurationRequest.class.getSimpleName(), e.getMessage());
-    }
-    return result;
+    return new ConfigurationResult(response);
   }
 }

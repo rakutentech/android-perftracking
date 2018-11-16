@@ -3,7 +3,6 @@ package com.rakuten.tech.mobile.perf.runtime.internal;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -12,13 +11,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import com.android.volley.VolleyError;
-import com.google.gson.Gson;
 import com.rakuten.tech.mobile.perf.core.LocationData;
 import com.rakuten.tech.mobile.perf.runtime.MockedQueue;
 import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import com.rakuten.tech.mobile.perf.runtime.TestData;
 import com.rakuten.tech.mobile.perf.runtime.shadow.RequestQueueShadow;
-import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,7 +40,7 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
 
   @SuppressLint("ApplySharedPref")
   @Before
-  public void init() throws PackageManager.NameNotFoundException {
+  public void init() {
     RequestQueueShadow.queue = spy(new MockedQueue());
     queue = RequestQueueShadow.queue;
     context = spy(RuntimeEnvironment.application);
@@ -54,7 +51,7 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
   }
 
   @Test
-  public void shouldRequestLocationOnEmptyCache() throws JSONException {
+  public void shouldRequestLocationOnEmptyCache() {
     queue.rule().whenClass(GeoLocationRequest.class).returnNetworkResponse(200, location.content);
 
     locationStore = new LocationStore(context, queue, "", "");
@@ -63,7 +60,7 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
   }
 
   @Test
-  public void shouldCacheLocationOnEmptyCache() throws JSONException {
+  public void shouldCacheLocationOnEmptyCache() {
     LocationData expectedValue = new LocationData("JP", "Tokyo");
     queue.rule().whenClass(GeoLocationRequest.class).returnNetworkResponse(200, location.content);
 
@@ -75,9 +72,9 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
   }
 
   @Test
-  public void shouldUseCachedLocationForInstanceCreation() throws JSONException {
+  public void shouldUseCachedLocationForInstanceCreation() {
     LocationData prefsValue = new LocationData("JP", "Tokyo");
-    prefs.edit().putString("location_key", new Gson().toJson(prefsValue)).apply();
+    prefs.edit().putString("location_key", LocationStore.toJsonString(prefsValue)).apply();
 
     locationStore = new LocationStore(context, queue, "", "");
 
@@ -87,7 +84,7 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
   }
 
   @Test
-  public void shouldUseNullLocationOnEmptyCacheForInstanceCreation() throws JSONException {
+  public void shouldUseNullLocationOnEmptyCacheForInstanceCreation() {
     locationStore = new LocationStore(context, queue, "", "");
 
     LocationData storeValue = locationStore.getObservable().getCachedValue();

@@ -6,13 +6,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.gson.Gson;
 import com.rakuten.tech.mobile.perf.core.LocationData;
 import com.rakuten.tech.mobile.perf.core.Tracker;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * LocationStore - Handles requesting location, response caching and publishing to observers. Can be
@@ -43,11 +45,16 @@ class LocationStore extends Store<LocationData> {
   private static final String LOCATION_KEY = "location_key";
   private static final int TIME_INTERVAL = 60 * 60 * 1000; // 1 HOUR in milli seconds
 
-  @Nullable private final String subscriptionKey;
-  @NonNull private final String urlPrefix;
-  @NonNull private final RequestQueue requestQueue;
-  @NonNull private final SharedPreferences prefs;
-  @NonNull private final Handler handler;
+  @Nullable
+  private final String subscriptionKey;
+  @NonNull
+  private final String urlPrefix;
+  @NonNull
+  private final RequestQueue requestQueue;
+  @NonNull
+  private final SharedPreferences prefs;
+  @NonNull
+  private final Handler handler;
 
   LocationStore(
       @NonNull Context context,
@@ -84,33 +91,56 @@ class LocationStore extends Store<LocationData> {
               + "manifest automated performance tracking will not work.");
     }
     new GeoLocationRequest(
-            urlPrefix,
-            subscriptionKey,
-            new Response.Listener<GeoLocationResult>() {
-              @Override
-              public void onResponse(GeoLocationResult newLocation) {
-                LocationData locationData =
-                    new LocationData(newLocation.getCountryName(), newLocation.getRegionName());
-                writeLocationToCache(locationData);
-                getObservable().publish(locationData);
-              }
-            },
-            new Response.ErrorListener() {
-              @Override
-              public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Error loading location", error);
-              }
-            })
+        urlPrefix,
+        subscriptionKey,
+        new Response.Listener<GeoLocationResult>() {
+          @Override
+          public void onResponse(GeoLocationResult newLocation) {
+            LocationData locationData =
+                new LocationData(newLocation.getCountry(), newLocation.getRegion());
+            writeLocationToCache(locationData);
+            getObservable().publish(locationData);
+          }
+        },
+        new Response.ErrorListener() {
+          @Override
+          public void onErrorResponse(VolleyError error) {
+            Log.d(TAG, "Error loading location", error);
+          }
+        })
         .queue(requestQueue);
   }
 
   private void writeLocationToCache(LocationData result) {
-    prefs.edit().putString(LOCATION_KEY, new Gson().toJson(result)).apply();
+    prefs.edit().putString(LOCATION_KEY, toJsonString(result)).apply();
+  }
+
+  @VisibleForTesting
+  @NonNull
+  static String toJsonString(LocationData result) {
+    try {
+      return new JSONObject()
+          .put("country", result.country)
+          .put("region", result.region)
+          .toString();
+    } catch (JSONException e) {
+      return "{}";
+    }
+  }
+
+  @NonNull
+  static private LocationData fromJsonString(@NonNull String json) {
+    try {
+      JSONObject obj = new JSONObject(json);
+      return new LocationData(obj.getString("country"), obj.getString("region"));
+    } catch (JSONException e) {
+      return new LocationData("", "");
+    }
   }
 
   @Nullable
   private LocationData readLocationFromCache() {
     String result = prefs.getString(LOCATION_KEY, null);
-    return result != null ? new Gson().fromJson(result, LocationData.class) : null;
+    return result != null ? fromJsonString(result) : null;
   }
 }

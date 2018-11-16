@@ -144,7 +144,6 @@ public class ConfigurationRequestSpec extends RobolectricUnitSpec {
   public void shouldNotFailOnInvalidResponseString() {
     ConfigurationRequest request = new ConfigurationRequest("", "", builder.build(), null, null);
     ConfigurationResult result = request.parseResponse("some invalid json [[[[}}}");
-    assertThat(result).isNull();
     // no exception
   }
 }

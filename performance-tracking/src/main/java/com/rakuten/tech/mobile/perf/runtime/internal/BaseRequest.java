@@ -12,7 +12,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.google.gson.JsonSyntaxException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
@@ -215,9 +214,6 @@ abstract class BaseRequest<T> extends Request<T> {
     try {
       T data = parseResponse(response);
       return Response.success(data, parseCache(response));
-    } catch (JsonSyntaxException e) {
-      Log.e(TAG, "Json Exception", e);
-      return Response.error(new ParseError(e));
     } catch (JSONException e) {
       Log.e(TAG, "Json Exception", e);
       return Response.error(new ParseError(e));
