@@ -4,6 +4,7 @@ package com.rakuten.tech.mobile.perf.runtime.internal;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -34,7 +35,7 @@ public class AnalyticsBroadcastSpec extends RobolectricUnitSpec {
   public void setup() {
     ctx = RuntimeEnvironment.application;
     LocalBroadcastManager.getInstance(ctx).registerReceiver(receiver, new IntentFilter(AnalyticsBroadcaster.ACTION));
-    analytics = new AnalyticsBroadcaster(ctx);
+    analytics = new AnalyticsBroadcaster(ctx, true);
   }
 
   @After
@@ -87,7 +88,7 @@ public class AnalyticsBroadcastSpec extends RobolectricUnitSpec {
   }
 
   @Test public void shouldBlacklistEventsByDomain() {
-    AnalyticsBroadcaster analytics = new AnalyticsBroadcaster(ctx, "https://rat.rakuten.co.jp/");
+    AnalyticsBroadcaster analytics = new AnalyticsBroadcaster(ctx, true, "https://rat.rakuten.co.jp/");
 
     assertThat(analytics.isUrlBlacklisted("http://rat.rakuten.co.jp")).isTrue(); // same schema & host
     assertThat(analytics.isUrlBlacklisted("https://rat.rakuten.co.jp")).isTrue(); // different schema & same host
@@ -96,6 +97,14 @@ public class AnalyticsBroadcastSpec extends RobolectricUnitSpec {
     assertThat(analytics.isUrlBlacklisted("http://rakuten.co.jp")).isFalse(); // different domain
     assertThat(analytics.isUrlBlacklisted("http://sub.rat.rakuten.co.jp")).isFalse(); // subdomain
     assertThat(analytics.isUrlBlacklisted("rat.rakuten.co.jp")).isFalse(); // missing schema
+  }
+
+  @Test public void shouldNotSendEventsWhenDisabled() {
+    AnalyticsBroadcaster analytics = new AnalyticsBroadcaster(ctx, false, "https://rat.rakuten.co.jp/");
+
+    analytics.sendEvent("name", null);
+
+    verify(receiver, never()).onReceive(any(Context.class), any(Intent.class));
   }
 
   private Intent captureIntent() {

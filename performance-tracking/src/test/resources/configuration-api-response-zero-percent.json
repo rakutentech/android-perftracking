@@ -6,5 +6,9 @@
     "BrokerProperties": "{\"PartitionKey\": \"com.rakuten.tech.mobile.perf.example/1.0.0\"}",
     "Content-Type": "application/atom+xml;type=entry;charset=utf-8"
   },
-  "sendUrl": "https://secrect.event.host.net/measurements/messages?timeout=5&api-version=2014-01"
+  "sendUrl": "https://secrect.event.host.net/measurements/messages?timeout=5&api-version=2014-01",
+  "modules": {
+    "enablePerformanceTracking": "true",
+    "enableRat": "true"
+  }
 }

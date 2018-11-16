@@ -31,7 +31,7 @@ public class TrackingManagerSpec extends RobolectricUnitSpec {
   @Before
   public void init() {
     TrackingManager.initialize(
-        context, config, location, battery, new AnalyticsBroadcaster(context));
+        context, config, location, battery, new AnalyticsBroadcaster(context, true));
     manager = TrackingManager.INSTANCE;
     TrackerShadow.mockTracker = tracker;
   }
@@ -42,7 +42,7 @@ public class TrackingManagerSpec extends RobolectricUnitSpec {
   public void shouldCreateInstanceOnInit() {
     TrackingManager.INSTANCE = null;
     TrackingManager.initialize(
-        context, config, location, battery, new AnalyticsBroadcaster(context));
+        context, config, location, battery, new AnalyticsBroadcaster(context, true));
     assertThat(TrackingManager.INSTANCE).isNotNull();
   }
 
@@ -50,7 +50,7 @@ public class TrackingManagerSpec extends RobolectricUnitSpec {
   public void shouldCreateNewInstanceOnEveryInit() {
     TrackingManager previousInstance = TrackingManager.INSTANCE;
     TrackingManager.initialize(
-        context, config, location, battery, new AnalyticsBroadcaster(context));
+        context, config, location, battery, new AnalyticsBroadcaster(context, true));
     assertThat(previousInstance).isNotEqualTo(TrackingManager.INSTANCE);
   }
 

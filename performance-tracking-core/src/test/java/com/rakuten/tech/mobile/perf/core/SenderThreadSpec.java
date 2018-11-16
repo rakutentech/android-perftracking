@@ -168,6 +168,7 @@ public class SenderThreadSpec {
       config.debug = true;
       config.eventHubUrl = ""; // url injected via constructor
       config.header = new HashMap<>();
+      config.enablePerfTrackingEvents = true;
 
       envInfo = new EnvironmentInfo(ctx, location, batteryinfo);
       location.publish(new LocationData("test-land", "test-region"));

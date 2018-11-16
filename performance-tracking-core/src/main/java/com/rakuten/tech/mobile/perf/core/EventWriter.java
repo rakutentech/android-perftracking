@@ -12,97 +12,101 @@ import javax.net.ssl.HttpsURLConnection;
 class EventWriter {
 
   private final String TAG = "Performance Tracking";
-  private final Config _config;
-  private final EnvironmentInfo _envInfo;
-  private final URL _url;
-  private HttpsURLConnection _conn;
-  private BufferedWriter _writer;
-  private int _measurements;
+  private final Config config;
+  private final EnvironmentInfo envInfo;
+  private final URL url;
+  private HttpsURLConnection connection;
+  private BufferedWriter writer;
+  private int measurements;
 
   EventWriter(Config config, EnvironmentInfo envInfo) {
-    _config = config;
-    _envInfo = envInfo;
+    this.config = config;
+    this.envInfo = envInfo;
     URL url = null;
     try {
-      url = new URL(_config.eventHubUrl);
+      url = new URL(this.config.eventHubUrl);
     } catch (MalformedURLException e) {
-      if (_config.debug) {
+      if (this.config.debug) {
         Log.d(TAG, e.getMessage());
       }
     } finally {
-      _url = url;
+      this.url = url;
     }
   }
 
   /* for testing */
   @SuppressWarnings("unused") EventWriter(Config config, EnvironmentInfo envInfo, URL url) {
-    _config = config;
-    _envInfo = envInfo;
-    _url = url;
+    this.config = config;
+    this.envInfo = envInfo;
+    this.url = url;
   }
 
   void begin() throws IOException {
+    if (!config.enablePerfTrackingEvents) {
+      return;
+    }
+
     try {
-      _conn = (HttpsURLConnection) _url.openConnection();
-      _conn.setRequestMethod("POST");
-      for (Map.Entry<String, String> entry : _config.header.entrySet()) {
-        _conn.setRequestProperty(entry.getKey(), entry.getValue());
+      connection = (HttpsURLConnection) url.openConnection();
+      connection.setRequestMethod("POST");
+      for (Map.Entry<String, String> entry : config.header.entrySet()) {
+        connection.setRequestProperty(entry.getKey(), entry.getValue());
       }
-      _conn.setUseCaches(false);
-      _conn.setDoInput(false);
-      _conn.setDoOutput(true);
-      _conn.connect();
+      connection.setUseCaches(false);
+      connection.setDoInput(false);
+      connection.setDoOutput(true);
+      connection.connect();
 
-      _writer = new BufferedWriter(new OutputStreamWriter(_conn.getOutputStream()));
-      _writer.append("{\"app\":\"").append(_config.app).append("\"")
-          .append(",\"version\":\"").append(_config.version).append("\"")
-          .append(",\"relay_app_id\":\"").append(_config.relayAppId).append("\"");
+      writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+      writer.append("{\"app\":\"").append(config.app).append("\"")
+          .append(",\"version\":\"").append(config.version).append("\"")
+          .append(",\"relay_app_id\":\"").append(config.relayAppId).append("\"");
 
-      if (_envInfo.device != null) {
-        _writer.append(",\"device\":\"").append(_envInfo.device).append("\"");
-      }
-
-      if (_envInfo.getAppUsedMemory() > 0) {
-        _writer.append(",\"app_mem_used\":").append(Long.toString(_envInfo.getAppUsedMemory()));
+      if (envInfo.device != null) {
+        writer.append(",\"device\":\"").append(envInfo.device).append("\"");
       }
 
-      if (_envInfo.getDeviceFreeMemory() > 0) {
-        _writer.append(",\"device_mem_free\":").append(Long.toString(_envInfo.getDeviceFreeMemory()));
+      if (envInfo.getAppUsedMemory() > 0) {
+        writer.append(",\"app_mem_used\":").append(Long.toString(envInfo.getAppUsedMemory()));
       }
 
-      if (_envInfo.getDeviceTotalMemory() > 0) {
-        _writer.append(",\"device_mem_total\":").append(Long.toString(_envInfo.getDeviceTotalMemory()));
+      if (envInfo.getDeviceFreeMemory() > 0) {
+        writer.append(",\"device_mem_free\":").append(Long.toString(envInfo.getDeviceFreeMemory()));
       }
 
-      if (_envInfo.getBatteryLevel() > 0) {
-        _writer.append(",\"battery_level\":").append(Float.toString(_envInfo.getBatteryLevel()));
+      if (envInfo.getDeviceTotalMemory() > 0) {
+        writer.append(",\"device_mem_total\":").append(Long.toString(envInfo.getDeviceTotalMemory()));
       }
 
-      if (_envInfo.getCountry() != null) {
-        _writer.append(",\"country\":\"").append(_envInfo.getCountry()).append("\"");
+      if (envInfo.getBatteryLevel() > 0) {
+        writer.append(",\"battery_level\":").append(Float.toString(envInfo.getBatteryLevel()));
       }
 
-      if (_envInfo.getRegion() != null) {
-        _writer.append(",\"region\":\"").append(_envInfo.getRegion()).append("\"");
+      if (envInfo.getCountry() != null) {
+        writer.append(",\"country\":\"").append(envInfo.getCountry()).append("\"");
       }
 
-      if (_envInfo.network != null) {
-        _writer.append(",\"network\":\"").append(_envInfo.network).append("\"");
+      if (envInfo.getRegion() != null) {
+        writer.append(",\"region\":\"").append(envInfo.getRegion()).append("\"");
       }
 
-      if (_envInfo.osName != null) {
-        _writer.append(",\"os\":\"").append(_envInfo.osName).append("\"");
+      if (envInfo.network != null) {
+        writer.append(",\"network\":\"").append(envInfo.network).append("\"");
       }
 
-      if (_envInfo.osVersion != null) {
-        _writer.append(",\"os_version\":\"").append(_envInfo.osVersion).append("\"");
+      if (envInfo.osName != null) {
+        writer.append(",\"os\":\"").append(envInfo.osName).append("\"");
       }
 
-      _writer.append(",\"measurements\":[");
-      _measurements = 0;
+      if (envInfo.osVersion != null) {
+        writer.append(",\"os_version\":\"").append(envInfo.osVersion).append("\"");
+      }
+
+      writer.append(",\"measurements\":[");
+      measurements = 0;
 
     } catch (Exception e) {
-      if (_config.debug) {
+      if (config.debug) {
         Log.d(TAG, e.getMessage());
       }
       disconnect();
@@ -113,113 +117,121 @@ class EventWriter {
   }
 
   void write(Metric metric) throws IOException {
-    if (_writer != null) {
-      try {
-        if (_measurements > 0) {
-          _writer.append(',');
-        }
-        _writer
-            .append("{\"metric\":\"").append(metric.id).append("\"")
-            .append(",\"urls\":").append(Long.toString(metric.urls))
-            .append(",\"start\":").append(Long.toString(metric.startTime))
-            .append(",\"time\":").append(Long.toString(metric.endTime - metric.startTime))
-            .append('}');
-        _measurements++;
-      } catch (Exception e) {
-        if (_config.debug) {
-          Log.d(TAG, e.getMessage());
-        }
-        disconnect();
-        if (e instanceof IOException) {
-          throw e;
-        }
+    if (!config.enablePerfTrackingEvents || writer == null) {
+      return;
+    }
+
+    try {
+      if (measurements > 0) {
+        writer.append(',');
+      }
+      writer
+          .append("{\"metric\":\"").append(metric.id).append("\"")
+          .append(",\"urls\":").append(Long.toString(metric.urls))
+          .append(",\"start\":").append(Long.toString(metric.startTime))
+          .append(",\"time\":").append(Long.toString(metric.endTime - metric.startTime))
+          .append('}');
+      measurements++;
+    } catch (Exception e) {
+      if (config.debug) {
+        Log.d(TAG, e.getMessage());
+      }
+      disconnect();
+      if (e instanceof IOException) {
+        throw e;
       }
     }
   }
 
   void write(Measurement m, String metricId) throws IOException {
-    if (_writer != null) {
-      try {
-        if (_measurements > 0) {
-          _writer.append(',');
-        }
+    if (!config.enablePerfTrackingEvents || writer == null) {
+      return;
+    }
 
-        switch (m.type) {
-          case Measurement.METHOD:
-            _writer.append("{\"method\":\"").append((String) m.a).append('.').append((String) m.b)
-                .append('"');
-            break;
+    try {
+      if (measurements > 0) {
+        writer.append(',');
+      }
 
-          case Measurement.URL:
-            _writer.append("{\"url\":\"");
+      switch (m.type) {
+        case Measurement.METHOD:
+          writer.append("{\"method\":\"").append((String) m.a).append('.').append((String) m.b)
+              .append('"');
+          break;
 
-            if (m.a instanceof URL) {
-              URL url = (URL) m.a;
-              _writer.append(url.getProtocol()).append("://").append(url.getAuthority())
-                  .append(escapeValue(url.getPath()));
-            } else {
-              String url = (String) m.a;
-              int q = url.indexOf('?');
-              if (q > 0) {
-                url = url.substring(0, q);
-              }
-              _writer.append(escapeValue(url));
+        case Measurement.URL:
+          writer.append("{\"url\":\"");
+
+          if (m.a instanceof URL) {
+            URL url = (URL) m.a;
+            writer.append(url.getProtocol()).append("://").append(url.getAuthority())
+                .append(escapeValue(url.getPath()));
+          } else {
+            String url = (String) m.a;
+            int q = url.indexOf('?');
+            if (q > 0) {
+              url = url.substring(0, q);
             }
+            writer.append(escapeValue(url));
+          }
 
-            _writer.append('"');
+          writer.append('"');
 
-            if (m.b != null) {
-              _writer.append(",\"verb\":\"").append((String) m.b).append('"');
-            }
-            if (m.c != null) {
-              _writer.append(",\"status_code\":").append(m.c.toString());
-            }
-            break;
+          if (m.b != null) {
+            writer.append(",\"verb\":\"").append((String) m.b).append('"');
+          }
+          if (m.c != null) {
+            writer.append(",\"status_code\":").append(m.c.toString());
+          }
+          break;
 
-          case Measurement.CUSTOM:
-            _writer.append("{\"custom\":\"").append((String) m.a).append('"');
-            break;
+        case Measurement.CUSTOM:
+          writer.append("{\"custom\":\"").append((String) m.a).append('"');
+          break;
 
-          default:
-            return;
-        }
+        default:
+          return;
+      }
 
-        if (m.activityName != null && m.activityName.length() > 0) {
-          _writer.append(",\"screen\":\"").append(m.activityName).append('"');
-        }
+      if (m.activityName != null && m.activityName.length() > 0) {
+        writer.append(",\"screen\":\"").append(m.activityName).append('"');
+      }
 
-        if (metricId != null) {
-          _writer.append(",\"metric\":\"").append(metricId).append('"');
-        }
-        _writer.append(",\"start\":").append(Long.toString(m.startTime));
-        _writer.append(",\"time\":").append(Long.toString(m.endTime - m.startTime)).append('}');
-        _measurements++;
-      } catch (Exception e) {
-        if (_config.debug) {
-          Log.d(TAG, e.getMessage());
-        }
-        disconnect();
-        if (e instanceof IOException) {
-          throw e;
-        }
+      if (metricId != null) {
+        writer.append(",\"metric\":\"").append(metricId).append('"');
+      }
+      writer.append(",\"start\":").append(Long.toString(m.startTime));
+      writer.append(",\"time\":").append(Long.toString(m.endTime - m.startTime)).append('}');
+      measurements++;
+    } catch (Exception e) {
+      if (config.debug) {
+        Log.d(TAG, e.getMessage());
+      }
+      disconnect();
+      if (e instanceof IOException) {
+        throw e;
       }
     }
   }
 
   void end() throws IOException {
-    try {
-      if (_writer != null) {
-        _writer.append("]}");
-        _writer.close();
+    if (!config.enablePerfTrackingEvents) {
+      return;
+    }
 
-        int result = _conn.getResponseCode();
+    try {
+      if (writer != null) {
+        writer.append("]}");
+        writer.close();
+
+        int result = connection.getResponseCode();
 
         if (result != 201) {
           throw new EventHubException(result);
         }
       }
     } catch (Exception e) {
-      if (_config.debug) {
+      if (config.debug) {
         Log.d(TAG, e.getMessage());
       }
       if (e instanceof EventHubException) {
@@ -231,19 +243,19 @@ class EventWriter {
   }
 
   private void disconnect() {
-    if (_conn != null) {
-      _conn.disconnect();
-      _conn = null;
+    if (connection != null) {
+      connection.disconnect();
+      connection = null;
     }
-    if (_writer != null) {
+    if (writer != null) {
       try {
-        _writer.close();
+        writer.close();
       } catch (IOException e) {
-        if (_config.debug) {
+        if (config.debug) {
           Log.d(TAG, e.getMessage());
         }
       }
-      _writer = null;
+      writer = null;
     }
   }
 
