@@ -5,7 +5,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
-import com.rakuten.tech.mobile.perf.BuildConfig;
 import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import com.rakuten.tech.mobile.perf.runtime.TestData;
 import org.junit.Rule;
@@ -37,17 +36,17 @@ public class GeoLocationRequestSpec extends RobolectricUnitSpec {
   @Rule public TestData data = new TestData("geolocation-api-response.json");
 
   @Test
-  public void shouldParseResponse() throws VolleyError {
+  public void shouldParseResponse() {
     GeoLocationRequest request = new GeoLocationRequest("", "", null, null);
     GeoLocationResult response = request.parseResponse(data.content);
     assertThat(response).isNotNull();
-    assertThat(response.getRegionName().equals("Tokyo"));
+    assertThat(response.getRegion()).isEqualTo("Tokyo");
   }
 
-  @Test(expected = VolleyError.class)
-  public void shouldNotFailOnInvalidResponseString() throws VolleyError {
+  @Test
+  public void shouldNotFailOnInvalidResponseString() {
     GeoLocationRequest request = new GeoLocationRequest("", "", null, null);
-    GeoLocationResult result = request.parseResponse("some invalid json [[[[}}}");
-    assertThat(result).isNull();
+    request.parseResponse("some invalid json [[[[}}}");
+    // no exception
   }
 }

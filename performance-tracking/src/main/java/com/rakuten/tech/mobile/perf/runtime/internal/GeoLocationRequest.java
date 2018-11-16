@@ -4,9 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import com.rakuten.tech.mobile.perf.BuildConfig;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /** GeoLocationRequest */
 class GeoLocationRequest extends BaseRequest<GeoLocationResult> {
@@ -23,41 +22,7 @@ class GeoLocationRequest extends BaseRequest<GeoLocationResult> {
   }
 
   @Override
-  protected GeoLocationResult parseResponse(String response) throws VolleyError {
-    try {
-      String subdivisionNamesEn =
-          new JsonParser()
-              .parse(response)
-              .getAsJsonObject()
-              .get("list")
-              .getAsJsonArray()
-              .get(0)
-              .getAsJsonObject()
-              .get("subdivisions")
-              .getAsJsonArray()
-              .get(0)
-              .getAsJsonObject()
-              .get("names")
-              .getAsJsonObject()
-              .get("en")
-              .getAsString();
-
-      String countryIsoCode =
-          new JsonParser()
-              .parse(response)
-              .getAsJsonObject()
-              .get("list")
-              .getAsJsonArray()
-              .get(0)
-              .getAsJsonObject()
-              .get("country")
-              .getAsJsonObject()
-              .get("iso_code")
-              .getAsString();
-
-      return new GeoLocationResult(countryIsoCode, subdivisionNamesEn);
-    } catch (JsonSyntaxException e) {
-      throw new VolleyError(e.getMessage(), e.getCause());
-    }
+  protected GeoLocationResult parseResponse(String response) {
+    return new GeoLocationResult(response);
   }
 }

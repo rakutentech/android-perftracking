@@ -14,7 +14,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import com.android.volley.VolleyError;
-import com.google.gson.Gson;
 import com.rakuten.tech.mobile.perf.runtime.MockedQueue;
 import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import com.rakuten.tech.mobile.perf.runtime.TestData;
@@ -85,7 +84,7 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     configStore = new ConfigStore(context, queue, appId, "", "");
 
     ConfigurationResult cachedResponse = configStore.getObservable().getCachedValue();
-    JSONAssert.assertEquals(config.content, new Gson().toJson(cachedResponse), true);
+    JSONAssert.assertEquals(config.content, cachedResponse.toString(), true);
   }
 
   @Test
@@ -96,11 +95,11 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     configStore = new ConfigStore(context, queue, appId, "", "");
 
     ConfigurationResult cachedResponse = configStore.getObservable().getCachedValue();
-    JSONAssert.assertEquals(config.content, new Gson().toJson(cachedResponse), true);
+    JSONAssert.assertEquals(config.content, cachedResponse.toString(), true);
   }
 
   @Test
-  public void shouldUseNullConfigOnEmptyCacheOnInstanceCreation() throws JSONException {
+  public void shouldUseNullConfigOnEmptyCacheOnInstanceCreation() {
     // EmptyCache
     configStore = new ConfigStore(context, queue, appId, "", "");
 
@@ -136,6 +135,6 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
     configStore = new ConfigStore(context, queue, appId, null, "");
 
     ConfigurationResult cachedResponse = configStore.getObservable().getCachedValue();
-    JSONAssert.assertEquals(config.content, new Gson().toJson(cachedResponse), true);
+    JSONAssert.assertEquals(config.content, cachedResponse.toString(), true);
   }
 }

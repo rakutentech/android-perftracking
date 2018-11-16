@@ -1,20 +1,43 @@
 package com.rakuten.tech.mobile.perf.runtime.internal;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 class GeoLocationResult {
 
-  private final String countryName;
-  private final String regionName;
+  private final String country;
+  private final String region;
 
-  GeoLocationResult(String country, String region) {
-    countryName = country;
-    regionName = region;
+  public GeoLocationResult(String json) {
+    String region;
+    String country;
+    try {
+      JSONObject location = new JSONObject(json)
+          .getJSONArray("list")
+          .getJSONObject(0);
+
+      region = location
+          .getJSONArray("subdivisions")
+          .getJSONObject(0)
+          .getJSONObject("names")
+          .getString("en");
+
+      country = location
+          .getJSONObject("country")
+          .getString("iso_code");
+    } catch (JSONException ignored) {
+      country = "";
+      region = "";
+    }
+    this.region = region;
+    this.country = country;
   }
 
-  String getCountryName() {
-    return countryName;
+  String getCountry() {
+    return country;
   }
 
-  String getRegionName() {
-    return regionName;
+  String getRegion() {
+    return region;
   }
 }

@@ -9,12 +9,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.gson.Gson;
 import com.rakuten.tech.mobile.perf.R;
 import com.rakuten.tech.mobile.perf.core.TelephonyUtil;
 import com.rakuten.tech.mobile.perf.core.Tracker;
@@ -153,12 +151,13 @@ class ConfigStore extends Store<ConfigurationResult> {
   }
 
   private void writeConfigToCache(ConfigurationResult result) {
-    prefs.edit().putString(CONFIG_KEY, new Gson().toJson(result)).apply();
+
+    prefs.edit().putString(CONFIG_KEY, result.toString()).apply();
   }
 
   @Nullable
   private ConfigurationResult readConfigFromCache() {
     String result = prefs.getString(CONFIG_KEY, null);
-    return result != null ? new Gson().fromJson(result, ConfigurationResult.class) : null;
+    return result != null ? new ConfigurationResult(result) : null;
   }
 }
