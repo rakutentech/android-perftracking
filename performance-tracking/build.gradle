@@ -1,26 +1,40 @@
 apply from: '../config/android/library.gradle'
+apply plugin: 'me.tatarka.retrolambda'
+
+if(System.env.CI && System.env.CIRCLECI) {
+  project.ext.DEFAULT_CONFIG_URL_PREFIX = "https://config.example.com/"
+  project.ext.DEFAULT_LOCATION_URL_PREFIX = "https://location.example.com/"
+}
 
 android {
   defaultConfig {
     resValue 'string', 'perftracking__version', project.version
 
     def property = { name ->
-      project.hasProperty(name) ? project."${name}" : "";
+      project.hasProperty(name) ? project."${name}" : ""
     }
 
     buildConfigField("String", "DEFAULT_CONFIG_URL_PREFIX", "\"${property('DEFAULT_CONFIG_URL_PREFIX')}\"")
     buildConfigField("String", "DEFAULT_LOCATION_URL_PREFIX", "\"${property('DEFAULT_LOCATION_URL_PREFIX')}\"")
+
+    consumerProguardFiles 'proguard.rules'
   }
 
   testOptions {
     unitTests{
       includeAndroidResources = true
+      returnDefaultValues = true
       all {
         jacoco {
           includeNoLocationClasses = true
         }
       }
     }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
 }
 
@@ -41,7 +55,7 @@ dependencies {
 
   api "com.android.support:support-annotations:$CONFIG.versions.android.libraries.support"
   implementation "com.android.support:support-v4:${CONFIG.versions.android.libraries.support}"
-  implementation "com.android.volley:volley:${CONFIG.versions.android.libraries.volley}"
+  implementation 'com.squareup.retrofit2:retrofit:2.4.0'
 
   implementation 'com.rakuten.tech.mobile:manifest-config-annotations:0.1.0'
   annotationProcessor   'com.rakuten.tech.mobile:manifest-config-processor:0.1.0'
@@ -52,6 +66,8 @@ dependencies {
   testImplementation "org.mockito:mockito-core:2.23.0"
   testImplementation 'org.robolectric:robolectric:3.8'
   testImplementation 'com.squareup.okio:okio:1.14.0'
+  testImplementation 'com.squareup.okhttp3:mockwebserver:3.11.0'
+  testImplementation 'org.awaitility:awaitility:3.1.3'
 }
 
 apply from: "../config/quality/jacoco/android.gradle"
@@ -68,9 +84,7 @@ pmd { // TODO: fix all findbugs warnings
 
 task checkUrlPrefixes {
   doLast {
-    if(System.env.CI && System.env.CIRCLECI) {
-      println "allow empty URL prefixes for location and config APIs on circleCI build jobs"
-    } else if (!project.hasProperty('DEFAULT_CONFIG_URL_PREFIX') ||
+    if (!project.hasProperty('DEFAULT_CONFIG_URL_PREFIX') ||
         !project.hasProperty('DEFAULT_LOCATION_URL_PREFIX')) {
       throw new GradleException("Cannot Bulid Runtime without default config & location API" +
           " prexfixes.\nConfigure 'DEFAULT_CONFIG_URL_PREFIX' and " +
@@ -80,7 +94,7 @@ task checkUrlPrefixes {
 }
 
 tasks.whenTaskAdded { task ->
-  if (task.name.contains("assemble")) {
+  if (task.name.contains("assemble") || task.name.contains("test")) {
     task.dependsOn checkUrlPrefixes
   }
 }

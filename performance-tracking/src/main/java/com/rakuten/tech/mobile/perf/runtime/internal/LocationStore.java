@@ -8,13 +8,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.rakuten.tech.mobile.perf.core.LocationData;
 import com.rakuten.tech.mobile.perf.core.Tracker;
 import org.json.JSONException;
 import org.json.JSONObject;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * LocationStore - Handles requesting location, response caching and publishing to observers. Can be
@@ -48,9 +49,7 @@ class LocationStore extends Store<LocationData> {
   @Nullable
   private final String subscriptionKey;
   @NonNull
-  private final String urlPrefix;
-  @NonNull
-  private final RequestQueue requestQueue;
+  private final GeoLocationApi api;
   @NonNull
   private final SharedPreferences prefs;
   @NonNull
@@ -58,13 +57,25 @@ class LocationStore extends Store<LocationData> {
 
   LocationStore(
       @NonNull Context context,
-      @NonNull RequestQueue requestQueue,
       @Nullable String subscriptionKey,
       @NonNull String urlPrefix) {
+    this(context, subscriptionKey,
+        new Retrofit.Builder()
+            .baseUrl(urlPrefix)
+            .addConverterFactory(new ConverterFactory())
+            .build()
+            .create(GeoLocationApi.class)
+    );
+  }
+
+  @VisibleForTesting
+  LocationStore(
+      @NonNull Context context,
+      @Nullable String subscriptionKey,
+      @NonNull GeoLocationApi api) {
     this.prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-    this.requestQueue = requestQueue;
     this.subscriptionKey = subscriptionKey;
-    this.urlPrefix = urlPrefix;
+    this.api = api;
     this.handler = new Handler(Looper.getMainLooper());
 
     getObservable().publish(readLocationFromCache());
@@ -90,29 +101,28 @@ class LocationStore extends Store<LocationData> {
           "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from "
               + "manifest automated performance tracking will not work.");
     }
-    new GeoLocationRequest(
-        urlPrefix,
-        subscriptionKey,
-        new Response.Listener<GeoLocationResult>() {
-          @Override
-          public void onResponse(GeoLocationResult newLocation) {
-            LocationData locationData =
-                new LocationData(newLocation.getCountry(), newLocation.getRegion());
-            writeLocationToCache(locationData);
-            getObservable().publish(locationData);
-          }
-        },
-        new Response.ErrorListener() {
-          @Override
-          public void onErrorResponse(VolleyError error) {
-            Log.d(TAG, "Error loading location", error);
-          }
-        })
-        .queue(requestQueue);
-  }
 
-  private void writeLocationToCache(LocationData result) {
-    prefs.edit().putString(LOCATION_KEY, toJsonString(result)).apply();
+    api.location(subscriptionKey)
+        .enqueue(new Callback<GeoLocationResponse>() {
+          @Override
+          public void onResponse(Call<GeoLocationResponse> call,
+              Response<GeoLocationResponse> response) {
+            if(response.isSuccessful()) {
+              GeoLocationResponse newLocation = response.body();
+              LocationData locationData =
+                  new LocationData(newLocation.getCountry(), newLocation.getRegion());
+              prefs.edit().putString(LOCATION_KEY, toJsonString(locationData)).apply();
+              getObservable().publish(locationData);
+            } else {
+              Log.d(TAG, "Failed to load location with HTTP status code " + response.code());
+            }
+          }
+
+          @Override
+          public void onFailure(Call<GeoLocationResponse> call, Throwable t) {
+            Log.d(TAG, "Error loading location", t);
+          }
+        });
   }
 
   @VisibleForTesting

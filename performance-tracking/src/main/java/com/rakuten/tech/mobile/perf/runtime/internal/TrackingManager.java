@@ -16,12 +16,12 @@ public class TrackingManager {
   private static final String TAG = TrackingManager.class.getSimpleName();
   public static TrackingManager INSTANCE = null;
   /** maps {@link TrackingData} to Measurement ids (from {@link Tracker} */
-  private Map<TrackingData, Integer> mTrackingData;
-  /* Max number of objects for @TrackingManager#mTrackingData */
+  private Map<TrackingData, Integer> trackingData;
+  /* Max number of objects for @TrackingManager#trackingData */
   private static final int TRACKING_DATA_LIMIT = 100;
 
   private TrackingManager() {
-    mTrackingData = new HashMap<>();
+    trackingData = new HashMap<>();
   }
 
   static synchronized void initialize(
@@ -65,11 +65,11 @@ public class TrackingManager {
    */
   public synchronized void startAggregated(String id, Comparable object) {
     TrackingData key = new TrackingData(id, object);
-    if (mTrackingData.size() >= TRACKING_DATA_LIMIT) {
-      mTrackingData.clear();
+    if (trackingData.size() >= TRACKING_DATA_LIMIT) {
+      trackingData.clear();
     }
-    if (!mTrackingData.containsKey(key)) {
-      mTrackingData.put(key, Tracker.startCustom(id));
+    if (!trackingData.containsKey(key)) {
+      trackingData.put(key, Tracker.startCustom(id));
     } else {
       Log.d(TAG, "Measurement already started");
     }
@@ -83,9 +83,9 @@ public class TrackingManager {
    */
   public synchronized void endAggregated(String id, Comparable object) {
     TrackingData key = new TrackingData(id, object);
-    if (mTrackingData.containsKey(key)) {
-      Tracker.endCustom(mTrackingData.get(key));
-      mTrackingData.remove(key);
+    if (trackingData.containsKey(key)) {
+      Tracker.endCustom(trackingData.get(key));
+      trackingData.remove(key);
     } else {
       Log.d(TAG, "Measurement not found");
     }

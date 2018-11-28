@@ -12,10 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.BasicNetwork;
-import com.android.volley.toolbox.HurlStack;
-import com.android.volley.toolbox.NoCache;
 import com.rakuten.tech.mobile.perf.core.Config;
 import com.rakuten.tech.mobile.perf.runtime.Metric;
 import java.util.Random;
@@ -37,10 +33,7 @@ public class RuntimeContentProvider extends ContentProvider {
     if (!AppPerformanceConfig.enabled) {
       return false; // Return when instrumentation is disabled
     }
-
-    RequestQueue queue = new RequestQueue(new NoCache(), new BasicNetwork(new HurlStack()));
-    queue.start();
-
+    
     BatteryInfoStore batteryInfoStore = new BatteryInfoStore(context);
 
     App manifest = new AppManifestConfig(context);
@@ -55,7 +48,7 @@ public class RuntimeContentProvider extends ContentProvider {
           + "manifest, automated performance tracking will not work.");
     }
 
-    ConfigStore configStore = new ConfigStore(context, queue, manifest.appId(), manifest.appKey(),
+    ConfigStore configStore = new ConfigStore(context, manifest.appId(), manifest.appKey(),
             manifest.configUrlPrefix());
 
     // Read last config from cache
@@ -63,7 +56,7 @@ public class RuntimeContentProvider extends ContentProvider {
         manifest.appId());
     if (config != null) {
       LocationStore locationStore =
-          new LocationStore(context, queue, manifest.appKey(), manifest.locationUrlPrefix());
+          new LocationStore(context, manifest.appKey(), manifest.locationUrlPrefix());
       // Initialise Tracking Manager
       TrackingManager.initialize(
           context,
@@ -86,7 +79,7 @@ public class RuntimeContentProvider extends ContentProvider {
   @Nullable
   private Config createConfig(
       @NonNull final Context context,
-      @Nullable final ConfigurationResult lastConfig,
+      @Nullable final ConfigurationResponse lastConfig,
       @Nullable final String appId) {
     if (lastConfig == null) {
       return null;

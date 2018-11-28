@@ -1,9 +1,7 @@
 package com.rakuten.tech.mobile.perf.runtime.internal;
 
-import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -13,8 +11,9 @@ import org.json.JSONObject;
 /**
  * Configuration Result
  */
-class ConfigurationResult implements Parcelable {
+class ConfigurationResponse {
 
+  private static final String TAG = ConfigurationResponse.class.getSimpleName();
   private double enablePercent;
   private boolean enableNonMetricMeasurement;
   private String sendUrl;
@@ -24,7 +23,7 @@ class ConfigurationResult implements Parcelable {
   private static final String ENABLE_PERFORMANCE_TRACKING_KEY = "enablePerformanceTracking";
   private static final String ENABLE_RAT_KEY = "enableRat";
 
-  ConfigurationResult(@NonNull String json) {
+  ConfigurationResponse(@NonNull String json) {
     try {
       JSONObject obj = new JSONObject(json);
       enablePercent = obj.getDouble("enablePercent");
@@ -32,7 +31,8 @@ class ConfigurationResult implements Parcelable {
       sendUrl = obj.getString("sendUrl");
       header = toStringMap(obj.getJSONObject("sendHeaders"));
       modules = toStringMap(obj.getJSONObject("modules"));
-    } catch (JSONException ignored) {
+    } catch (JSONException t) {
+      Log.d(TAG, "Failed to parse configuration response JSON", t);
     }
   }
 
@@ -61,61 +61,6 @@ class ConfigurationResult implements Parcelable {
       return "{}";
     }
   }
-
-  private ConfigurationResult(Parcel in) {
-    enablePercent = in.readDouble();
-    enableNonMetricMeasurement = in.readByte() == 1;
-    sendUrl = in.readString();
-
-    Bundle headerBundle = in.readBundle();
-    header = new HashMap<>();
-    for (String key : headerBundle.keySet()) {
-      header.put(key, headerBundle.getString(key));
-    }
-
-    Bundle modulesBundle = in.readBundle();
-    modules = new HashMap<>();
-    for (String key : modulesBundle.keySet()) {
-      modules.put(key, modulesBundle.getString(key));
-    }
-  }
-
-  @Override
-  public void writeToParcel(Parcel dest, int flags) {
-    dest.writeDouble(enablePercent);
-    dest.writeByte((byte) (enableNonMetricMeasurement ? 1 : 0));
-    dest.writeString(sendUrl);
-
-    Bundle headerBundle = new Bundle();
-    for (String key : header.keySet()) {
-      headerBundle.putString(key, header.get(key));
-    }
-    dest.writeBundle(headerBundle);
-
-    Bundle moduleBundle = new Bundle();
-    for (String key : modules.keySet()) {
-      moduleBundle.putString(key, modules.get(key));
-    }
-    dest.writeBundle(moduleBundle);
-  }
-
-  @Override
-  public int describeContents() {
-    return 0;
-  }
-
-  public static final Creator<ConfigurationResult> CREATOR =
-      new Creator<ConfigurationResult>() {
-        @Override
-        public ConfigurationResult createFromParcel(Parcel in) {
-          return new ConfigurationResult(in);
-        }
-
-        @Override
-        public ConfigurationResult[] newArray(int size) {
-          return new ConfigurationResult[size];
-        }
-      };
 
   double getEnablePercent() {
     return enablePercent;
