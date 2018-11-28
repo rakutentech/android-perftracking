@@ -17,6 +17,10 @@ buildscript {
   }
 }
 
+plugins {
+  id "me.tatarka.retrolambda" version "3.7.0"
+}
+
 // do something if a task exists after evaluate
 // receives the task as delegate and parameter
 Project.metaClass.eventuallyHasTask = { String taskName, Closure<Task> cls = null ->

@@ -1,6 +1,9 @@
 package com.rakuten.tech.mobile.perf.runtime;
 
 import com.rakuten.tech.mobile.perf.BuildConfig;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
@@ -16,5 +19,9 @@ public class RobolectricUnitSpec {
   @Before
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
+    Logger logger = LogManager.getLogManager().getLogger("okhttp3.mockwebserver.MockWebServer");
+    if (logger != null) {
+      logger.setLevel(Level.OFF);
+    }
   }
 }

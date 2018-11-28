@@ -3,12 +3,12 @@ package com.rakuten.tech.mobile.perf.runtime.internal;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class GeoLocationResult {
+class GeoLocationResponse {
 
   private final String country;
   private final String region;
 
-  public GeoLocationResult(String json) {
+  GeoLocationResponse(String json) {
     String region;
     String country;
     try {

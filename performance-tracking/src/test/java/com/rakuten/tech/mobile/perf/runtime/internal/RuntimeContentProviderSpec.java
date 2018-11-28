@@ -1,7 +1,6 @@
 package com.rakuten.tech.mobile.perf.runtime.internal;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.clearInvocations;
@@ -16,13 +15,12 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import com.android.volley.Request;
-import com.rakuten.tech.mobile.perf.runtime.MockedQueue;
 import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import com.rakuten.tech.mobile.perf.runtime.TestData;
-import com.rakuten.tech.mobile.perf.runtime.shadow.RequestQueueShadow;
+import com.rakuten.tech.mobile.perf.runtime.shadow.NetworkSecurityPolicyShadow;
 import com.rakuten.tech.mobile.perf.runtime.shadow.TrackerShadow;
 import com.rakuten.tech.mobile.perf.runtime.shadow.UtilShadow;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,27 +30,27 @@ import org.robolectric.annotation.Config;
 
 @Config(
     shadows = {
-      RequestQueueShadow.class, // prevent network requests from runtime side
-      TrackerShadow.class, // prevent network requests from core side
-      StoreShadow.class, // fake cache
-      UtilShadow.class // fake debug build
+        NetworkSecurityPolicyShadow.class,
+        TrackerShadow.class,
+        StoreShadow.class, // fake cache
+        UtilShadow.class // fake debug build
     })
 public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
 
-  @Rule public TestData config = new TestData("configuration-api-response.json");
-
+  @Rule
+  public TestData config = new TestData("configuration-api-response.json");
   @Rule
   public TestData configZeroPercent = new TestData("configuration-api-response-zero-percent.json");
+  @Rule
+  public MockWebServer server = new MockWebServer();
 
-  @Mock PackageManager packageManager;
-  /* Spy */ private MockedQueue queue;
+  @Mock
+  private PackageManager packageManager;
 
   private RuntimeContentProvider provider;
 
   @Before
   public void init() throws PackageManager.NameNotFoundException {
-    RequestQueueShadow.queue = spy(new MockedQueue());
-    queue = RequestQueueShadow.queue;
     provider = spy(new RuntimeContentProvider());
     Context context = spy(RuntimeEnvironment.application);
     when(provider.getContext()).thenReturn(context);
@@ -63,6 +61,8 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
     ApplicationInfo appInfo = new ApplicationInfo();
     appInfo.metaData = new Bundle();
     appInfo.metaData.putCharSequence("com.rakuten.tech.mobile.relay.AppId", "testAppId");
+    appInfo.metaData.putCharSequence("com.rakuten.tech.mobile.perf.ConfigurationUrlPrefix", "https://config.example.com/");
+    appInfo.metaData.putCharSequence("com.rakuten.tech.mobile.perf.LocationUrlPrefix", "https://location.example.com/");
     when(packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA))
         .thenReturn(appInfo);
     TrackingManager.INSTANCE = null;
@@ -82,7 +82,7 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldStartTrackingAndLaunchMetricOnCachedConfig() {
-    StoreShadow.cachedContent = new ConfigurationResult(config.content);
+    StoreShadow.cachedContent = new ConfigurationResponse(config.content);
 
     provider.onCreate();
 
@@ -92,7 +92,7 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
 
   @Test
   public void shouldStartTrackingForDebugBuildEvenifEnablePercentIsZero() {
-    StoreShadow.cachedContent = new ConfigurationResult(configZeroPercent.content);
+    StoreShadow.cachedContent = new ConfigurationResponse(configZeroPercent.content);
     UtilShadow.mockDebugBuild = true;
 
     provider.onCreate();
@@ -109,13 +109,13 @@ public class RuntimeContentProviderSpec extends RobolectricUnitSpec {
 
     provider.onCreate();
 
-    verify(queue).add(any(Request.class));
+    // no exception
   }
 
   @Test
   public void shouldStartTrackingEvenWhenPackageAndAppInfoIsMissing()
       throws PackageManager.NameNotFoundException {
-    StoreShadow.cachedContent = new ConfigurationResult(config.content);
+    StoreShadow.cachedContent = new ConfigurationResponse(config.content);
     doThrow(new PackageManager.NameNotFoundException())
         .when(packageManager)
         .getPackageInfo(anyString(), anyInt());
