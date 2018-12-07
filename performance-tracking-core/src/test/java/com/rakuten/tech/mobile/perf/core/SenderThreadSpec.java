@@ -231,8 +231,9 @@ public class SenderThreadSpec {
     Measurement next = buffer.next();
     next.type = Measurement.METRIC;
     for (int i = 0; i < count; i++) {
-      buffer.next().endTime = 10000000;
-      buffer.next().startTime = 1;
+      Measurement nextMeasurement = buffer.next();
+      nextMeasurement.endTime = 10000000;
+      nextMeasurement.startTime = 1;
     }
   }
 

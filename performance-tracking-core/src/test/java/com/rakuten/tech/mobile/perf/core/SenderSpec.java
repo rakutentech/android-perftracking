@@ -61,19 +61,12 @@ public class SenderSpec {
       verify(eventWriter, times(1)).end();
     }
 
-    @Test public void shouldSendMetricWithNegativeBuffer() throws IOException {
-      setUpCustomMetrics(measurementBuffer, 10);
-      measurementBuffer.nextTrackingId.set(-5);
-      sender.send(0);
-      verify(eventWriter, times(1)).begin();
-      verify(eventWriter, times(9)).write(any(Metric.class));
-      verify(eventWriter, times(1)).end();
-    }
-
     @Test public void shouldNotSendMetricBufferSizeGreaterThenMax() throws IOException {
       setUpCustomMetrics(measurementBuffer, 10);
-      measurementBuffer.nextTrackingId.set(513);
+      fillBuffer(measurementBuffer, MeasurementBuffer.SIZE);
+
       sender.send(513);
+
       verify(eventWriter, never()).begin();
       verify(eventWriter, never()).write(any(Measurement.class), (String) any());
       verify(eventWriter, never()).write(any(Metric.class));
@@ -92,7 +85,7 @@ public class SenderSpec {
 
     @Test public void shouldNotSendMeasurementsAndMetric() throws IOException {
       setUp10CustomMeasurementAndMetricLesserEndTime(measurementBuffer);
-      current.metric.set((Metric) measurementBuffer.at[3].a);
+      current.metric.set((Metric) measurementBuffer.at(3).a);
       sender.send(0);
       verify(eventWriter, times(1)).begin();
       verify(eventWriter, times(1)).write(any(Measurement.class), (String) isNotNull());
@@ -101,7 +94,7 @@ public class SenderSpec {
 
     @Test public void shouldNotSendMetricLesserThanMaxTime() throws IOException {
       setUp10CustomMetricLesserThanMaxTime(measurementBuffer);
-      current.metric.set((Metric) measurementBuffer.at[3].a);
+      current.metric.set((Metric) measurementBuffer.at(3).a);
       sender.send(0);
       verify(eventWriter, never()).begin();
       verify(eventWriter, never()).write(any(Measurement.class), (String) any());
@@ -150,7 +143,7 @@ public class SenderSpec {
 
     @Test public void shouldReturnNextStartIndex() throws IOException {
       setUpCustomMetrics(measurementBuffer, 10);
-      int startIndex = 0;
+      int startIndex = 1;
       int nextStartIndex = sender.send(startIndex);
 
       clearInvocations(eventWriter);
@@ -158,10 +151,12 @@ public class SenderSpec {
       setUpCustomMetrics(measurementBuffer, 10);
 
       for (int i = startIndex; i < nextStartIndex; i++) { // all previous measurement are cleared
-        assertThat(measurementBuffer.at[i]).is(cleared());
+        assertThat(measurementBuffer.at(i)).is(cleared());
       }
-      for (int i = nextStartIndex; i < measurementBuffer.nextTrackingId.get(); i++) {
-        assertThat(measurementBuffer.at[i]).isNot(cleared()); // new measurements
+
+      int endIndex = nextStartIndex + measurementBuffer.count(nextStartIndex);
+      for (int i = nextStartIndex; i < endIndex; i++) {
+        assertThat(measurementBuffer.at(i)).isNot(cleared()); // new measurements
       }
 
       sender.send(nextStartIndex);
@@ -170,8 +165,8 @@ public class SenderSpec {
       verify(eventWriter, times(10)).write(any(Metric.class));
       verify(eventWriter).end();
 
-      for (int i = startIndex; i < measurementBuffer.nextTrackingId.get(); i++) {
-        assertThat(measurementBuffer.at[i]).is(cleared()); // all previous measurement are cleared
+      for (int i = startIndex; i < endIndex; i++) {
+        assertThat(measurementBuffer.at(i)).is(cleared()); // all previous measurement are cleared
       }
     }
   }
@@ -328,5 +323,11 @@ public class SenderSpec {
             && value.b == null && value.startTime == 0 && value.endTime == 0;
       }
     };
+  }
+
+  protected static void fillBuffer(MeasurementBuffer buffer, int count) {
+    for (int i = 1; i <= count; i++) {
+      buffer.next();
+    }
   }
 }
