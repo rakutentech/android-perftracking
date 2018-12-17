@@ -29,31 +29,22 @@ class Sender {
    * Tries to send measurements and metrics from the underlying buffer starting from {@code
    * startIndex}. Will wait while each measurement/metric is potentially still "alive", i.e. it
    * started less than {@link Metric#MAX_TIME} or {@link Measurement#MAX_TIME} ago respectively.
-   * Returns the buffer index next unsent measurement/metric, which should be used for the next
+   * Returns the index for next unsent measurement/metric, which should be used for the next
    * call to this method as new {@code startIndex}.
    *
    * @param startIndex send measurements starting from this index (of the buffer)
    * @return next unsent index, i.e. {@code startIndex} for the next call to send
    */
   int send(int startIndex) throws IOException {
-    int endIndex = buffer.nextTrackingId.get() % MeasurementBuffer.SIZE;
-    if (endIndex < 0) {
-      endIndex += MeasurementBuffer.SIZE;
-    }
-
-    int count;
-
-    if (startIndex == endIndex && buffer.next() == null) {
-      count = MeasurementBuffer.SIZE;
-    } else {
-      count = endIndex - startIndex;
-      if (count < 0) {
-        count += MeasurementBuffer.SIZE;
-      }
-    }
+    int count = buffer.count(startIndex);
 
     if (count >= MIN_COUNT) {
       startIndex = send(startIndex, count);
+    } else {
+      if (metric != null) {
+        sendSingleMetric(metric);
+        metric = null;
+      }
     }
 
     return startIndex;
@@ -61,9 +52,9 @@ class Sender {
 
   /**
    * Tries to send measurements from measurement buffer starting at {@code startIndex} until
-   * {@code endIndex}. Will stop sending if the metric/measurement is potentially still "alive",
+   * {@code count} is reached. Will stop sending if the metric/measurement is potentially still "alive",
    * i.e. it started less than {@link Metric#MAX_TIME} or {@link Measurement#MAX_TIME} ago
-   * respectively. Returns the buffer index next unsent measurement/metric, which should be
+   * respectively. Returns the index for next unsent measurement/metric, which should be
    * used for the next call to this method as new {@code startIndex}.
    *
    * @param startIndex send measurements starting from this index (of the buffer)
@@ -78,19 +69,18 @@ class Sender {
     try {
       int endIndex = (startIndex + count) % MeasurementBuffer.SIZE;
       for (int i = startIndex; count > 0; count--, i = (i + 1) % MeasurementBuffer.SIZE) {
-        Measurement m = buffer.at[i];
+        Measurement measurement = buffer.at(i);
 
-        if (m.type == Measurement.METRIC) {
-
+        if (measurement.type == Measurement.METRIC) {
           if (metric != null) {
             send(metric);
             metric = null;
           }
 
-          Metric measurementMetric = (Metric) m.a;
+          Metric measurementMetric = (Metric) measurement.a;
 
           if (measurementMetric == current.metric.get()) {
-            if (now - m.startTime < Metric.MAX_TIME) {
+            if (now - measurement.startTime < Metric.MAX_TIME) {
               return i;
             }
 
@@ -98,23 +88,23 @@ class Sender {
           }
 
           this.metric = measurementMetric;
-          m.clear();
+          measurement.clear();
         } else {
-          if (m.endTime == 0) {
-            if (now - m.startTime < Measurement.MAX_TIME) {
+          if (measurement.endTime == 0) {
+            if (now - measurement.startTime < Measurement.MAX_TIME) {
               return i;
             }
 
-            m.clear();
+            measurement.clear();
             continue;
           }
 
-          if ((metric != null) && (m.startTime > metric.endTime)) {
+          if (metric != null && measurement.startTime > metric.endTime) {
             send(metric);
             metric = null;
           }
 
-          if ((metric != null) && (m.type == Measurement.URL)) {
+          if ((metric != null) && (measurement.type == Measurement.URL)) {
             metric.urls++;
           }
 
@@ -122,10 +112,10 @@ class Sender {
           // no metric should not even be added to the buffer. However, they occasionally are due
           // to threading issues, so this check is needed to prevent them from being sent
           if (sendMeasurementWithoutMetric || metric != null) {
-            send(m, metric != null ? metric.id : null);
+            send(measurement, metric != null ? metric.id : null);
           }
 
-          m.clear();
+          measurement.clear();
         }
       }
 
@@ -138,6 +128,17 @@ class Sender {
              */
       metric = savedMetric;
       throw sendFailed;
+    } finally {
+      if (sent > 0) {
+        writer.end();
+      }
+    }
+  }
+
+  private void sendSingleMetric(Metric metric) throws IOException {
+    sent = 0;
+    try {
+      send(metric);
     } finally {
       if (sent > 0) {
         writer.end();

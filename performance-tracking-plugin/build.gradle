@@ -16,7 +16,7 @@ sourceSets {
 dependencies {
   implementation gradleApi()
   implementation localGroovy()
-  implementation 'com.android.tools.build:gradle:2.3.3'
+  implementation 'com.android.tools.build:gradle:3.1.0'
   implementation 'org.ow2.asm:asm-all:5.1'
 }
 
