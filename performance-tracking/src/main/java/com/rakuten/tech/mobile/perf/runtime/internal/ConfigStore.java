@@ -149,11 +149,10 @@ class ConfigStore extends Store<ConfigurationResponse> {
     }
 
     ConfigurationResponse prevConfig = readConfigFromCache();
-    boolean shouldRollDice =
-        (newConfig != null && Tracker.isTrackerRunning() && prevConfig == null)
-            || (prevConfig != null
-            && newConfig != null
-            && newConfig.getEnablePercent() < prevConfig.getEnablePercent());
+    boolean shouldRollDice = newConfig != null &&
+        ((Tracker.isTrackerRunning() && prevConfig == null)
+            || (prevConfig != null && newConfig.getEnablePercent() < prevConfig.getEnablePercent())
+        );
 
     if (shouldRollDice) {
       double randomNumber =
