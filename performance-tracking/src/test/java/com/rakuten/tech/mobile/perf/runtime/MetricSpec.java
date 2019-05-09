@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import com.rakuten.tech.mobile.perf.runtime.internal.TrackingManager;
 import java.util.Arrays;
 import java.util.Collection;
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,9 +51,11 @@ public class MetricSpec extends RobolectricUnitSpec {
   public void shouldNotFailOnNullTrackingManager() {
     TrackingManager.INSTANCE = null;
 
-    Metric.start("id1");
-
-    // no exception thrown
+    try {
+      Metric.start("id1");
+    } catch(NullPointerException e) {
+      TestCase.fail("Should not throw an Exception when TrackingManager is null.");
+    }
   }
 
   @Test
@@ -71,8 +74,28 @@ public class MetricSpec extends RobolectricUnitSpec {
   public void prolongShouldNotFailOnNullTrackingManager() {
     TrackingManager.INSTANCE = null;
 
-    Metric.prolong();
+    try {
+      Metric.prolong();
+    } catch(NullPointerException e) {
+      TestCase.fail("Should not throw an Exception when TrackingManager is null.");
+    }
+  }
 
-    // no exception thrown
+  @Test
+  public void shouldEndMetric() {
+    Metric.end();
+
+    verify(trackingManager).endMetric();
+  }
+
+  @Test
+  public void endMetricShouldNotFailOnNullTrackingManager() {
+    TrackingManager.INSTANCE = null;
+
+    try {
+      Metric.end();
+    } catch(NullPointerException e) {
+      TestCase.fail("Should not throw an Exception when TrackingManager is null.");
+    }
   }
 }

@@ -25,6 +25,17 @@ public final class Metric {
   }
 
   /**
+   * Ends the metric.
+   */
+  public static void end() {
+    if (TrackingManager.INSTANCE != null) {
+      TrackingManager.INSTANCE.endMetric();
+    } else {
+      Log.d(TAG, "Tracking manager not initialized");
+    }
+  }
+
+  /**
    * Prolongs current metric.
    *
    * <p>By default the current metric is prolonged by UI life cycle events (Activity, Fragment and
