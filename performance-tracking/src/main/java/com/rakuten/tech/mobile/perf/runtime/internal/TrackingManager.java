@@ -100,6 +100,13 @@ public class TrackingManager {
     Tracker.startMetric(metricId);
   }
 
+  /**
+   * Ends the currently running metric.
+   */
+  public void endMetric() {
+    Tracker.endMetric();
+  }
+
   /** Prolongs current metric. */
   public void prolongMetric() {
     Tracker.prolongMetric();

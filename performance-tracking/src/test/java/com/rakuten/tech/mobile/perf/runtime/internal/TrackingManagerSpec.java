@@ -90,6 +90,13 @@ public class TrackingManagerSpec extends RobolectricUnitSpec {
     verify(tracker).startMetric("testMetric");
   }
 
+  @Test
+  public void shouldRelayEndMetricToTracker() {
+    manager.startMetric("testMetric");
+    manager.endMetric();
+    verify(tracker).endMetric();
+  }
+
   // aggregated
 
   @Test
