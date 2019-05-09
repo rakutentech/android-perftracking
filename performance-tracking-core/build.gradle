@@ -20,12 +20,6 @@ dependencies {
   testImplementation 'org.awaitility:awaitility:3.1.2'
 }
 
-// copy resources to classes dir so they are available on the test classpath
-processTestResources {
-  from sourceSets.test.resources
-  destinationDir sourceSets.test.output.classesDir
-}
-
 jacocoTestReport {
   reports {
     csv.enabled false

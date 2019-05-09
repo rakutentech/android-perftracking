@@ -11,14 +11,11 @@ buildscript {
     classpath "com.android.tools.build:gradle:$CONFIG.versions.android.plugin"
     classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'
     classpath 'net.saliman:gradle-cobertura-plugin:2.5.4'
-    classpath 'digital.wup:android-maven-publish:3.1.0'
+    classpath 'digital.wup:android-maven-publish:3.6.2'
     classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
     classpath 'pl.allegro.tech.build:axion-release-plugin:1.8.1'
+    classpath 'me.tatarka:gradle-retrolambda:3.7.1'
   }
-}
-
-plugins {
-  id "me.tatarka.retrolambda" version "3.7.0"
 }
 
 // do something if a task exists after evaluate
