@@ -9,7 +9,6 @@ buildscript {
   }
   dependencies {
     classpath "com.android.tools.build:gradle:$CONFIG.versions.android.plugin"
-    classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'
     classpath 'net.saliman:gradle-cobertura-plugin:2.5.4'
     classpath 'digital.wup:android-maven-publish:3.6.2'
     classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
