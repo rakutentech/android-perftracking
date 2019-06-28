@@ -5,6 +5,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 
 public interface GeoLocationApi {
-  @GET("/")
+  @GET(".")
   Call<GeoLocationResponse> location(@Header("Ocp-Apim-Subscription-Key") String subscriptionKey);
 }

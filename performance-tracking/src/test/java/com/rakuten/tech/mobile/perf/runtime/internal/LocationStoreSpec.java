@@ -15,7 +15,7 @@ import com.rakuten.tech.mobile.perf.core.LocationData;
 import com.rakuten.tech.mobile.perf.runtime.RobolectricUnitSpec;
 import com.rakuten.tech.mobile.perf.runtime.TestData;
 import com.rakuten.tech.mobile.perf.runtime.shadow.NetworkSecurityPolicyShadow;
-import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import okhttp3.mockwebserver.MockResponse;
@@ -44,6 +44,8 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
 
   private LocationStore locationStore;
 
+  private String url = server.url("location/").toString();
+
   @SuppressLint("ApplySharedPref")
   @Before
   public void init() {
@@ -54,11 +56,22 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
     when(context.getSharedPreferences(anyString(), anyInt())).thenReturn(prefs);
 
     api = new Retrofit.Builder()
-        .baseUrl(server.url("/").toString())
+        .baseUrl(url)
         .addConverterFactory(new ConverterFactory())
         .callbackExecutor(Executors.newSingleThreadExecutor())
         .build()
         .create(GeoLocationApi.class);
+  }
+
+  @Test
+  public void shouldRequestLocationFromProvidedUrl() {
+    server.enqueue(new MockResponse().setBody(location.content));
+
+    locationStore = new LocationStore(context, "", api);
+
+    awaitUntil(
+        () -> server.takeRequest().getRequestUrl().toString().equals(url)
+    );
   }
 
   @Test
@@ -67,9 +80,7 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
 
     locationStore = new LocationStore(context, "", api);
 
-    await().atMost(1, TimeUnit.SECONDS).untilAsserted(
-        () -> assertThat(server.getRequestCount()).isEqualTo(1)
-    );
+    awaitUntil(() -> server.getRequestCount() == 1);
   }
 
   @Test
@@ -77,7 +88,7 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
     server.enqueue(new MockResponse().setBody(location.content));
 
     locationStore = new LocationStore(context, "", api);
-    await().atMost(1, TimeUnit.SECONDS).until(
+    awaitUntil(
         () -> locationStore.getObservable().getCachedValue() != null
     );
 
@@ -123,5 +134,9 @@ public class LocationStoreSpec extends RobolectricUnitSpec {
   @Test
   public void shouldDoWhatWhenSubscriptionKeyIsMissing() {
     locationStore = new LocationStore(context, null, api);
+  }
+
+  private void awaitUntil(Callable<Boolean> conditionEvaluator) {
+    await().atMost(1, TimeUnit.SECONDS).until(conditionEvaluator);
   }
 }
