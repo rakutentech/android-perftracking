@@ -37,26 +37,26 @@ public class RuntimeContentProvider extends ContentProvider {
     BatteryInfoStore batteryInfoStore = new BatteryInfoStore(context);
 
     App manifest = new AppManifestConfig(context);
+    String appKey = manifest.appKey().isEmpty() ? manifest.relayAppKey() : manifest.appKey();
+    String appId = manifest.appId().isEmpty() ? manifest.relayAppId() : manifest.appId();
 
-    if (TextUtils.isEmpty(manifest.appKey())) {
-      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.perf.SubscriptionKey` from"
+    if (appKey.isEmpty()) {
+      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.ras.ProjectSubscriptionKey` from"
           + "manifest, automated performance tracking will not work.");
     }
 
-    if (TextUtils.isEmpty(manifest.appId())) {
-      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.relay.AppId` from"
+    if (appId.isEmpty()) {
+      Log.d(TAG, "Cannot read metadata `com.rakuten.tech.mobile.ras.AppId` from"
           + "manifest, automated performance tracking will not work.");
     }
 
-    ConfigStore configStore = new ConfigStore(context, manifest.appId(), manifest.appKey(),
-            manifest.configUrlPrefix());
+    ConfigStore configStore = new ConfigStore(context, appId, appKey, manifest.configUrlPrefix());
 
     // Read last config from cache
-    Config config = createConfig(context, configStore.getObservable().getCachedValue(),
-        manifest.appId());
+    Config config = createConfig(context, configStore.getObservable().getCachedValue(), appId);
     if (config != null) {
       LocationStore locationStore =
-          new LocationStore(context, manifest.appKey(), manifest.locationUrlPrefix());
+          new LocationStore(context, appKey, manifest.locationUrlPrefix());
       // Initialise Tracking Manager
       TrackingManager.initialize(
           context,
