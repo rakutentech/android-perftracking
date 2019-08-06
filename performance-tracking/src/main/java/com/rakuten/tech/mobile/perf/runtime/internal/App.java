@@ -15,9 +15,17 @@ public interface App {
   @MetaData(key = "com.rakuten.tech.mobile.perf.LocationUrlPrefix", value = BuildConfig.DEFAULT_LOCATION_URL_PREFIX)
   String locationUrlPrefix();
 
-  @MetaData(key = "com.rakuten.tech.mobile.relay.AppId")
+  @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
   String appId();
 
-  @MetaData(key = "com.rakuten.tech.mobile.relay.SubscriptionKey")
+  @MetaData(key = "com.rakuten.tech.mobile.ras.ProjectSubscriptionKey")
   String appKey();
+
+  @MetaData(key = "com.rakuten.tech.mobile.relay.AppId")
+  @Deprecated
+  String relayAppId();
+
+  @MetaData(key = "com.rakuten.tech.mobile.relay.SubscriptionKey")
+  @Deprecated
+  String relayAppKey();
 }
