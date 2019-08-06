@@ -84,6 +84,14 @@ public class ConfigStoreSpec extends RobolectricUnitSpec {
   }
 
   @Test
+  public void shouldAddRasPrefixToSubscriptionKey() throws InterruptedException {
+    configStore = new ConfigStore(context, appId, "test-subscription-key", api);
+
+    assertThat(server.takeRequest().getHeader("apiKey"))
+      .isEqualTo( "ras-test-subscription-key");
+  }
+
+  @Test
   public void shouldUseCachedConfigForInstanceCreation() throws JSONException {
     prefs.edit().putString("config_key", config.content).apply();
 

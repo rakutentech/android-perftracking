@@ -11,7 +11,7 @@ interface ConfigApi {
   Call<ConfigurationResponse> config(
       @Path("app") String appId,
       @Path("version") String appVersion,
-      @Header("Ocp-Apim-Subscription-Key") String subscriptionKey,
+      @Header("apiKey") String subscriptionKey,
       @Query("sdk") String sdkVersion,
       @Query("country") String country,
       @Query("osVersion") String osVersion,
