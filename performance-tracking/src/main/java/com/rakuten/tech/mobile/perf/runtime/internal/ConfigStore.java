@@ -89,7 +89,7 @@ class ConfigStore extends Store<ConfigurationResponse> {
     this.appId = relayAppId;
     this.res = context.getResources();
     this.prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-    this.subscriptionKey = subscriptionKey;
+    this.subscriptionKey = "ras-" + subscriptionKey;
     this.api = api;
     getObservable().publish(readConfigFromCache());
     handler = new Handler(Looper.getMainLooper());
