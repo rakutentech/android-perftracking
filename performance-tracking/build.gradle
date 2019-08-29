@@ -57,6 +57,12 @@ dependencies {
   implementation "com.android.support:support-v4:${CONFIG.versions.android.libraries.support}"
   implementation 'com.squareup.retrofit2:retrofit:2.4.0'
 
+  // DocLava needs the javax.annotations.Nullable class (used by Retrofit), so findbugs is added
+  // to bring this to the classpath: https://stackoverflow.com/a/19031259
+  compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+  // Doclava needs an annotation class from this package (used by Retrofit)
+  compileOnly 'org.codehaus.mojo:animal-sniffer-annotations:1.18'
+
   implementation 'com.rakuten.tech.mobile:manifest-config-annotations:0.1.0'
   annotationProcessor   'com.rakuten.tech.mobile:manifest-config-processor:0.1.0'
 
