@@ -88,6 +88,8 @@ pmd { // TODO: fix all findbugs warnings
   ignoreFailures = true
 }
 
+apply from: '../config/documentation/doclava/android.gradle'
+
 task checkUrlPrefixes {
   doLast {
     if (!project.hasProperty('DEFAULT_CONFIG_URL_PREFIX') ||
