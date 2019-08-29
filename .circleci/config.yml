@@ -15,6 +15,7 @@ jobs:
           key: v1-{{ checksum "build.gradle" }}-{{ checksum  "performance-tracking/build.gradle" }}-{{ checksum  "performance-tracking-plugin/build.gradle" }}-{{ checksum  "performance-tracking-core/build.gradle" }}-{{ checksum  "performance-tracking-stubs/build.gradle" }}
       - run: git submodule update --init
       - run: ./gradlew check --info -s
+      - run: ./gradlew generateDoclava
       - save_cache:
           paths:
             - ~/.gradle
