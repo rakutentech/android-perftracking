@@ -53,7 +53,7 @@ public class RuntimeContentProvider extends ContentProvider {
     ConfigStore configStore = new ConfigStore(context, appId, appKey, manifest.configUrlPrefix());
 
     // Read last config from cache
-    Config config = createConfig(context, configStore.getObservable().getCachedValue(), appId);
+    Config config = createConfig(context, configStore.getObservable().getCachedValue(), appId, (long) manifest.maxMetricDuration());
     if (config != null) {
       LocationStore locationStore =
           new LocationStore(context, appKey, manifest.locationUrlPrefix());
@@ -80,7 +80,8 @@ public class RuntimeContentProvider extends ContentProvider {
   private Config createConfig(
       @NonNull final Context context,
       @Nullable final ConfigurationResponse lastConfig,
-      @Nullable final String appId) {
+      @Nullable final String appId,
+      final long maxMetricDuration) {
     if (lastConfig == null) {
       return null;
     }
@@ -114,6 +115,7 @@ public class RuntimeContentProvider extends ContentProvider {
       config.header = lastConfig.getHeader();
       config.enablePerfTrackingEvents = lastConfig.shouldSendToPerfTracking();
       config.enableAnalyticsEvents = lastConfig.shouldSendToAnalytics();
+      config.maxMetricDuration = maxMetricDuration;
     }
 
     return config;

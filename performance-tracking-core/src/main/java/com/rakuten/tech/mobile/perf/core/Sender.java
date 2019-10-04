@@ -28,7 +28,7 @@ class Sender {
   /**
    * Tries to send measurements and metrics from the underlying buffer starting from {@code
    * startIndex}. Will wait while each measurement/metric is potentially still "alive", i.e. it
-   * started less than {@link Metric#MAX_TIME} or {@link Measurement#MAX_TIME} ago respectively.
+   * started less than {@link Metric#maxTime} or {@link Measurement#MAX_TIME} ago respectively.
    * Returns the index for next unsent measurement/metric, which should be used for the next
    * call to this method as new {@code startIndex}.
    *
@@ -53,7 +53,7 @@ class Sender {
   /**
    * Tries to send measurements from measurement buffer starting at {@code startIndex} until
    * {@code count} is reached. Will stop sending if the metric/measurement is potentially still "alive",
-   * i.e. it started less than {@link Metric#MAX_TIME} or {@link Measurement#MAX_TIME} ago
+   * i.e. it started less than {@link Metric#maxTime} or {@link Measurement#MAX_TIME} ago
    * respectively. Returns the index for next unsent measurement/metric, which should be
    * used for the next call to this method as new {@code startIndex}.
    *
@@ -80,7 +80,7 @@ class Sender {
           Metric measurementMetric = (Metric) measurement.a;
 
           if (measurementMetric == current.metric.get()) {
-            if (now - measurement.startTime < Metric.MAX_TIME) {
+            if (now - measurement.startTime < Metric.maxTime()) {
               return i;
             }
 

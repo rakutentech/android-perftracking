@@ -26,6 +26,7 @@ public class Tracker {
       CachingObservable<Float> batteryInfoObservable,
       Analytics analytics) {
     Debug debug = config.debug ? new Debug() : null;
+    Metric.setMaxTime(config.maxMetricDuration);
     MeasurementBuffer buffer = new MeasurementBuffer();
     Current current = new Current();
     tracker = new TrackerImpl(buffer, current, debug, analytics, config.enableNonMetricMeasurement);

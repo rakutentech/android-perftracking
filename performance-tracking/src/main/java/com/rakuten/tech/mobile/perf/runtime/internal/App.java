@@ -15,6 +15,9 @@ public interface App {
   @MetaData(key = "com.rakuten.tech.mobile.perf.LocationUrlPrefix", value = BuildConfig.DEFAULT_LOCATION_URL_PREFIX)
   String locationUrlPrefix();
 
+  @MetaData(key = "com.rakuten.tech.mobile.perf.MaxMetricDuration", value = "10000")
+  float maxMetricDuration();
+
   @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
   String appId();
 

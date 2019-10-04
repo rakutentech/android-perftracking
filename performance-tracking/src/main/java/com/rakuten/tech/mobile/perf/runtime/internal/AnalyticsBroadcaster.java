@@ -8,7 +8,6 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import com.rakuten.tech.mobile.perf.core.Analytics;
-import com.rakuten.tech.mobile.perf.core.Measurement;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;

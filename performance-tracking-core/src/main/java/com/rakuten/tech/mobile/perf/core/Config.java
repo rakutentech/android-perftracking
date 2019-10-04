@@ -17,4 +17,5 @@ public class Config {
   public boolean enableNonMetricMeasurement;
   public boolean enablePerfTrackingEvents;
   public boolean enableAnalyticsEvents;
+  public long maxMetricDuration;
 }
