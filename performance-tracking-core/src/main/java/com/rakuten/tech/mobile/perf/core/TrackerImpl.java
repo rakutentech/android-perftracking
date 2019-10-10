@@ -54,7 +54,7 @@ class TrackerImpl {
     if (metric != null) {
       long now = System.currentTimeMillis();
       metric.endTime = now;
-      if (now - metric.startTime > Metric.MAX_TIME) {
+      if (now - metric.startTime > Metric.maxTime()) {
         current.metric.compareAndSet(metric, null);
       }
 

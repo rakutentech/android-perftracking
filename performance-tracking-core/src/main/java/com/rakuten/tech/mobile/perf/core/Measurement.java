@@ -1,6 +1,6 @@
 package com.rakuten.tech.mobile.perf.core;
 
-public class Measurement {
+class Measurement {
 
   static final byte METRIC = 1;
   static final byte METHOD = 2;

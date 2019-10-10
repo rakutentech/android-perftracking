@@ -1,8 +1,16 @@
 package com.rakuten.tech.mobile.perf.core;
 
-public class Metric {
+class Metric {
 
-  static final long MAX_TIME = 10000L; // 10 s
+  private static long maxTime = 10000L; // 10 s
+
+  static void setMaxTime(long duration) {
+    maxTime = duration;
+  }
+
+  static long maxTime() {
+    return maxTime;
+  }
 
   String id;
   long startTime;
