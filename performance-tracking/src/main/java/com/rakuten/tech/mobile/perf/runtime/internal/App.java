@@ -16,7 +16,7 @@ public interface App {
   String locationUrlPrefix();
 
   @MetaData(key = "com.rakuten.tech.mobile.perf.MaxMetricDuration", value = "10000")
-  float maxMetricDuration();
+  int maxMetricDuration();
 
   @MetaData(key = "com.rakuten.tech.mobile.ras.AppId")
   String appId();
