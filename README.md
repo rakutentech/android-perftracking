@@ -2,6 +2,8 @@
 [![codecov](https://codecov.io/gh/rakutentech/android-perftracking/branch/master/graph/badge.svg)](https://codecov.io/gh/rakutentech/android-perftracking)
 [![CircleCI](https://circleci.com/gh/rakutentech/android-perftracking.svg?style=svg)](https://circleci.com/gh/rakutentech/android-perftracking)
 
+:skull: *This product was shut down internally at the end of 2020. The repo is now archived.*
+
 Measure performance of android applications.
  
 ## How it works
